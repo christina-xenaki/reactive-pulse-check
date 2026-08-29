@@ -161,6 +161,16 @@ PulseCheck.Questions = (function () {
     progressEl.textContent = template
       .replace('{n}', String(index + 1))
       .replace('{total}', String(visible.length));
+
+    // aria.progress is a fuller, punctuated sentence for assistive tech,
+    // distinct from the compact text shown visually (q.progress);
+    // role="status" on #progress already makes this an announced live region.
+    var ariaTemplate = uiText('aria.progress');
+    if (ariaTemplate) {
+      progressEl.setAttribute('aria-label', ariaTemplate
+        .replace('{n}', String(index + 1))
+        .replace('{total}', String(visible.length)));
+    }
   }
 
   function updateNavButtons(question) {
