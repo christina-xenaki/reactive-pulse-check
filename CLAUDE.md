@@ -56,6 +56,12 @@ There is no code yet. This file defines how it is to be built.
   it is never dereferenced at runtime. Do not "fix" a hardcoded string
   sitting next to a `textId` by trying to look it up dynamically; that
   is the intended pattern, not a shortcut taken under time pressure.
+  Where a config entry's `id` already matches its `COPY.md` ID, the `id`
+  is itself the provenance pointer and no separate `textId` field is
+  needed — this is why answer options, glossary entries and `uiCopy`
+  entries correctly carry no `textId`. A `textId` (or `helpTextId`) is
+  added only where the `id` and the `COPY.md` ID differ, as they do for
+  core questions (e.g. question `id` `q1`, `COPY.md` ID `q1.text`).
 - **No free-text input, anywhere, ever.** The tool never asks what the
   issue is and has no field for describing it. Do not add a text field —
   including a "notes" field, an "other, please specify" option, or
