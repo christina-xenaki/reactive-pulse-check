@@ -104,6 +104,26 @@ There is no code yet. This file defines how it is to be built.
 - **List every file touched.** At the end of any session that adds or
   moves files, list every file created or changed and confirm that each
   reference to it (from other code, config, or documentation) resolves.
+- **Starting-state check.** Every prompt in this project begins with the
+  state the repo is expected to be in. Before doing anything else, verify
+  that state. If any part of it does not match what you find, stop,
+  report exactly what differs, and make no changes until the requester
+  confirms how to proceed. Never adapt the work to fit a repo state that
+  was not described.
+- **Icons.** If a button carries an icon, the icon is decorative
+  (`aria-hidden="true"`, `focusable="false"`) and the visible text label
+  always stays. Never an icon-only button and never a shortened label to
+  make an icon fit. Inline SVG only: no icon library, no icon font, no
+  CDN, no build step. A third-party logo appears only on a button that
+  targets that service, unmodified in shape, never recoloured.
+- **Documentation viewer.** Every markdown file in the repo renders
+  through the same renderer and the same stylesheet. Which files appear
+  in the navigation is a separate curation decision from how they
+  render.
+- **Never invent a value.** If a threshold, weight, question, answer
+  option or user-facing string is needed and is not in SPEC.md or
+  COPY.md, do not write a plausible one. Leave a clearly marked
+  placeholder and list it at the end of the session.
 
 ## Key facts from SPEC.md worth keeping in view
 
