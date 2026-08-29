@@ -453,6 +453,18 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.noHandoff`** — shown at Levels 1 and 2
 > Nothing needs writing for publication at this level. The record below is the output.
 
+**`out.level6Gate`** — shown with the result, only where the arithmetic lands on Level 6; not part of the question set
+> Do we have something new and true to say that is not already public?
+
+**`out.lowConfidenceCaveat`** — shown where more than `lowConfidenceThreshold` of scored answers on the path taken were unknowns
+> More than {threshold}% of the answers behind this recommendation were "we don't know" or "we can't verify it yet." This rests mostly on what you don't know yet. Worth re-running once you do.
+
+**`out.q9eConsistent`** — shown where Q9 is `q9.e` and an override fired or cost of staying quiet is high
+> Legal, compliance or regulatory raised this. That's consistent with what this assessment found: {finding}.
+
+**`out.q9eNoRoute`** — shown where Q9 is `q9.e` and nothing else in the assessment flagged
+> Legal, compliance or regulatory raised this, but nothing else in this assessment routes there. They may be working from something these questions didn't ask about.
+
 ---
 
 ## 7. Rules and overrides
