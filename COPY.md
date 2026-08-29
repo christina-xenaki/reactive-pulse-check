@@ -178,6 +178,7 @@ Single choice.
 | `q6.c` | An anonymous or very low-reach account |
 | `q6.d` | An organised group running a planned campaign |
 | `q6.e` | Nobody yet; we found this ourselves |
+| `q6.f` | Staff, suppliers or people we work with, spreading it informally — no account, journalist or campaign behind it |
 
 ---
 
@@ -515,6 +516,9 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 **`rule.personalAccountReplyNote`** — a note, not a rule
 > Someone has already replied from a personal account. That reply is part of the record now, and anything the organisation says next will be read alongside it. Find out exactly what was said before deciding what to add.
+
+**`rule.internalAudienceNote`** — a note, not a rule
+> This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.
 
 ---
 

@@ -2,10 +2,13 @@
 // (SPEC.md F.1), always-on regimes (F.2), individual identifiability (F.3),
 // other overrides (F.4), and sector overrides from config (F.6) — and
 // reporting when one has overridden the two-axis arithmetic entirely. Also
-// computes the check-yourself flag and the Q9 legal cross-check (SPEC.md
-// section G and section E, Q9), which are separate mechanisms from
-// overrides but are, like overrides, read alongside the two scores rather
-// than folded into them.
+// computes the check-yourself flag, the Q9 legal cross-check, and the
+// internal-audience note (SPEC.md section G, section E Q9, and section I.5),
+// which are separate mechanisms from overrides but are, like overrides,
+// read alongside the two scores rather than folded into them. The
+// internal-audience note lives here rather than in scoring.js's noteId
+// mechanism because it depends on the final level, which is only known once
+// overrides have been resolved.
 //
 // Outcome levels, firing priority when more than one override fires, and
 // which are inferred rather than given a literal number by SPEC.md, are
@@ -133,9 +136,20 @@ PulseCheck.Overrides = (function () {
     };
   }
 
+  // SPEC.md I.5: where employees are already discussing it (q8.a) and the
+  // recommendation lands at Level 1 or 2, the ladder describes external
+  // response only — an internal audience already discussing something
+  // usually needs addressing whatever the external answer is.
+  function internalAudienceNote(answers, finalLevel) {
+    var q8 = answers.q8 || [];
+    if (q8.indexOf('q8.a') === -1) return null;
+    if (finalLevel !== 1 && finalLevel !== 2) return null;
+    return { noteId: 'rule.internalAudienceNote' };
+  }
+
   function apply(answers, scoringResult, config) {
     if (scoringResult.configError) {
-      return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null };
+      return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null };
     }
 
     var fired = findFired(answers, config);
@@ -147,7 +161,8 @@ PulseCheck.Overrides = (function () {
       applied: applied,
       finalLevel: finalLevel,
       checkYourselfFlag: checkYourselfFlag(answers),
-      legalCrossCheck: legalCrossCheck(answers, scoringResult, fired)
+      legalCrossCheck: legalCrossCheck(answers, scoringResult, fired),
+      internalAudienceNote: internalAudienceNote(answers, finalLevel)
     };
   }
 

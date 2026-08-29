@@ -74,6 +74,8 @@ The recommended level comes from the 3×3 matrix. Band boundaries and matrix cel
 
 **Every recommendation is shown with its matrix position**, both scores, and the three or four answers that contributed most to each. The reasoning is the product; the level is the summary of it.
 
+**Cap on cost of staying quiet where the organisation is not identifiable.** Where `q2.d` is selected ("our sector or a peer organisation only; we are not identifiable"), the cost-of-staying-quiet score is capped at `bandBoundaries.notIdentifiableQuietCap` (a config value, kept below `bandLowCeiling` so the axis cannot leave the low band on this path) regardless of what the other answers produce. The core questions assume the issue is about us; on a sector or competitor path where nobody can tell it is us, the arithmetic would otherwise score the other organisation's reach as our own cost of silence, which is not what it costs us to stay quiet. Branch questions still apply beneath the cap — `br.sect.1.a` (a shared supplier, contractor or partner) can lift a shared-exposure case above `br.sect.1.d` (nothing beyond the sector) — only the ceiling is fixed.
+
 ### C.2 Uncertainty
 
 Not-knowing is scored by what it costs in that specific question, not by a blanket rule applied to every "unknown" answer. An unknown answer to "what do we know about whether what's been said is accurate" (`q3.f`) and an unknown answer to "does our previous public position still hold" (`br.prior.3`) do not cost the same thing, so each is weighted individually in `config/config.json`, like any other answer option. Where not-knowing carries a cost whichever way the situation turns out, both axes rise. Every answer that records an unknown also feeds "What would change this" (section I.8): finding out is itself an escalation trigger.
@@ -82,6 +84,8 @@ Not-knowing is scored by what it costs in that specific question, not by a blank
 
 Where more than `lowConfidenceThreshold` (a config value, default 40%) of the scored answers on the path taken are unknowns, the record carries a caveat: the assessment rests mostly on things not yet known, and is worth re-running once they are.
 
+**`q3.f` fires the caveat regardless of proportion.** Not knowing whether what's been said is true (`q3.f`, "we cannot verify it yet") is not comparable to, say, not knowing our relationship with an outlet — averaging them into one proportional test understates the first. Any answer option carrying `forcesLowConfidence` (section C.4) trips the caveat on its own; the proportion threshold above still applies as well, and either condition is sufficient.
+
 ### C.4 Answer option properties
 
 An answer option in `config/config.json` can carry three properties beyond its two axis weights:
@@ -89,8 +93,9 @@ An answer option in `config/config.json` can carry three properties beyond its t
 - **`triggersOverride`** — the ID of the override (section F) this option fires when selected. Where present, the named override's outcome replaces the two-axis arithmetic entirely, and the record states that it did (section F, section I.4).
 - **`noteId`** — the ID of a note in `COPY.md` to attach to the record's output (section I) when this option is selected, shown alongside the recommendation regardless of level.
 - **`isUnknown`** — `true` where the option represents "we don't know yet" for that question. Counted, alongside every other scored answer on the path taken, toward the percentage behind the low-confidence caveat (C.3).
+- **`forcesLowConfidence`** — `true` where selecting this option should raise the low-confidence caveat (C.3) on its own, regardless of what proportion of scored answers are unknowns. Set on `q3.f` only: not knowing whether the central claim is true is a different order of uncertainty from the other unknowns the proportional test averages it with.
 
-All three are optional and independent: an option can carry any combination of them, or none.
+All four are optional and independent: an option can carry any combination of them, or none.
 
 ---
 
@@ -147,6 +152,8 @@ Carries no weight on either axis. Its only job is to select which branch questio
 
 A separate question rather than a fifth option on Q2, because a named individual is not a further point on the same scale. It can be more severe than the organisation being named and it changes which overrides fire. The split between the first two options carries real weight: an executive named over a business decision is a corporate issue; the same executive named over personal conduct is a governance and personal-data issue that can move a share price, and it raises the individual override rather than scoring on the axes.
 
+**"A senior leader below board level" raises `rule.individualInternal`, matching "an employee" and "a board member or C-suite executive, in a personal capacity."** The identifiability override was drafted with employees and service users as its two anchor cases, and a senior leader below board level fell between them by accident rather than by decision — the option existed but carried no override. It is an internal individual, so it gets the internal rule: holds at Level 2 or 3 and routes to HR and legal before comms, the same as the other two internal cases.
+
 **3. What do we know about whether what's been said is accurate?** *(single choice)*
 - True, and we knew
 - True, and we did not know until now
@@ -177,6 +184,9 @@ Retained despite correlating with Q4 and Q6, because "already fading" is the sin
 - An anonymous or very low-reach account
 - An organised group running a planned campaign
 - Nobody yet; we found this ourselves
+- Staff, suppliers or people we work with, spreading it informally — no account, journalist or campaign behind it
+
+The sixth option covers word-of-mouth carriers: an internal rumour spreading among staff or people we work with, with no identifiable external account, journalist or campaign behind it. Without it, an internal rumour had to be mapped to one of the external-carrier options or to "nobody yet," none of which describe it. Weighted `costOfSpeaking` 5, `costOfStayingQuiet` 5.
 
 **7. Is there a deadline we don't control?** *(single choice)*
 - Yes, publication in under four hours
@@ -261,7 +271,7 @@ The design draft conflated these. They have different answers.
 
 **An individual outside the organisation is identifiable** (a complainant, a patient, a customer, a social media user). You almost certainly cannot address specifics publicly without confirming information about them. Recommendation is capped at Level 2 plus a general public line: never a rebuttal discussing their case. **This applies even when they are wrong**, and it is the override people most often break, because being wrong feels like it grants permission.
 
-**An individual inside the organisation is identifiable** (an employee, a named executive in a personal capacity). Duty of care, employment law, and in most jurisdictions data protection. Holds at Level 2 or 3 and routes to HR and legal before comms. The public line is about process, never about the person.
+**An individual inside the organisation is identifiable** (an employee, a senior leader below board level, a named executive in a personal capacity). Duty of care, employment law, and in most jurisdictions data protection. Holds at Level 2 or 3 and routes to HR and legal before comms. The public line is about process, never about the person.
 
 ### F.4 Other overrides
 
@@ -391,7 +401,7 @@ All seven levels from section B, defined in full. The output is meaningless with
 2. **The two scores and the matrix position** that produced it.
 3. **What drove each score** — the three or four answers contributing most to each axis.
 4. **Any override that applied**, named, with the statement that it beat the arithmetic.
-5. **Any notes attached by the answers given** (`noteId`, section C.4), in their own block immediately under the recommendation. Separate from item 4, which is for overrides that beat the arithmetic, and from item 6, which is for the check-yourself flag: a note is neither of those, and rendering it inside either block would misstate what produced it.
+5. **Any notes attached by the answers given** (`noteId`, section C.4), in their own block immediately under the recommendation. Separate from item 4, which is for overrides that beat the arithmetic, and from item 6, which is for the check-yourself flag: a note is neither of those, and rendering it inside either block would misstate what produced it. One note is conditional on the final level rather than on the answer alone: where employees are already discussing it (`q8.a`) and the recommendation lands at Level 1 or 2, the record attaches the internal-audience note (`rule.internalAudienceNote`) — the ladder describes external response only, and staff speculating without facts is how an internal rumour becomes an external story. It is computed in `js/overrides.js`, alongside the check-yourself flag and the Q9 legal cross-check, because it needs the final level, which is only known once overrides have been resolved.
 6. **The check-yourself flag**, if raised.
 7. **The Q9 legal cross-check**, where `q9.e` was selected (section E, Q9).
 8. **The low-confidence caveat**, where more than `lowConfidenceThreshold` of scored answers on the path taken were unknowns (section C.3).
@@ -407,7 +417,7 @@ Export-only. Nothing persists after the session. Same treatment as the scorer: a
 
 - **Copy for email** (rich text) and **Copy for Slack** (plain text)
 - **Print stylesheet**, which gives PDF export free
-- **Structure:** timestamp → recommended level → the two scores → the inputs, in full descriptive phrasing → overrides applied → check-yourself flag → escalation triggers → decision-maker → disclaimer and tool URL
+- **Structure:** timestamp → recommended level → the two scores → the inputs, in full descriptive phrasing → overrides applied → notes → check-yourself flag → escalation triggers → decision-maker → disclaimer and tool URL
 - **Decision-maker fields** (first name, last name, role, function) appear only at the export or copy step, never in the tool itself. **All optional.** Someone doing a genuine sanity check before taking it to their director should not have to put a name to it, and forcing it would push people to skip the export entirely.
 
 ---

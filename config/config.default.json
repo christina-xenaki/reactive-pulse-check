@@ -298,7 +298,7 @@
 
     { "id": "q2b.a", "questionId": "q2b", "text": "A board member or C-suite executive, in their organisational role" },
     { "id": "q2b.b", "questionId": "q2b", "text": "A board member or C-suite executive, in a personal capacity", "triggersOverride": "rule.individualInternal" },
-    { "id": "q2b.c", "questionId": "q2b", "text": "A senior leader below board level" },
+    { "id": "q2b.c", "questionId": "q2b", "text": "A senior leader below board level", "triggersOverride": "rule.individualInternal" },
     { "id": "q2b.d", "questionId": "q2b", "text": "An employee", "triggersOverride": "rule.individualInternal" },
     { "id": "q2b.e", "questionId": "q2b", "text": "A contractor, agency or freelancer working for us" },
     { "id": "q2b.f", "questionId": "q2b", "text": "A partner, supplier or client organisation" },
@@ -310,7 +310,7 @@
     { "id": "q3.c", "questionId": "q3", "text": "Partly true, but the central point is wrong" },
     { "id": "q3.d", "questionId": "q3", "text": "False, but plausible enough that people will believe it" },
     { "id": "q3.e", "questionId": "q3", "text": "False, and self-evidently so" },
-    { "id": "q3.f", "questionId": "q3", "text": "We cannot verify it yet", "isUnknown": true },
+    { "id": "q3.f", "questionId": "q3", "text": "We cannot verify it yet", "isUnknown": true, "forcesLowConfidence": true },
 
     { "id": "q4.a", "questionId": "q4", "text": "Only the originator and we know about it" },
     { "id": "q4.b", "questionId": "q4", "text": "A small audience has seen it; nobody else has picked it up" },
@@ -329,6 +329,7 @@
     { "id": "q6.c", "questionId": "q6", "text": "An anonymous or very low-reach account", "noteId": "rule.privateIndividualNote" },
     { "id": "q6.d", "questionId": "q6", "text": "An organised group running a planned campaign" },
     { "id": "q6.e", "questionId": "q6", "text": "Nobody yet; we found this ourselves" },
+    { "id": "q6.f", "questionId": "q6", "text": "Staff, suppliers or people we work with, spreading it informally — no account, journalist or campaign behind it" },
 
     { "id": "q7.a", "questionId": "q7", "text": "Yes, publication in under four hours" },
     { "id": "q7.b", "questionId": "q7", "text": "Yes, today" },
@@ -493,6 +494,7 @@
     "q6.c": { "costOfSpeaking": 8, "costOfStayingQuiet": 1 },
     "q6.d": { "costOfSpeaking": 4, "costOfStayingQuiet": 6 },
     "q6.e": { "costOfSpeaking": 7, "costOfStayingQuiet": 1 },
+    "q6.f": { "costOfSpeaking": 5, "costOfStayingQuiet": 5 },
     "q7.a": { "costOfSpeaking": 0, "costOfStayingQuiet": 9 },
     "q7.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 8 },
     "q7.c": { "costOfSpeaking": 1, "costOfStayingQuiet": 6 },
@@ -590,7 +592,8 @@
   "bandBoundaries": {
     "bandLowCeiling": 35,
     "bandMediumCeiling": 65,
-    "lowConfidenceThreshold": 40
+    "lowConfidenceThreshold": 40,
+    "notIdentifiableQuietCap": 34
   },
 
   "levelMatrix": [
