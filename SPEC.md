@@ -82,6 +82,16 @@ Not-knowing is scored by what it costs in that specific question, not by a blank
 
 Where more than `lowConfidenceThreshold` (a config value, default 40%) of the scored answers on the path taken are unknowns, the record carries a caveat: the assessment rests mostly on things not yet known, and is worth re-running once they are.
 
+### C.4 Answer option properties
+
+An answer option in `config/config.json` can carry three properties beyond its two axis weights:
+
+- **`triggersOverride`** — the ID of the override (section F) this option fires when selected. Where present, the named override's outcome replaces the two-axis arithmetic entirely, and the record states that it did (section F, section I.4).
+- **`noteId`** — the ID of a note in `COPY.md` to attach to the record's output (section I) when this option is selected, shown alongside the recommendation regardless of level.
+- **`isUnknown`** — `true` where the option represents "we don't know yet" for that question. Counted, alongside every other scored answer on the path taken, toward the percentage behind the low-confidence caveat (C.3).
+
+All three are optional and independent: an option can carry any combination of them, or none.
+
 ---
 
 ## D. Controlled vocabulary
