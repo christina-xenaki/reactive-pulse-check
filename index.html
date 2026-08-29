@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[[COPY NEEDED: page title]]</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/results.css">
+  <link rel="stylesheet" href="css/glossary.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+</head>
+<body>
+  <header>
+    <h1>[[COPY NEEDED: tool name / main heading]]</h1>
+    <p>[[COPY NEEDED: pulse-check framing line, SPEC.md section A]]</p>
+  </header>
+
+  <main>
+
+    <div id="progress" role="status">
+      <!-- Progress through the question set, announced not just shown (SPEC.md M). Populated by questions.js. -->
+    </div>
+
+    <section id="question-set" aria-labelledby="question-set-heading">
+      <h2 id="question-set-heading">[[COPY NEEDED: question set section heading]]</h2>
+      <form id="pulse-check-form">
+        <!-- Question fieldsets (one group per view, mobile-first) rendered here by questions.js. No questions yet. -->
+      </form>
+    </section>
+
+    <section id="results" aria-labelledby="results-heading" aria-live="polite">
+      <h2 id="results-heading">[[COPY NEEDED: results section heading]]</h2>
+      <!--
+        Recommended level, the two scores, what drove each, any override applied,
+        the check-yourself flag, escalation triggers, and the level-below/level-above
+        explanation (SPEC.md section I) rendered here by render.js.
+      -->
+    </section>
+
+    <section id="export" aria-labelledby="export-heading">
+      <h2 id="export-heading">[[COPY NEEDED: export section heading]]</h2>
+      <!--
+        Copy for email, copy for Slack, print/PDF, and the optional decision-maker
+        fields (SPEC.md section J) rendered here by export.js.
+      -->
+    </section>
+
+  </main>
+
+  <section id="glossary" aria-labelledby="glossary-heading">
+    <h2 id="glossary-heading">[[COPY NEEDED: glossary section heading]]</h2>
+    <!-- Expandable glossary terms (SPEC.md section H) rendered here. -->
+  </section>
+
+  <footer>
+    <p>[[COPY NEEDED: privacy note, SPEC.md section K]]</p>
+    <p>[[COPY NEEDED: disclaimer, SPEC.md section L]]</p>
+  </footer>
+
+  <script src="js/dom.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/overrides.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>
