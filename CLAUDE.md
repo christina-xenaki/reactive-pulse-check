@@ -73,6 +73,12 @@ There is no code yet. This file defines how it is to be built.
 - **Tone follows `COPY.md`** once it exists. Until then, do not guess at
   tone beyond the register SPEC.md section A describes ("pulse check,"
   not a diagnosis).
+- **Claude Code may add missing IDs to `COPY.md`, but must never add or
+  alter wording there.** If config references a string, or invents an ID
+  for one, that has no home in `COPY.md`, add the ID at the point the
+  wording already lives (or, if the wording doesn't exist yet, flag the
+  gap per the placeholder convention above). Wording gaps are always
+  flagged to the user instead of being filled in.
 
 ## Standing instructions for every session
 

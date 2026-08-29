@@ -6,3 +6,21 @@
  * structural scaffold (CLAUDE.md, "Decision logic and interface are
  * separate sessions").
  */
+
+/*
+ * Structural accessibility utility, not interface styling: keeps a heading
+ * in the document (so assistive tech gets correct structure, SPEC.md M)
+ * while showing nothing on screen. Standard clip technique, not display:none,
+ * so the content is still announced.
+ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
