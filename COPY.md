@@ -234,102 +234,102 @@ Shown after Q1, selected by trigger type.
 
 **Journalist enquiry** (`q1.a`)
 - `br.journ.1` — What have they asked for?
-  - Comment on a specific point
-  - General background
-  - Confirmation of a fact
-  - Right of reply on something they intend to publish regardless
+  - `br.journ.1.a` — Comment on a specific point
+  - `br.journ.1.b` — General background
+  - `br.journ.1.c` — Confirmation of a fact
+  - `br.journ.1.d` — Right of reply on something they intend to publish regardless
 - `br.journ.2` — Do we have an existing relationship with this outlet?
-  - Yes, a good working one
-  - Yes, but a difficult one
-  - No prior contact
+  - `br.journ.2.a` — Yes, a good working one
+  - `br.journ.2.b` — Yes, but a difficult one
+  - `br.journ.2.c` — No prior contact
 - `br.journ.3` — Has a version of this story run before?
-  - Yes → *reveals the prior-coverage block*
-  - No
-  - We don't know
+  - `br.journ.3.a` — Yes → *reveals the prior-coverage block*
+  - `br.journ.3.b` — No
+  - `br.journ.3.c` — We don't know
 
 **Social post or thread** (`q1.b`)
 - `br.social.1` — Can we reply to this account privately?
-  - Yes, direct messages are open
-  - No, public reply only
-  - We could contact them off-platform
+  - `br.social.1.a` — Yes, direct messages are open
+  - `br.social.1.b` — No, public reply only
+  - `br.social.1.c` — We could contact them off-platform
 - `br.social.2` — Has anyone from our organisation already replied publicly?
-  - No
-  - Yes, from an official account
-  - Yes, from a personal account
+  - `br.social.2.a` — No
+  - `br.social.2.b` — Yes, from an official account
+  - `br.social.2.c` — Yes, from a personal account
 
 **Review or complaint** (`q1.c`)
 - `br.review.1` — Is this a service failure we can actually fix?
-  - Yes, and we can say so
-  - Yes, but not quickly
-  - No, we don't accept the account of what happened
-  - We can't tell yet
+  - `br.review.1.a` — Yes, and we can say so
+  - `br.review.1.b` — Yes, but not quickly
+  - `br.review.1.c` — No, we don't accept the account of what happened
+  - `br.review.1.d` — We can't tell yet
 - `br.review.2` — Does the platform allow a public reply?
-  - Yes
-  - No
-  - Yes, but replies are visibly from the organisation and permanent
+  - `br.review.2.a` — Yes
+  - `br.review.2.b` — No
+  - `br.review.2.c` — Yes, but replies are visibly from the organisation and permanent
 
 **Competitor statement** (`q1.d`)
 - `br.comp.1` — What kind of statement is it?
-  - Comparative advertising
-  - A statement of fact about us
-  - A general claim about the market
+  - `br.comp.1.a` — Comparative advertising
+  - `br.comp.1.b` — A statement of fact about us
+  - `br.comp.1.c` — A general claim about the market
 - `br.comp.2` — Is there a route other than public comment?
-  - Direct approach to the organisation
-  - Trade body or industry forum
-  - Advertising or competition regulator
-  - No route other than public comment
+  - `br.comp.2.a` — Direct approach to the organisation
+  - `br.comp.2.b` — Trade body or industry forum
+  - `br.comp.2.c` — Advertising or competition regulator
+  - `br.comp.2.d` — No route other than public comment
 
 **Campaign group or NGO** (`q1.e`)
 - `br.ngo.1` — Is there a planned moment attached?
-  - Yes: an AGM, results, or a fixture in our calendar
-  - Yes: a report launch or campaign day of their own
-  - No planned moment we know of
+  - `br.ngo.1.a` — Yes: an AGM, results, or a fixture in our calendar
+  - `br.ngo.1.b` — Yes: a report launch or campaign day of their own
+  - `br.ngo.1.c` — No planned moment we know of
 - `br.ngo.2` — Have they approached us privately first?
-  - Yes, and we responded
-  - Yes, and we did not respond
-  - No
+  - `br.ngo.2.a` — Yes, and we responded
+  - `br.ngo.2.b` — Yes, and we did not respond
+  - `br.ngo.2.c` — No
 
 **Regulator, politician or public body** (`q1.f`)
 - `br.reg.1` — What form has this taken?
-  - A formal process with a deadline
-  - A written request for information
-  - A public statement with no direct approach to us
+  - `br.reg.1.a` — A formal process with a deadline
+  - `br.reg.1.b` — A written request for information
+  - `br.reg.1.c` — A public statement with no direct approach to us
 - `br.reg.2` — Is there an obligation to respond through a particular channel?
-  - Yes, and we know what it is
-  - Yes, but we need to check what it is
-  - No
+  - `br.reg.2.a` — Yes, and we know what it is
+  - `br.reg.2.b` — Yes, but we need to check what it is
+  - `br.reg.2.c` — No
 
 **Apparent leak** (`q1.g`)
 - `br.leak.1` — Is the underlying information accurate?
-  - Yes
-  - Partly
-  - No
-  - We can't verify yet
+  - `br.leak.1.a` — Yes
+  - `br.leak.1.b` — Partly
+  - `br.leak.1.c` — No
+  - `br.leak.1.d` — We can't verify yet
 - `br.leak.2` — What kind of information is it?
-  - Market-sensitive
-  - Personal data about an individual
-  - Commercially confidential but neither of the above
-  - Internal but not sensitive
+  - `br.leak.2.a` — Market-sensitive
+  - `br.leak.2.b` — Personal data about an individual
+  - `br.leak.2.c` — Commercially confidential but neither of the above
+  - `br.leak.2.d` — Internal but not sensitive
 
 **Private rumour** (`q1.h`)
 - `br.rum.1` — Has any journalist contacted us about it?
-  - Yes
-  - No
-  - Not yet, but we expect it
+  - `br.rum.1.a` — Yes
+  - `br.rum.1.b` — No
+  - `br.rum.1.c` — Not yet, but we expect it
 - `br.rum.2` — Would responding be the first public confirmation this exists?
-  - Yes
-  - No, it is already public somewhere
-  - We don't know
+  - `br.rum.2.a` — Yes
+  - `br.rum.2.b` — No, it is already public somewhere
+  - `br.rum.2.c` — We don't know
 
 **Sector incident** (`q1.i`)
 - `br.sect.1` — What do we share with the organisation involved?
-  - A supplier, contractor or partner
-  - A practice or process that has been criticised
-  - A regulator
-  - Nothing beyond the sector
+  - `br.sect.1.a` — A supplier, contractor or partner
+  - `br.sect.1.b` — A practice or process that has been criticised
+  - `br.sect.1.c` — A regulator
+  - `br.sect.1.d` — Nothing beyond the sector
 - `br.sect.2` — Has anyone asked us about it?
-  - Yes, a journalist or stakeholder has asked
-  - No, we are anticipating
+  - `br.sect.2.a` — Yes, a journalist or stakeholder has asked
+  - `br.sect.2.b` — No, we are anticipating
 
 **Old story resurfacing** (`q1.j`)
 - Prior-coverage block, always.
@@ -339,26 +339,26 @@ Shown after Q1, selected by trigger type.
 ### Prior-coverage block (shared)
 
 **`br.prior.1`** — When did the earlier version run?
-- Within the last month
-- One to six months ago
-- Six to twelve months ago
-- One to three years ago
-- More than three years ago
+- `br.prior.1.a` — Within the last month
+- `br.prior.1.b` — One to six months ago
+- `br.prior.1.c` — Six to twelve months ago
+- `br.prior.1.d` — One to three years ago
+- `br.prior.1.e` — More than three years ago
 
 **`br.prior.2`** — How did it end?
-- We responded and it was corrected or withdrawn
-- We responded, stood by our position, and it stood
-- We didn't respond and it faded
-- We didn't respond and it recurs periodically
-- It went to a regulator, adjudicator or legal process
-- It has never resolved
-- We don't know; nobody here was there
+- `br.prior.2.a` — We responded and it was corrected or withdrawn
+- `br.prior.2.b` — We responded, stood by our position, and it stood
+- `br.prior.2.c` — We didn't respond and it faded
+- `br.prior.2.d` — We didn't respond and it recurs periodically
+- `br.prior.2.e` — It went to a regulator, adjudicator or legal process
+- `br.prior.2.f` — It has never resolved
+- `br.prior.2.g` — We don't know; nobody here was there
 
 **`br.prior.3`** — Does our previous public position still hold?
-- Yes, unchanged
-- Yes, but the facts have moved since
-- No, our position has changed
-- We never took a public position
+- `br.prior.3.a` — Yes, unchanged
+- `br.prior.3.b` — Yes, but the facts have moved since
+- `br.prior.3.c` — No, our position has changed
+- `br.prior.3.d` — We never took a public position
 
 ---
 
@@ -555,43 +555,45 @@ Collapsed by default behind an expandable control, same pattern as the Comms Cla
 
 ### Who's who
 
-**You** — The person running this check. Nothing you enter is stored or sent anywhere.
+**`gloss.you`** — **You** — The person running this check. Nothing you enter is stored or sent anywhere.
 
-**Originator** — Whoever first said the thing publicly: the journalist who called, the account that posted, the group that published. Not necessarily the person affected.
+**`gloss.originator`** — **Originator** — Whoever first said the thing publicly: the journalist who called, the account that posted, the group that published. Not necessarily the person affected.
 
-**Subject** — Who or what the issue is about. Often, but not always, your organisation.
+**`gloss.subject`** — **Subject** — Who or what the issue is about. Often, but not always, your organisation.
 
-**Affected party** — Anyone who has actually experienced the thing being described. May be the originator, may be someone else, may be nobody.
+**`gloss.affectedParty`** — **Affected party** — Anyone who has actually experienced the thing being described. May be the originator, may be someone else, may be nobody.
 
-**Amplifier** — Anyone who has picked it up and carried it further than the originator could alone.
+**`gloss.amplifier`** — **Amplifier** — Anyone who has picked it up and carried it further than the originator could alone.
 
 ### What the tool measures
 
-**Pulse check** — A fast, structured read on a situation. It tells you something real and immediate. It is not a diagnosis. It does not replace the judgement of your communications or public affairs team, the specialists who own the risk — legal, compliance, regulatory — or the person who actually knows the facts. It does not replace your own escalation procedure. If your organisation has one, that procedure names who is accountable for this decision and who must be consulted before it is made. This tool does not know who those people are and cannot stand in for them.
+**`gloss.pulseCheck`** — **Pulse check** — A fast, structured read on a situation. It tells you something real and immediate. It is not a diagnosis. It does not replace the judgement of your communications or public affairs team, the specialists who own the risk — legal, compliance, regulatory — or the person who actually knows the facts. It does not replace your own escalation procedure. If your organisation has one, that procedure names who is accountable for this decision and who must be consulted before it is made. This tool does not know who those people are and cannot stand in for them.
 
-**Cost of speaking** — What a response spends: attention it draws, standing it gives the originator, and the length of time the issue stays live.
+**`gloss.costOfSpeaking`** — **Cost of speaking** — What a response spends: attention it draws, standing it gives the originator, and the length of time the issue stays live.
 
-**Cost of staying quiet** — What silence spends: inaccuracy left standing unchallenged, obligations unmet, and a decision you may not be able to account for later.
+**`gloss.costOfStayingQuiet`** — **Cost of staying quiet** — What silence spends: inaccuracy left standing unchallenged, obligations unmet, and a decision you may not be able to account for later.
 
-**Rule** — A condition that decides the outcome regardless of the two scores. Rules exist because some situations are not trade-offs.
+**`gloss.rule`** — **Rule** — A condition that decides the outcome regardless of the two scores. Rules exist because some situations are not trade-offs.
 
-**Check-yourself flag** — A note, not a score. It appears when the assessment suggests the pressure to act is coming from inside the organisation rather than from the situation.
+**`gloss.checkYourselfFlag`** — **Check-yourself flag** — A note, not a score. It appears when the assessment suggests the pressure to act is coming from inside the organisation rather than from the situation.
 
-**Escalation trigger** — A condition you name now that would make you revisit this decision. "A national outlet picks it up." "The complainant goes to the regulator." A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms.
+**`gloss.escalationTrigger`** — **Escalation trigger** — A condition you name now that would make you revisit this decision. "A national outlet picks it up." "The complainant goes to the regulator." A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms.
 
 ### Terms that get confused
 
-**"No comment"** — Not silence. It is Level 4 with the worst available wording: it appears in the piece, and readers hear it as confirmation. If you are declining, say what you are declining and why.
+**`gloss.noComment`** — **"No comment"** — Not silence. It is Level 4 with the worst available wording: it appears in the piece, and readers hear it as confirmation. If you are declining, say what you are declining and why.
 
-**Silence** — Level 1 or 2. Nobody outside knows you considered it.
+**`gloss.silence`** — **Silence** — Level 1 or 2. Nobody outside knows you considered it.
 
-**Holding line** — A short, true, approved statement that buys time without committing to a position you might have to move off.
+**`gloss.holdingLine`** — **Holding line** — A short, true, approved statement that buys time without committing to a position you might have to move off.
 
-**Right of reply** — An offer to comment before publication. Declining it does not stop publication; it removes your account from the piece.
+**`gloss.rightOfReply`** — **Right of reply** — An offer to comment before publication. Declining it does not stop publication; it removes your account from the piece.
 
-**Oxygen of amplification** — The finding that covering or responding to a fringe assertion can spread it further than leaving it alone. Source: Phillips, *The Oxygen of Amplification*, Data & Society, 2018.
+**`gloss.oxygenOfAmplification`** — **Oxygen of amplification** — The finding that covering or responding to a fringe assertion can spread it further than leaving it alone. Source: Phillips, *The Oxygen of Amplification*, Data & Society, 2018.
 
 *Sector terms — purdah, quiet period, adverse event, serious incident — are defined inside the sector rule that uses them, not here.*
+
+*Glossary IDs `gloss.level1`, `gloss.level2`, `gloss.level3`, `gloss.level4`, `gloss.level5`, `gloss.level6` and `gloss.level7` (a "The response scale" category in `config.default.json`'s glossary, not reproduced here) reuse the `level.1.name`/`.def`/`.not` through `level.7.name`/`.def`/`.not` strings in section 5 verbatim.*
 
 ---
 
@@ -638,6 +640,10 @@ Collapsed by default behind an expandable control, same pattern as the Comms Cla
 **`ui.restart`** — Start again
 **`ui.sectorLabel`** — Sector
 **`ui.sectorDefault`** — General
+
+**`ui.heading.questions`** — Questions
+**`ui.heading.results`** — Your result
+**`ui.heading.export`** — Copy and share
 
 **`ui.restartConfirm`**
 > Starting again clears your answers. Nothing was stored, so they can't be recovered.

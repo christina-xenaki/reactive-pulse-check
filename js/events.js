@@ -80,7 +80,21 @@
         var dd = document.createElement('dd');
         dd.id = panelId;
         dd.hidden = true;
-        dd.textContent = entry.definition;
+
+        // Response-scale entries (SPEC.md section F, the level-below/
+        // level-above explanation) carry a definition and a separate
+        // "what this is not" line where confusion is likely (COPY.md
+        // section 5); render them as two elements rather than
+        // concatenating them into one string. Other glossary entries
+        // carry a single definition.
+        if (entry.def) {
+          dd.appendChild(PulseCheck.Dom.el('p', {}, [document.createTextNode(entry.def)]));
+          if (entry.not) {
+            dd.appendChild(PulseCheck.Dom.el('p', {}, [document.createTextNode(entry.not)]));
+          }
+        } else {
+          dd.textContent = entry.definition;
+        }
 
         button.addEventListener('click', function () {
           var expanded = button.getAttribute('aria-expanded') === 'true';
