@@ -8,6 +8,13 @@
 //
 // Every threshold and weight this module reads comes from config
 // (axisWeights, bandBoundaries, levelMatrix) — nothing here is hardcoded.
+//
+// Two config-driven exceptions to the plain arithmetic, both SPEC.md C.1/C.3:
+// where q2.d (not identifiable) is selected, cost of staying quiet is capped
+// at config.bandBoundaries.notIdentifiableQuietCap so it cannot leave the low
+// band on that path; and any selected option carrying forcesLowConfidence
+// (SPEC.md C.4) forces the low-confidence caveat regardless of the usual
+// proportion threshold.
 
 window.PulseCheck = window.PulseCheck || {};
 
@@ -182,6 +189,19 @@ PulseCheck.Scoring = (function () {
       bands[axis] = bandFor(score, config.bandBoundaries);
     });
 
+    // SPEC.md C.1: the core questions assume the issue is about us. On a
+    // sector or competitor path where we are not identifiable (q2.d), the
+    // arithmetic scores the other organisation's reach as our cost of
+    // staying quiet, so that axis is capped in the low band regardless of
+    // what the other answers produce. Branch questions still apply beneath
+    // the cap.
+    var notIdentifiable = (answers.q2 || [])[0] === 'q2.d';
+    var quietCap = config.bandBoundaries.notIdentifiableQuietCap;
+    if (notIdentifiable && typeof quietCap === 'number') {
+      scores.costOfStayingQuiet = Math.min(scores.costOfStayingQuiet, quietCap);
+      bands.costOfStayingQuiet = bandFor(scores.costOfStayingQuiet, config.bandBoundaries);
+    }
+
     var cell = matrixLevel(config.levelMatrix, bands.costOfSpeaking, bands.costOfStayingQuiet);
     var level = cell ? cell.level : null;
     var level6Eligible = bands.costOfSpeaking === 'low' && bands.costOfStayingQuiet === 'high';
@@ -195,9 +215,18 @@ PulseCheck.Scoring = (function () {
       .map(function (id) { return { optionId: id, text: oById[id].text }; });
     var unknownCount = unknownSelections.length;
     var lowConfidenceThreshold = config.bandBoundaries.lowConfidenceThreshold;
-    var lowConfidence = typeof lowConfidenceThreshold === 'number' && selections.length > 0
+    var lowConfidenceByProportion = typeof lowConfidenceThreshold === 'number' && selections.length > 0
       ? (unknownCount / selections.length) * 100 > lowConfidenceThreshold
       : false;
+    // SPEC.md C.3: not knowing whether the central claim is true (q3.f) is
+    // not comparable to the other unknowns the proportional test averages
+    // it with, so any option carrying forcesLowConfidence trips the caveat
+    // on its own, alongside the existing proportion threshold.
+    var lowConfidenceForced = selections.some(function (id) {
+      var option = oById[id];
+      return option && option.forcesLowConfidence === true;
+    });
+    var lowConfidence = lowConfidenceByProportion || lowConfidenceForced;
 
     return {
       configError: false,
