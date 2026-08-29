@@ -110,6 +110,10 @@ There is no code yet. This file defines how it is to be built.
   report exactly what differs, and make no changes until the requester
   confirms how to proceed. Never adapt the work to fit a repo state that
   was not described.
+- **Pull requests.** I merge every pull request manually on GitHub. Before
+  starting any session,fetch and check whether main has moved since your last
+  branch. If it has,start a fresh branch from current main rather than continuing
+  an existing one.
 - **Icons.** If a button carries an icon, the icon is decorative
   (`aria-hidden="true"`, `focusable="false"`) and the visible text label
   always stays. Never an icon-only button and never a shortened label to
