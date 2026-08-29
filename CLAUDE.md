@@ -45,6 +45,23 @@ There is no code yet. This file defines how it is to be built.
   clearly marked placeholder (e.g. `[[COPY NEEDED: short description]]`)
   in its place, and list every placeholder introduced at the end of your
   response.
+- **String values live in config; `textId` is provenance, not a runtime
+  lookup.** This tool has no build step, so nothing can read `COPY.md` at
+  runtime — it is markdown, not data the page fetches. Every question,
+  option, help text and glossary entry therefore carries its actual text
+  as a plain string value in `config/config.default.json`, copied
+  verbatim from `COPY.md`. Where a config entry also carries a `textId`
+  (or `helpTextId`), that field is a pointer recording which `COPY.md`
+  string the value came from, for auditing drift between the two files —
+  it is never dereferenced at runtime. Do not "fix" a hardcoded string
+  sitting next to a `textId` by trying to look it up dynamically; that
+  is the intended pattern, not a shortcut taken under time pressure.
+  Where a config entry's `id` already matches its `COPY.md` ID, the `id`
+  is itself the provenance pointer and no separate `textId` field is
+  needed — this is why answer options, glossary entries and `uiCopy`
+  entries correctly carry no `textId`. A `textId` (or `helpTextId`) is
+  added only where the `id` and the `COPY.md` ID differ, as they do for
+  core questions (e.g. question `id` `q1`, `COPY.md` ID `q1.text`).
 - **No free-text input, anywhere, ever.** The tool never asks what the
   issue is and has no field for describing it. Do not add a text field —
   including a "notes" field, an "other, please specify" option, or

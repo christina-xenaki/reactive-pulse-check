@@ -82,13 +82,13 @@
         dd.hidden = true;
 
         // Response-scale entries (SPEC.md section F, the level-below/
-        // level-above explanation) carry a definition and a separate
-        // "what this is not" line where confusion is likely (COPY.md
-        // section 5); render them as two elements rather than
-        // concatenating them into one string. Other glossary entries
-        // carry a single definition.
-        if (entry.def) {
-          dd.appendChild(PulseCheck.Dom.el('p', {}, [document.createTextNode(entry.def)]));
+        // level-above explanation) carry a definition and, for most
+        // levels, a separate "what this is not" line where confusion is
+        // likely (COPY.md section 5); render them as separate paragraphs
+        // rather than concatenating them into one string. Other glossary
+        // entries carry a single definition and no "not" line.
+        if (entry.category === 'The response scale') {
+          dd.appendChild(PulseCheck.Dom.el('p', {}, [document.createTextNode(entry.definition)]));
           if (entry.not) {
             dd.appendChild(PulseCheck.Dom.el('p', {}, [document.createTextNode(entry.not)]));
           }
