@@ -7,17 +7,13 @@
 // overrides but are, like overrides, read alongside the two scores rather
 // than folded into them.
 //
-// CLAUDE.md: every override lives in config, never hardcoded in
-// JavaScript, with one deliberate exception. The safety override (F.1) is
-// that exception — it lives in this file as code and must never be moved
-// into a config file, made editable, reweighted or switched off, see
-// SPEC.md F.1 for why. No question in the current config asks about
-// physical safety yet, so this check cannot fire today; the function below
-// and this comment are the deliberate, non-configurable place it will hook
-// in once that question exists. Every other override (F.2, F.3, F.4)
-// reads its outcome from config.alwaysOnRegimes, and F.6 sector overrides
-// read from config.sectorOverrides — neither's outcome levels are
-// hardcoded here.
+// Outcome levels, firing priority when more than one override fires, and
+// which are inferred rather than given a literal number by SPEC.md, are
+// all documented in SPEC.md F.7, not here — that is the source of truth
+// for the behaviour this file implements, not this comment. The one
+// exception is the safety override (F.1), which lives in this file as
+// code per CLAUDE.md's config-not-code principle and cannot fire today,
+// since no question asks about it yet.
 
 window.PulseCheck = window.PulseCheck || {};
 
@@ -54,22 +50,46 @@ PulseCheck.Overrides = (function () {
     return byId;
   }
 
+  // SPEC.md F.4/F.7: "a deadline exists and we are named" is a compound
+  // condition — a tight external deadline (q7.a/q7.b) together with the
+  // organisation being named (q2.a/q2.b) — that a single answer option's
+  // triggersOverride cannot express on its own, so it is checked directly
+  // against both answers here. br.journ.1.d is the one option that still
+  // fires this override unconditionally via triggersOverride (see
+  // SPEC.md F.7 for why that option is the exception).
+  var TIGHT_DEADLINE_OPTION_IDS = { 'q7.a': true, 'q7.b': true };
+  var NAMED_OPTION_IDS = { 'q2.a': true, 'q2.b': true };
+  var DEADLINE_NAMED_OVERRIDE_ID = 'rule.deadlineNamed';
+
+  function deadlineAndNamedFired(answers) {
+    var q7 = (answers.q7 || [])[0];
+    var q2 = (answers.q2 || [])[0];
+    return !!(TIGHT_DEADLINE_OPTION_IDS[q7] && NAMED_OPTION_IDS[q2]);
+  }
+
   // Any answer option carrying triggersOverride, across every question
-  // actually on the path (SPEC.md C.4), resolved against the config-driven
-  // override definitions above. Priority: safety outranks everything (it
-  // is the only route to Level 7); among the rest, lower "priority" in
-  // config wins. This ordering is a documented design decision — SPEC.md
-  // does not itself state what happens when more than one override fires
-  // on the same path.
+  // actually on the path (SPEC.md C.4), plus the one compound condition
+  // above, resolved against the config-driven override definitions.
+  // Priority: safety outranks everything (it is the only route to
+  // Level 7); among the rest, lower "priority" in config wins (SPEC.md
+  // F.7). Each override id fires at most once even if more than one
+  // answer would trigger it.
   function findFired(answers, config) {
     var oById = {};
     config.answerOptions.forEach(function (option) { oById[option.id] = option; });
     var overridesById = configuredOverrides(config);
 
     var fired = [];
+    var firedIds = {};
+
+    function pushOnce(id, sourceOptionId, outcome, priority) {
+      if (firedIds[id]) return;
+      firedIds[id] = true;
+      fired.push({ id: id, sourceOptionId: sourceOptionId, outcome: outcome, priority: priority });
+    }
 
     if (safetyFired(answers)) {
-      fired.push({ id: SAFETY_OVERRIDE_ID, sourceOptionId: null, outcome: SAFETY_OUTCOME, priority: -1 });
+      pushOnce(SAFETY_OVERRIDE_ID, null, SAFETY_OUTCOME, -1);
     }
 
     Object.keys(answers).forEach(function (questionId) {
@@ -77,15 +97,15 @@ PulseCheck.Overrides = (function () {
         var option = oById[optionId];
         var definition = option && option.triggersOverride ? overridesById[option.triggersOverride] : null;
         if (definition) {
-          fired.push({
-            id: definition.id,
-            sourceOptionId: optionId,
-            outcome: definition.outcome,
-            priority: typeof definition.priority === 'number' ? definition.priority : 99
-          });
+          pushOnce(definition.id, optionId, definition.outcome, typeof definition.priority === 'number' ? definition.priority : 99);
         }
       });
     });
+
+    if (deadlineAndNamedFired(answers) && overridesById[DEADLINE_NAMED_OVERRIDE_ID]) {
+      var deadlineDefinition = overridesById[DEADLINE_NAMED_OVERRIDE_ID];
+      pushOnce(deadlineDefinition.id, null, deadlineDefinition.outcome, typeof deadlineDefinition.priority === 'number' ? deadlineDefinition.priority : 99);
+    }
 
     fired.sort(function (a, b) { return a.priority - b.priority; });
     return fired;

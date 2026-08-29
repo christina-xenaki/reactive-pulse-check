@@ -684,3 +684,4 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
+- Note copy for three answer options marked "note" in the axis weight matrix, none of which match an existing note in section 7: `br.social.2.c` (replied to a journalist enquiry from a personal account), `br.rum.2.a` (responding to a private rumour would be the first public confirmation it exists), `br.rum.2.c` (don't know whether responding would be the first public confirmation). No `noteId` is set on these options in config until this copy exists.

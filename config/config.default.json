@@ -330,8 +330,8 @@
     { "id": "q6.d", "questionId": "q6", "text": "An organised group running a planned campaign" },
     { "id": "q6.e", "questionId": "q6", "text": "Nobody yet; we found this ourselves" },
 
-    { "id": "q7.a", "questionId": "q7", "text": "Yes, publication in under four hours", "triggersOverride": "rule.deadlineNamed" },
-    { "id": "q7.b", "questionId": "q7", "text": "Yes, today", "triggersOverride": "rule.deadlineNamed" },
+    { "id": "q7.a", "questionId": "q7", "text": "Yes, publication in under four hours" },
+    { "id": "q7.b", "questionId": "q7", "text": "Yes, today" },
     { "id": "q7.c", "questionId": "q7", "text": "Yes, within the next few days" },
     { "id": "q7.d", "questionId": "q7", "text": "No external deadline" },
 
