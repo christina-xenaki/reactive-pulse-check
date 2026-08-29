@@ -1,10 +1,499 @@
 {
-  "questions": [],
-  "answerOptions": [],
+  "questions": [
+    {
+      "id": "q1",
+      "textId": "q1.text",
+      "text": "What kind of issue has been raised?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q2",
+      "textId": "q2.text",
+      "text": "How directly is the organisation mentioned in this issue?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q2b",
+      "textId": "q2b.text",
+      "text": "Is a named individual involved?",
+      "helpTextId": "q2b.help",
+      "helpText": "Asked separately because a named individual is not simply a stronger version of the organisation being named. It can be more serious, and it changes which rules apply.",
+      "type": "multi",
+      "core": true,
+      "showIf": { "questionId": "q2", "notIn": ["q2.d"] }
+    },
+    {
+      "id": "q3",
+      "textId": "q3.text",
+      "text": "What do we know about whether what's been said is accurate?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q4",
+      "textId": "q4.text",
+      "text": "How far has it travelled so far?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q5",
+      "textId": "q5.text",
+      "text": "Which way is it moving?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q6",
+      "textId": "q6.text",
+      "text": "Who is carrying it?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q7",
+      "textId": "q7.text",
+      "text": "Is there a deadline we don't control?",
+      "type": "single",
+      "core": true
+    },
+    {
+      "id": "q8",
+      "textId": "q8.text",
+      "text": "Who else, beyond the originator, has a stake in this?",
+      "type": "multi",
+      "core": true
+    },
+    {
+      "id": "q9",
+      "textId": "q9.text",
+      "text": "Is there anyone in the organisation pushing for a response?",
+      "helpTextId": "q9.help",
+      "helpText": "This question does not score. It is here because \"a senior leader wants something said\" is a real consideration, and it is not the one this assessment measures. Recording it separately means the decision can be explained later on the grounds it was actually made.",
+      "type": "single",
+      "core": true,
+      "optional": true
+    },
+
+    {
+      "id": "br.journ.1",
+      "textId": "br.journ.1",
+      "text": "What have they asked for?",
+      "type": "single",
+      "branch": "journ",
+      "showIf": { "questionId": "q1", "in": ["q1.a"] }
+    },
+    {
+      "id": "br.journ.2",
+      "textId": "br.journ.2",
+      "text": "Do we have an existing relationship with this outlet?",
+      "type": "single",
+      "branch": "journ",
+      "showIf": { "questionId": "q1", "in": ["q1.a"] }
+    },
+    {
+      "id": "br.journ.3",
+      "textId": "br.journ.3",
+      "text": "Has a version of this story run before?",
+      "type": "single",
+      "branch": "journ",
+      "showIf": { "questionId": "q1", "in": ["q1.a"] }
+    },
+
+    {
+      "id": "br.social.1",
+      "textId": "br.social.1",
+      "text": "Can we reply to this account privately?",
+      "type": "single",
+      "branch": "social",
+      "showIf": { "questionId": "q1", "in": ["q1.b"] }
+    },
+    {
+      "id": "br.social.2",
+      "textId": "br.social.2",
+      "text": "Has anyone from our organisation already replied publicly?",
+      "type": "single",
+      "branch": "social",
+      "showIf": { "questionId": "q1", "in": ["q1.b"] }
+    },
+
+    {
+      "id": "br.review.1",
+      "textId": "br.review.1",
+      "text": "Is this a service failure we can actually fix?",
+      "type": "single",
+      "branch": "review",
+      "showIf": { "questionId": "q1", "in": ["q1.c"] }
+    },
+    {
+      "id": "br.review.2",
+      "textId": "br.review.2",
+      "text": "Does the platform allow a public reply?",
+      "type": "single",
+      "branch": "review",
+      "showIf": { "questionId": "q1", "in": ["q1.c"] }
+    },
+
+    {
+      "id": "br.comp.1",
+      "textId": "br.comp.1",
+      "text": "What kind of statement is it?",
+      "type": "single",
+      "branch": "comp",
+      "showIf": { "questionId": "q1", "in": ["q1.d"] }
+    },
+    {
+      "id": "br.comp.2",
+      "textId": "br.comp.2",
+      "text": "Is there a route other than public comment?",
+      "type": "single",
+      "branch": "comp",
+      "showIf": { "questionId": "q1", "in": ["q1.d"] }
+    },
+
+    {
+      "id": "br.ngo.1",
+      "textId": "br.ngo.1",
+      "text": "Is there a planned moment attached?",
+      "type": "single",
+      "branch": "ngo",
+      "showIf": { "questionId": "q1", "in": ["q1.e"] }
+    },
+    {
+      "id": "br.ngo.2",
+      "textId": "br.ngo.2",
+      "text": "Have they approached us privately first?",
+      "type": "single",
+      "branch": "ngo",
+      "showIf": { "questionId": "q1", "in": ["q1.e"] }
+    },
+
+    {
+      "id": "br.reg.1",
+      "textId": "br.reg.1",
+      "text": "What form has this taken?",
+      "type": "single",
+      "branch": "reg",
+      "showIf": { "questionId": "q1", "in": ["q1.f"] }
+    },
+    {
+      "id": "br.reg.2",
+      "textId": "br.reg.2",
+      "text": "Is there an obligation to respond through a particular channel?",
+      "type": "single",
+      "branch": "reg",
+      "showIf": { "questionId": "q1", "in": ["q1.f"] }
+    },
+
+    {
+      "id": "br.leak.1",
+      "textId": "br.leak.1",
+      "text": "Is the underlying information accurate?",
+      "type": "single",
+      "branch": "leak",
+      "showIf": { "questionId": "q1", "in": ["q1.g"] }
+    },
+    {
+      "id": "br.leak.2",
+      "textId": "br.leak.2",
+      "text": "What kind of information is it?",
+      "type": "single",
+      "branch": "leak",
+      "showIf": { "questionId": "q1", "in": ["q1.g"] }
+    },
+
+    {
+      "id": "br.rum.1",
+      "textId": "br.rum.1",
+      "text": "Has any journalist contacted us about it?",
+      "type": "single",
+      "branch": "rum",
+      "showIf": { "questionId": "q1", "in": ["q1.h"] }
+    },
+    {
+      "id": "br.rum.2",
+      "textId": "br.rum.2",
+      "text": "Would responding be the first public confirmation this exists?",
+      "type": "single",
+      "branch": "rum",
+      "showIf": { "questionId": "q1", "in": ["q1.h"] }
+    },
+
+    {
+      "id": "br.sect.1",
+      "textId": "br.sect.1",
+      "text": "What do we share with the organisation involved?",
+      "type": "single",
+      "branch": "sect",
+      "showIf": { "questionId": "q1", "in": ["q1.i"] }
+    },
+    {
+      "id": "br.sect.2",
+      "textId": "br.sect.2",
+      "text": "Has anyone asked us about it?",
+      "type": "single",
+      "branch": "sect",
+      "showIf": { "questionId": "q1", "in": ["q1.i"] }
+    },
+
+    {
+      "id": "br.prior.1",
+      "textId": "br.prior.1",
+      "text": "When did the earlier version run?",
+      "type": "single",
+      "branch": "prior",
+      "showIf": {
+        "any": [
+          { "questionId": "q1", "in": ["q1.j"] },
+          { "questionId": "br.journ.3", "in": ["br.journ.3.a"] }
+        ]
+      }
+    },
+    {
+      "id": "br.prior.2",
+      "textId": "br.prior.2",
+      "text": "How did it end?",
+      "type": "single",
+      "branch": "prior",
+      "showIf": {
+        "any": [
+          { "questionId": "q1", "in": ["q1.j"] },
+          { "questionId": "br.journ.3", "in": ["br.journ.3.a"] }
+        ]
+      }
+    },
+    {
+      "id": "br.prior.3",
+      "textId": "br.prior.3",
+      "text": "Does our previous public position still hold?",
+      "type": "single",
+      "branch": "prior",
+      "showIf": {
+        "any": [
+          { "questionId": "q1", "in": ["q1.j"] },
+          { "questionId": "br.journ.3", "in": ["br.journ.3.a"] }
+        ]
+      }
+    }
+  ],
+
+  "answerOptions": [
+    { "id": "q1.a", "questionId": "q1", "text": "A journalist has contacted us" },
+    { "id": "q1.b", "questionId": "q1", "text": "A post or thread on social media" },
+    { "id": "q1.c", "questionId": "q1", "text": "A review, rating or complaint on a public platform" },
+    { "id": "q1.d", "questionId": "q1", "text": "A statement made by a competitor or rival organisation" },
+    { "id": "q1.e", "questionId": "q1", "text": "A campaign group, NGO or activist action" },
+    { "id": "q1.f", "questionId": "q1", "text": "A regulator, politician or public body has raised it" },
+    { "id": "q1.g", "questionId": "q1", "text": "Something that looks like an internal leak" },
+    { "id": "q1.h", "questionId": "q1", "text": "A rumour circulating privately, not yet published anywhere" },
+    { "id": "q1.i", "questionId": "q1", "text": "An incident at another organisation in our sector" },
+    { "id": "q1.j", "questionId": "q1", "text": "An old story about us resurfacing" },
+
+    { "id": "q2.a", "questionId": "q2", "text": "Named directly, and we are the subject of it" },
+    { "id": "q2.b", "questionId": "q2", "text": "Named, but we are not the main subject" },
+    { "id": "q2.c", "questionId": "q2", "text": "Not named, but anyone in our sector would know it's us" },
+    { "id": "q2.d", "questionId": "q2", "text": "Our sector or a peer organisation only; we are not identifiable" },
+
+    { "id": "q2b.a", "questionId": "q2b", "text": "A board member or C-suite executive, in their organisational role" },
+    { "id": "q2b.b", "questionId": "q2b", "text": "A board member or C-suite executive, in a personal capacity" },
+    { "id": "q2b.c", "questionId": "q2b", "text": "A senior leader below board level" },
+    { "id": "q2b.d", "questionId": "q2b", "text": "An employee" },
+    { "id": "q2b.e", "questionId": "q2b", "text": "A contractor, agency or freelancer working for us" },
+    { "id": "q2b.f", "questionId": "q2b", "text": "A partner, supplier or client organisation" },
+    { "id": "q2b.g", "questionId": "q2b", "text": "A customer, patient or service user" },
+    { "id": "q2b.h", "questionId": "q2b", "text": "No individual is named" },
+
+    { "id": "q3.a", "questionId": "q3", "text": "True, and we knew" },
+    { "id": "q3.b", "questionId": "q3", "text": "True, and we did not know until now" },
+    { "id": "q3.c", "questionId": "q3", "text": "Partly true, but the central point is wrong" },
+    { "id": "q3.d", "questionId": "q3", "text": "False, but plausible enough that people will believe it" },
+    { "id": "q3.e", "questionId": "q3", "text": "False, and self-evidently so" },
+    { "id": "q3.f", "questionId": "q3", "text": "We cannot verify it yet" },
+
+    { "id": "q4.a", "questionId": "q4", "text": "Only the originator and we know about it" },
+    { "id": "q4.b", "questionId": "q4", "text": "A small audience has seen it; nobody else has picked it up" },
+    { "id": "q4.c", "questionId": "q4", "text": "An amplifier has picked it up: a trade or niche outlet" },
+    { "id": "q4.d", "questionId": "q4", "text": "An amplifier has picked it up: a national outlet or a large account" },
+    { "id": "q4.e", "questionId": "q4", "text": "It is already everywhere we look" },
+
+    { "id": "q5.a", "questionId": "q5", "text": "Growing quickly" },
+    { "id": "q5.b", "questionId": "q5", "text": "Growing slowly" },
+    { "id": "q5.c", "questionId": "q5", "text": "Flat" },
+    { "id": "q5.d", "questionId": "q5", "text": "Already fading" },
+    { "id": "q5.e", "questionId": "q5", "text": "Too early to tell; this is under an hour old" },
+
+    { "id": "q6.a", "questionId": "q6", "text": "Someone with real distribution — a journalist, a large account, a broadcaster" },
+    { "id": "q6.b", "questionId": "q6", "text": "An account with a committed audience but little reach beyond it" },
+    { "id": "q6.c", "questionId": "q6", "text": "An anonymous or very low-reach account" },
+    { "id": "q6.d", "questionId": "q6", "text": "An organised group running a planned campaign" },
+    { "id": "q6.e", "questionId": "q6", "text": "Nobody yet; we found this ourselves" },
+
+    { "id": "q7.a", "questionId": "q7", "text": "Yes, publication in under four hours" },
+    { "id": "q7.b", "questionId": "q7", "text": "Yes, today" },
+    { "id": "q7.c", "questionId": "q7", "text": "Yes, within the next few days" },
+    { "id": "q7.d", "questionId": "q7", "text": "No external deadline" },
+
+    { "id": "q8.a", "questionId": "q8", "text": "Employees are already discussing it" },
+    { "id": "q8.b", "questionId": "q8", "text": "A regulator has an interest in this subject" },
+    { "id": "q8.c", "questionId": "q8", "text": "Customers, patients or service users are directly affected" },
+    { "id": "q8.d", "questionId": "q8", "text": "Investors, funders or trustees will ask about it" },
+    { "id": "q8.e", "questionId": "q8", "text": "A partner, supplier or client is implicated" },
+    { "id": "q8.f", "questionId": "q8", "text": "Nobody beyond the originator yet" },
+
+    { "id": "q9.a", "questionId": "q9", "text": "Nobody; we are assessing it ourselves" },
+    { "id": "q9.b", "questionId": "q9", "text": "The comms team" },
+    { "id": "q9.c", "questionId": "q9", "text": "A senior leader has seen it and wants something said" },
+    { "id": "q9.d", "questionId": "q9", "text": "The CEO or an equivalent has seen it and wants something said" },
+    { "id": "q9.e", "questionId": "q9", "text": "Legal, compliance or regulatory have raised it" },
+
+    { "id": "br.journ.1.a", "questionId": "br.journ.1", "text": "Comment on a specific point" },
+    { "id": "br.journ.1.b", "questionId": "br.journ.1", "text": "General background" },
+    { "id": "br.journ.1.c", "questionId": "br.journ.1", "text": "Confirmation of a fact" },
+    { "id": "br.journ.1.d", "questionId": "br.journ.1", "text": "Right of reply on something they intend to publish regardless" },
+
+    { "id": "br.journ.2.a", "questionId": "br.journ.2", "text": "Yes, a good working one" },
+    { "id": "br.journ.2.b", "questionId": "br.journ.2", "text": "Yes, but a difficult one" },
+    { "id": "br.journ.2.c", "questionId": "br.journ.2", "text": "No prior contact" },
+
+    { "id": "br.journ.3.a", "questionId": "br.journ.3", "text": "Yes" },
+    { "id": "br.journ.3.b", "questionId": "br.journ.3", "text": "No" },
+    { "id": "br.journ.3.c", "questionId": "br.journ.3", "text": "We don't know" },
+
+    { "id": "br.social.1.a", "questionId": "br.social.1", "text": "Yes, direct messages are open" },
+    { "id": "br.social.1.b", "questionId": "br.social.1", "text": "No, public reply only" },
+    { "id": "br.social.1.c", "questionId": "br.social.1", "text": "We could contact them off-platform" },
+
+    { "id": "br.social.2.a", "questionId": "br.social.2", "text": "No" },
+    { "id": "br.social.2.b", "questionId": "br.social.2", "text": "Yes, from an official account" },
+    { "id": "br.social.2.c", "questionId": "br.social.2", "text": "Yes, from a personal account" },
+
+    { "id": "br.review.1.a", "questionId": "br.review.1", "text": "Yes, and we can say so" },
+    { "id": "br.review.1.b", "questionId": "br.review.1", "text": "Yes, but not quickly" },
+    { "id": "br.review.1.c", "questionId": "br.review.1", "text": "No, we don't accept the account of what happened" },
+    { "id": "br.review.1.d", "questionId": "br.review.1", "text": "We can't tell yet" },
+
+    { "id": "br.review.2.a", "questionId": "br.review.2", "text": "Yes" },
+    { "id": "br.review.2.b", "questionId": "br.review.2", "text": "No" },
+    { "id": "br.review.2.c", "questionId": "br.review.2", "text": "Yes, but replies are visibly from the organisation and permanent" },
+
+    { "id": "br.comp.1.a", "questionId": "br.comp.1", "text": "Comparative advertising" },
+    { "id": "br.comp.1.b", "questionId": "br.comp.1", "text": "A statement of fact about us" },
+    { "id": "br.comp.1.c", "questionId": "br.comp.1", "text": "A general claim about the market" },
+
+    { "id": "br.comp.2.a", "questionId": "br.comp.2", "text": "Direct approach to the organisation" },
+    { "id": "br.comp.2.b", "questionId": "br.comp.2", "text": "Trade body or industry forum" },
+    { "id": "br.comp.2.c", "questionId": "br.comp.2", "text": "Advertising or competition regulator" },
+    { "id": "br.comp.2.d", "questionId": "br.comp.2", "text": "No route other than public comment" },
+
+    { "id": "br.ngo.1.a", "questionId": "br.ngo.1", "text": "Yes: an AGM, results, or a fixture in our calendar" },
+    { "id": "br.ngo.1.b", "questionId": "br.ngo.1", "text": "Yes: a report launch or campaign day of their own" },
+    { "id": "br.ngo.1.c", "questionId": "br.ngo.1", "text": "No planned moment we know of" },
+
+    { "id": "br.ngo.2.a", "questionId": "br.ngo.2", "text": "Yes, and we responded" },
+    { "id": "br.ngo.2.b", "questionId": "br.ngo.2", "text": "Yes, and we did not respond" },
+    { "id": "br.ngo.2.c", "questionId": "br.ngo.2", "text": "No" },
+
+    { "id": "br.reg.1.a", "questionId": "br.reg.1", "text": "A formal process with a deadline" },
+    { "id": "br.reg.1.b", "questionId": "br.reg.1", "text": "A written request for information" },
+    { "id": "br.reg.1.c", "questionId": "br.reg.1", "text": "A public statement with no direct approach to us" },
+
+    { "id": "br.reg.2.a", "questionId": "br.reg.2", "text": "Yes, and we know what it is" },
+    { "id": "br.reg.2.b", "questionId": "br.reg.2", "text": "Yes, but we need to check what it is" },
+    { "id": "br.reg.2.c", "questionId": "br.reg.2", "text": "No" },
+
+    { "id": "br.leak.1.a", "questionId": "br.leak.1", "text": "Yes" },
+    { "id": "br.leak.1.b", "questionId": "br.leak.1", "text": "Partly" },
+    { "id": "br.leak.1.c", "questionId": "br.leak.1", "text": "No" },
+    { "id": "br.leak.1.d", "questionId": "br.leak.1", "text": "We can't verify yet" },
+
+    { "id": "br.leak.2.a", "questionId": "br.leak.2", "text": "Market-sensitive" },
+    { "id": "br.leak.2.b", "questionId": "br.leak.2", "text": "Personal data about an individual" },
+    { "id": "br.leak.2.c", "questionId": "br.leak.2", "text": "Commercially confidential but neither of the above" },
+    { "id": "br.leak.2.d", "questionId": "br.leak.2", "text": "Internal but not sensitive" },
+
+    { "id": "br.rum.1.a", "questionId": "br.rum.1", "text": "Yes" },
+    { "id": "br.rum.1.b", "questionId": "br.rum.1", "text": "No" },
+    { "id": "br.rum.1.c", "questionId": "br.rum.1", "text": "Not yet, but we expect it" },
+
+    { "id": "br.rum.2.a", "questionId": "br.rum.2", "text": "Yes" },
+    { "id": "br.rum.2.b", "questionId": "br.rum.2", "text": "No, it is already public somewhere" },
+    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know" },
+
+    { "id": "br.sect.1.a", "questionId": "br.sect.1", "text": "A supplier, contractor or partner" },
+    { "id": "br.sect.1.b", "questionId": "br.sect.1", "text": "A practice or process that has been criticised" },
+    { "id": "br.sect.1.c", "questionId": "br.sect.1", "text": "A regulator" },
+    { "id": "br.sect.1.d", "questionId": "br.sect.1", "text": "Nothing beyond the sector" },
+
+    { "id": "br.sect.2.a", "questionId": "br.sect.2", "text": "Yes, a journalist or stakeholder has asked" },
+    { "id": "br.sect.2.b", "questionId": "br.sect.2", "text": "No, we are anticipating" },
+
+    { "id": "br.prior.1.a", "questionId": "br.prior.1", "text": "Within the last month" },
+    { "id": "br.prior.1.b", "questionId": "br.prior.1", "text": "One to six months ago" },
+    { "id": "br.prior.1.c", "questionId": "br.prior.1", "text": "Six to twelve months ago" },
+    { "id": "br.prior.1.d", "questionId": "br.prior.1", "text": "One to three years ago" },
+    { "id": "br.prior.1.e", "questionId": "br.prior.1", "text": "More than three years ago" },
+
+    { "id": "br.prior.2.a", "questionId": "br.prior.2", "text": "We responded and it was corrected or withdrawn" },
+    { "id": "br.prior.2.b", "questionId": "br.prior.2", "text": "We responded, stood by our position, and it stood" },
+    { "id": "br.prior.2.c", "questionId": "br.prior.2", "text": "We didn't respond and it faded" },
+    { "id": "br.prior.2.d", "questionId": "br.prior.2", "text": "We didn't respond and it recurs periodically" },
+    { "id": "br.prior.2.e", "questionId": "br.prior.2", "text": "It went to a regulator, adjudicator or legal process" },
+    { "id": "br.prior.2.f", "questionId": "br.prior.2", "text": "It has never resolved" },
+    { "id": "br.prior.2.g", "questionId": "br.prior.2", "text": "We don't know; nobody here was there" },
+
+    { "id": "br.prior.3.a", "questionId": "br.prior.3", "text": "Yes, unchanged" },
+    { "id": "br.prior.3.b", "questionId": "br.prior.3", "text": "Yes, but the facts have moved since" },
+    { "id": "br.prior.3.c", "questionId": "br.prior.3", "text": "No, our position has changed" },
+    { "id": "br.prior.3.d", "questionId": "br.prior.3", "text": "We never took a public position" }
+  ],
+
   "axisWeights": {},
   "bandBoundaries": {},
   "levelMatrix": [],
   "alwaysOnRegimes": [],
   "sectorOverrides": [],
-  "glossary": []
+
+  "glossary": [
+    { "id": "gloss.you", "category": "Who's who", "term": "You", "definition": "The person running this check. Nothing you enter is stored or sent anywhere." },
+    { "id": "gloss.originator", "category": "Who's who", "term": "Originator", "definition": "Whoever first said the thing publicly: the journalist who called, the account that posted, the group that published. Not necessarily the person affected." },
+    { "id": "gloss.subject", "category": "Who's who", "term": "Subject", "definition": "Who or what the issue is about. Often, but not always, your organisation." },
+    { "id": "gloss.affectedParty", "category": "Who's who", "term": "Affected party", "definition": "Anyone who has actually experienced the thing being described. May be the originator, may be someone else, may be nobody." },
+    { "id": "gloss.amplifier", "category": "Who's who", "term": "Amplifier", "definition": "Anyone who has picked it up and carried it further than the originator could alone." },
+
+    { "id": "gloss.pulseCheck", "category": "What the tool measures", "term": "Pulse check", "definition": "A fast, structured read on a situation. It tells you something real and immediate. It is not a diagnosis. It does not replace the judgement of your communications or public affairs team, the specialists who own the risk — legal, compliance, regulatory — or the person who actually knows the facts. It does not replace your own escalation procedure. If your organisation has one, that procedure names who is accountable for this decision and who must be consulted before it is made. This tool does not know who those people are and cannot stand in for them." },
+    { "id": "gloss.costOfSpeaking", "category": "What the tool measures", "term": "Cost of speaking", "definition": "What a response spends: attention it draws, standing it gives the originator, and the length of time the issue stays live." },
+    { "id": "gloss.costOfStayingQuiet", "category": "What the tool measures", "term": "Cost of staying quiet", "definition": "What silence spends: inaccuracy left standing unchallenged, obligations unmet, and a decision you may not be able to account for later." },
+    { "id": "gloss.rule", "category": "What the tool measures", "term": "Rule", "definition": "A condition that decides the outcome regardless of the two scores. Rules exist because some situations are not trade-offs." },
+    { "id": "gloss.checkYourselfFlag", "category": "What the tool measures", "term": "Check-yourself flag", "definition": "A note, not a score. It appears when the assessment suggests the pressure to act is coming from inside the organisation rather than from the situation." },
+    { "id": "gloss.escalationTrigger", "category": "What the tool measures", "term": "Escalation trigger", "definition": "A condition you name now that would make you revisit this decision. \"A national outlet picks it up.\" \"The complainant goes to the regulator.\" A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms." },
+
+    { "id": "gloss.noComment", "category": "Terms that get confused", "term": "\"No comment\"", "definition": "Not silence. It is Level 4 with the worst available wording: it appears in the piece, and readers hear it as confirmation. If you are declining, say what you are declining and why." },
+    { "id": "gloss.silence", "category": "Terms that get confused", "term": "Silence", "definition": "Level 1 or 2. Nobody outside knows you considered it." },
+    { "id": "gloss.holdingLine", "category": "Terms that get confused", "term": "Holding line", "definition": "A short, true, approved statement that buys time without committing to a position you might have to move off." },
+    { "id": "gloss.rightOfReply", "category": "Terms that get confused", "term": "Right of reply", "definition": "An offer to comment before publication. Declining it does not stop publication; it removes your account from the piece." },
+    { "id": "gloss.oxygenOfAmplification", "category": "Terms that get confused", "term": "Oxygen of amplification", "definition": "The finding that covering or responding to a fringe assertion can spread it further than leaving it alone. Source: Phillips, The Oxygen of Amplification, Data & Society, 2018." },
+
+    { "id": "gloss.level1", "category": "The response scale", "term": "Level 1 — Log and monitor", "definition": "Record that you saw it and what you decided. Take no action. This is not the same as ignoring it. The record is the difference." },
+    { "id": "gloss.level2", "category": "The response scale", "term": "Level 2 — Private reply", "definition": "Respond directly to the originator only. Nothing public." },
+    { "id": "gloss.level3", "category": "The response scale", "term": "Level 3 — Holding line prepared", "definition": "Write and approve a line. Release it only if asked. Nothing goes out unprompted. Preparing a line is not deciding to use it. The point is that the decision to speak, if it comes, is not made under time pressure." },
+    { "id": "gloss.level4", "category": "The response scale", "term": "Level 4 — Reactive statement issued", "definition": "A statement given to whoever asked, for publication. \"No comment\" is also Level 4. It is Level 4 with the worst available wording: it appears in the piece and readers hear it as confirmation. If you are declining, say what you are declining and why." },
+    { "id": "gloss.level5", "category": "The response scale", "term": "Level 5 — Owned channels", "definition": "You publish something yourself, on your own site or accounts. Publishing to your own audience makes the issue visible to people who had not seen it. That is sometimes the point and sometimes the mistake." },
+    { "id": "gloss.level6", "category": "The response scale", "term": "Level 6 — Proactive outreach", "definition": "You approach outlets or stakeholders who have not asked." },
+    { "id": "gloss.level7", "category": "The response scale", "term": "Level 7 — Escalate", "definition": "Correction demand, regulator notification, or legal action. This is not a communications decision on its own, and this tool cannot make it. It reaches Level 7 only where a rule requires it." }
+  ],
+
+  "uiCopy": {
+    "q.progress": "Question {n} of {total}",
+    "q.optional": "Optional. You can skip this.",
+    "ui.start": "Start",
+    "ui.next": "Next",
+    "ui.back": "Back",
+    "ui.skip": "Skip this question",
+    "ui.submit": "Get the recommendation",
+    "state.incomplete": "Answer this to continue.",
+    "aria.progress": "Question {n} of {total}.",
+    "gloss.control.label": "What this means"
+  }
 }
