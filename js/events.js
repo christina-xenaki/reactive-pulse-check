@@ -9,6 +9,7 @@
         PulseCheck.Questions.init(config);
         wireStart(config);
         wireNav();
+        wireSubmit(config);
         buildGlossary(config);
       })
       .catch(function () {
@@ -16,6 +17,36 @@
         if (errorEl) errorEl.hidden = false;
       });
   });
+
+  // Scoring and overrides are decision logic (CLAUDE.md); this listener is
+  // only the wiring between the question set's submit event and those two
+  // modules. It never fails silently: an invalid or incomplete config shows
+  // state.configError, same as a config that failed to load at all.
+  function wireSubmit(config) {
+    var formEl = document.getElementById('pulse-check-form');
+    if (!formEl) return;
+
+    formEl.addEventListener('pulsecheck:submit', function (event) {
+      var answers = event.detail.answers;
+
+      if (!PulseCheck.Scoring.isConfigValid(config)) {
+        var errorEl = document.getElementById('config-error');
+        if (errorEl) errorEl.hidden = false;
+        return;
+      }
+
+      var scoringResult = PulseCheck.Scoring.compute(answers, config);
+      var overridesResult = PulseCheck.Overrides.apply(answers, scoringResult, config);
+
+      formEl.dispatchEvent(new CustomEvent('pulsecheck:result', {
+        detail: {
+          answers: answers,
+          scoring: scoringResult,
+          overrides: overridesResult
+        }
+      }));
+    });
+  }
 
   function wireStart() {
     var startButton = document.getElementById('start-button');

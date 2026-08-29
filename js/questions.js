@@ -126,17 +126,38 @@ PulseCheck.Questions = (function () {
     return fieldset;
   }
 
+  // Q8 is multi-select; selecting "nobody beyond the originator yet"
+  // (q8.f) clears every other Q8 selection, and vice versa (CLAUDE.md,
+  // axis weight matrix rule 3) — the two are mutually exclusive.
+  var CLEARING_OPTION_ID = 'q8.f';
+
   function handleChange(question, input) {
     var current = (answers[question.id] || []).slice();
     if (question.type === 'multi') {
       var pos = current.indexOf(input.value);
       if (input.checked && pos === -1) current.push(input.value);
       if (!input.checked && pos !== -1) current.splice(pos, 1);
+
+      if (question.id === 'q8') {
+        if (input.value === CLEARING_OPTION_ID && input.checked) {
+          current = [CLEARING_OPTION_ID];
+        } else if (input.value !== CLEARING_OPTION_ID && input.checked) {
+          var clearingPos = current.indexOf(CLEARING_OPTION_ID);
+          if (clearingPos !== -1) current.splice(clearingPos, 1);
+        }
+        syncCheckboxes(question, current);
+      }
     } else {
       current = input.checked ? [input.value] : [];
     }
     answers[question.id] = current;
     clearError();
+  }
+
+  function syncCheckboxes(question, selected) {
+    Dom.qsa('input[name="' + question.id + '"]', formEl).forEach(function (checkbox) {
+      checkbox.checked = selected.indexOf(checkbox.value) !== -1;
+    });
   }
 
   function clearError() {

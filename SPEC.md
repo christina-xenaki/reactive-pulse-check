@@ -298,6 +298,30 @@ Ten ship. Same pattern as the Comms Clarity Scorer: one file per sector, identic
 
 Any of these can be added as `config/config.<name>.json` without touching code. This footnote is repeated in SCORING.md, aimed at someone building their own.
 
+### F.7 Implementation: outcome levels, firing priority and configuration
+
+Every override's outcome and firing priority is a config value, in `config.alwaysOnRegimes` for F.2/F.3/F.4 and `config.sectorOverrides` for F.6, read by `js/overrides.js`. The one exception is F.1 safety, which stays hardcoded in that file per F.1 above — the one deliberate departure from this document's config-not-code principle, and it cannot fire yet, since no question in the current question set asks about physical safety.
+
+**Outcome levels.** Two are given a literal number above: F.1 safety is a forced Level 7 (the only route to it), and F.3's external-identifiability case is a forced Level 2 ("capped at Level 2"). F.3's internal case is given an explicit range ("Holds at Level 2 or 3"). The rest are not given a literal number above and were inferred by analogy at implementation time; recording the inference here keeps it visible rather than buried in a code comment.
+
+| Override | Outcome | Basis |
+|---|---|---|
+| `rule.safety` | Forced Level 7 | Explicit — F.1, "fixed escalation"; Level 7 is reachable only by override (C.1) |
+| `rule.individualExternal` | Forced Level 2 | Explicit — F.3, "capped at Level 2" |
+| `rule.individualInternal` | Clamped to Level 2 or 3 | Explicit — F.3, "Holds at Level 2 or 3" |
+| `rule.data` | Clamped to Level 2 or 3 | Inferred by analogy to `rule.individualInternal`: both route to a specialist function before public comment ("check with whoever owns data protection before responding") |
+| `rule.legal` | Clamped to Level 2 or 3 | Inferred by analogy to `rule.individualInternal`, same reasoning ("check with legal before responding") |
+| `rule.employment` | Clamped to Level 2 or 3 | Inferred by analogy to `rule.individualInternal`, same reasoning ("Involve HR and legal before comms") |
+| `rule.regulatorOriginator` | Floored at Level 2 | Explicit — F.4, "never Level 1. Minimum is a private, acknowledged reply" (Level 2, Private reply) |
+| `rule.deadlineNamed` | Floored at Level 2 | Inferred: F.4 says a response is required "even if it is only an acknowledgement," read as the minimal non-silence response (Level 2); no literal number is given |
+| `rule.trueAndKnew` | Floored at Level 2 | Inferred: F.4 says "silence is not available as a defensible posture," read as the same Level 2 floor as the other two F.4 rules, by analogy; no literal number is given |
+
+**Firing priority.** Where more than one override fires on the same path, only one decides the outcome. Priority, highest first: `rule.safety` (hardcoded, checked before any config-driven override — it is the only route to Level 7) → `rule.individualExternal` → `rule.individualInternal` → `rule.data` → `rule.legal` → `rule.employment` → `rule.regulatorOriginator` → `rule.deadlineNamed` → `rule.trueAndKnew`. This order is a design decision, not stated elsewhere in this document: safety outranks everything; the two identifiability rules protect a third party regardless of what else is going on, so they come next; the specialist-routing regimes (data, legal, employment) come before the floor-only "silence is not available" rules, which are the least restrictive of the nine.
+
+**`rule.deadlineNamed` firing condition.** F.4 states this fires on "a deadline exists and we are named" — a compound condition, not a single answer. The implementation fires it when (`q7.a` or `q7.b` is selected) **and** (`q2.a` or `q2.b` is selected), checked directly against both answers rather than via one option's `triggersOverride`, because that property fires unconditionally on a single option and cannot express a compound condition. The one exception is `br.journ.1.d` ("right of reply on something they intend to publish regardless"), which carries `triggersOverride` and fires unconditionally: a right-of-reply request already establishes both legs of the condition on its own — a deadline, from the outlet's intent to publish regardless, and being named, since the request is made to us specifically.
+
+**Considered and not implemented.** Two answer options were flagged as override candidates while the axis weights were being decided — `br.leak.2.a` ("market-sensitive" information in an apparent leak) and `br.prior.3.c` ("our position has changed" in the prior-coverage block) — but neither matches a named override above, and no new override has been added to accommodate them. Both score on the two axes like any other answer, with no override attached. Recorded here as a decision, not a gap, so it does not get rediscovered later.
+
 ---
 
 ## G. The check-yourself flag
