@@ -54,7 +54,9 @@ Deliberately not framed as "risk." Both directions carry risk, and the word make
 
 ### C.1 Scoring model
 
-Each axis produces a 0–100 score from the weighted answer options in `config/config.json`. Each axis is then placed in a band:
+Each axis produces a 0–100 score from the weighted answer options in `config/config.json`.
+
+**Scores are normalised by the path taken.** Paths vary in length — a leak enquiry asks fewer branch questions than a prior-coverage block — so raw point totals are not comparable across paths. Each axis score is the percentage of the maximum achievable on the path actually taken: points earned on that axis by the questions actually asked, divided by the maximum those same questions could have contributed. Q1 carries no weight on either axis: its only job is to select which branch questions are asked, so it contributes nothing to either axis and nothing to either maximum. Each axis is then placed in a band:
 
 - **Low** — below `bandLowCeiling` (default 35)
 - **Medium** — up to `bandMediumCeiling` (default 65)
@@ -68,9 +70,17 @@ The recommended level comes from the 3×3 matrix. Band boundaries and matrix cel
 | **Quiet: medium** | Level 4 | Level 3 | Level 2 |
 | **Quiet: high** | Level 5 | Level 4 | Level 3, with everything prepared |
 
-**Levels 6 and 7 are never reached by arithmetic.** Level 6 requires cost-of-quiet high, cost-of-speaking low, *and* a positive answer to a gating question: do we have something new and true to say that is not already public. Level 7 is reachable only by override. A tool that arrives at "sue them" by adding up multiple-choice answers would be indefensible.
+**Levels 6 and 7 are never reached by arithmetic.** Level 6 requires cost-of-quiet high, cost-of-speaking low, *and* a positive answer to a gating question: do we have something new and true to say that is not already public. **The gating question is not part of the question set.** It is asked only once the arithmetic has already landed on the level 6 cell, shown alongside the result rather than among Q1–Q9. Answering no gives Level 5 instead, with the reasoning for the drop shown alongside it. Level 7 is reachable only by override. A tool that arrives at "sue them" by adding up multiple-choice answers would be indefensible.
 
 **Every recommendation is shown with its matrix position**, both scores, and the three or four answers that contributed most to each. The reasoning is the product; the level is the summary of it.
+
+### C.2 Uncertainty
+
+Not-knowing is scored by what it costs in that specific question, not by a blanket rule applied to every "unknown" answer. An unknown answer to "what do we know about whether what's been said is accurate" (`q3.f`) and an unknown answer to "does our previous public position still hold" (`br.prior.3`) do not cost the same thing, so each is weighted individually in `config/config.json`, like any other answer option. Where not-knowing carries a cost whichever way the situation turns out, both axes rise. Every answer that records an unknown also feeds "What would change this" (section I.8): finding out is itself an escalation trigger.
+
+### C.3 Low-confidence caveat
+
+Where more than `lowConfidenceThreshold` (a config value, default 40%) of the scored answers on the path taken are unknowns, the record carries a caveat: the assessment rests mostly on things not yet known, and is worth re-running once they are.
 
 ---
 
@@ -106,6 +116,8 @@ Nine core questions plus one conditional core question, then two to four branch 
 - A rumour circulating privately, not yet published anywhere
 - An incident at another organisation in our sector
 - An old story about us resurfacing
+
+Carries no weight on either axis. Its only job is to select which branch questions come next; the branch questions score.
 
 **2. How directly is the organisation mentioned in this issue?** *(single choice)*
 - Named directly, and we are the subject of it
@@ -177,7 +189,7 @@ Retained despite correlating with Q4 and Q6, because "already fading" is the sin
 - The CEO or an equivalent has seen it and wants something said
 - Legal, compliance or regulatory have raised it
 
-Scores nothing on either axis. Produces the check-yourself flag (section G), except where legal, compliance or regulatory is the source, which raises an override instead.
+Scores nothing on either axis. Produces the check-yourself flag (section G) when the answer is a senior leader or the CEO. Where the answer is `q9.e` — legal, compliance or regulatory — it does not raise the flag; instead the record cross-checks it against the rest of the assessment. If an override fired or cost of staying quiet is high, the record says legal's involvement is consistent with what the assessment found, and names the finding. If nothing else flagged, the record says the assessment found nothing that routes to legal, and that they may be working from something these questions did not ask about.
 
 ### Branches, by trigger type
 
@@ -341,14 +353,16 @@ All seven levels from section B, defined in full. The output is meaningless with
 
 ## I. Output
 
-1. **Recommended level**, stated plainly, with its name.
+1. **Recommended level**, stated plainly, with its name. Where the arithmetic lands on level 6, the gating question (section C.1) and its answer are shown alongside it; a "no" is shown as having produced level 5, with that reasoning stated.
 2. **The two scores and the matrix position** that produced it.
 3. **What drove each score** — the three or four answers contributing most to each axis.
 4. **Any override that applied**, named, with the statement that it beat the arithmetic.
 5. **The check-yourself flag**, if raised.
-6. **What would change this** — the escalation triggers, drawn from the answers given.
-7. **What the level below and the level above would mean**, so the recommendation can be argued with rather than only accepted.
-8. **The handoff**, where the level is 3, 4, 5 or 6: a link to the Comms Clarity Scorer for the line, statement or post now needing to be written.
+6. **The Q9 legal cross-check**, where `q9.e` was selected (section E, Q9).
+7. **The low-confidence caveat**, where more than `lowConfidenceThreshold` of scored answers on the path taken were unknowns (section C.3).
+8. **What would change this** — the escalation triggers, drawn from the answers given.
+9. **What the level below and the level above would mean**, so the recommendation can be argued with rather than only accepted.
+10. **The handoff**, where the level is 3, 4, 5 or 6: a link to the Comms Clarity Scorer for the line, statement or post now needing to be written.
 
 ---
 
