@@ -507,6 +507,15 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`rule.privateIndividualNote`** — a note, not a rule
 > The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.
 
+**`rule.firstPublicConfirmationNote`** — a note, not a rule
+> Nothing has been published yet, so a response would be the first public record that this exists. That is not an argument for silence on its own, but it is a cost that does not show up in how far this has travelled.
+
+**`rule.firstConfirmationUncertainNote`** — a note, not a rule
+> You have said you do not know whether a response would be the first public confirmation. The assessment has treated it as though it would be, because if it is, that cannot be undone. This is worth establishing before you decide.
+
+**`rule.personalAccountReplyNote`** — a note, not a rule
+> Someone has already replied from a personal account. That reply is part of the record now, and anything the organisation says next will be read alongside it. Find out exactly what was said before deciding what to add.
+
 ---
 
 ## 8. Sector rules
@@ -684,4 +693,3 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
-- Note copy for three answer options marked "note" in the axis weight matrix, none of which match an existing note in section 7: `br.social.2.c` (replied to a journalist enquiry from a personal account), `br.rum.2.a` (responding to a private rumour would be the first public confirmation it exists), `br.rum.2.c` (don't know whether responding would be the first public confirmation). No `noteId` is set on these options in config until this copy exists.

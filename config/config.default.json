@@ -367,7 +367,7 @@
 
     { "id": "br.social.2.a", "questionId": "br.social.2", "text": "No" },
     { "id": "br.social.2.b", "questionId": "br.social.2", "text": "Yes, from an official account" },
-    { "id": "br.social.2.c", "questionId": "br.social.2", "text": "Yes, from a personal account" },
+    { "id": "br.social.2.c", "questionId": "br.social.2", "text": "Yes, from a personal account", "noteId": "rule.personalAccountReplyNote" },
 
     { "id": "br.review.1.a", "questionId": "br.review.1", "text": "Yes, and we can say so" },
     { "id": "br.review.1.b", "questionId": "br.review.1", "text": "Yes, but not quickly" },
@@ -417,9 +417,9 @@
     { "id": "br.rum.1.b", "questionId": "br.rum.1", "text": "No" },
     { "id": "br.rum.1.c", "questionId": "br.rum.1", "text": "Not yet, but we expect it", "isUnknown": true },
 
-    { "id": "br.rum.2.a", "questionId": "br.rum.2", "text": "Yes" },
+    { "id": "br.rum.2.a", "questionId": "br.rum.2", "text": "Yes", "noteId": "rule.firstPublicConfirmationNote" },
     { "id": "br.rum.2.b", "questionId": "br.rum.2", "text": "No, it is already public somewhere" },
-    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true },
+    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true, "noteId": "rule.firstConfirmationUncertainNote" },
 
     { "id": "br.sect.1.a", "questionId": "br.sect.1", "text": "A supplier, contractor or partner" },
     { "id": "br.sect.1.b", "questionId": "br.sect.1", "text": "A practice or process that has been criticised" },

@@ -391,12 +391,13 @@ All seven levels from section B, defined in full. The output is meaningless with
 2. **The two scores and the matrix position** that produced it.
 3. **What drove each score** — the three or four answers contributing most to each axis.
 4. **Any override that applied**, named, with the statement that it beat the arithmetic.
-5. **The check-yourself flag**, if raised.
-6. **The Q9 legal cross-check**, where `q9.e` was selected (section E, Q9).
-7. **The low-confidence caveat**, where more than `lowConfidenceThreshold` of scored answers on the path taken were unknowns (section C.3).
-8. **What would change this** — the escalation triggers, drawn from the answers given.
-9. **What the level below and the level above would mean**, so the recommendation can be argued with rather than only accepted.
-10. **The handoff**, where the level is 3, 4, 5 or 6: a link to the Comms Clarity Scorer for the line, statement or post now needing to be written.
+5. **Any notes attached by the answers given** (`noteId`, section C.4), in their own block immediately under the recommendation. Separate from item 4, which is for overrides that beat the arithmetic, and from item 6, which is for the check-yourself flag: a note is neither of those, and rendering it inside either block would misstate what produced it.
+6. **The check-yourself flag**, if raised.
+7. **The Q9 legal cross-check**, where `q9.e` was selected (section E, Q9).
+8. **The low-confidence caveat**, where more than `lowConfidenceThreshold` of scored answers on the path taken were unknowns (section C.3).
+9. **What would change this** — the escalation triggers, drawn from the answers given.
+10. **What the level below and the level above would mean**, so the recommendation can be argued with rather than only accepted.
+11. **The handoff**, where the level is 3, 4, 5 or 6: a link to the Comms Clarity Scorer for the line, statement or post now needing to be written.
 
 ---
 
