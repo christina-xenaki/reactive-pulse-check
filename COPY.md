@@ -466,14 +466,14 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.q9eNoRoute`** — shown where Q9 is `q9.e` and nothing else in the assessment flagged
 > Legal, compliance or regulatory raised this, but nothing else in this assessment routes there. They may be working from something these questions didn't ask about.
 
-**`out.answersHeading`** — *(draft, not yet approved — see note below)* heading over the full list of answers given, shown under `out.driversHeading`
+**`out.answersHeading`** — heading over the full list of answers given, shown under `out.driversHeading`
 > Your answers
 
-**`out.matrixOverriddenNote`** — *(draft, not yet approved)* shown on the matrix cell the arithmetic reached, only where a rule or the Level 6 gate has moved the recommendation away from it
-> The recommendation below differs from this cell.
+**`out.matrixOverriddenNote`** — shown on the matrix cell the arithmetic reached, only where a rule or the Level 6 gate has moved the recommendation away from it. Reworded from the first draft, which told the user two things differed without telling them which to act on.
+> Your answers land here. The recommendation below takes account of something else as well.
 
-**`out.matrixCurrentCell`** — *(draft, not yet approved)* visually-hidden text marking the matrix cell the arithmetic reached, for anyone not seeing the visual marker
-> This is where your answers land.
+**`out.matrixCurrentCell`** — visually-hidden text marking the matrix cell the arithmetic reached, for anyone not seeing the visual marker
+> Your answers land here.
 
 ### Overrides and the Level 6 gate, as shown with the result
 
@@ -494,10 +494,8 @@ Three fixed sentence patterns, each built from the rule's own lead sentence in s
 **`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
 > Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {finalLevel} is available to you.
 
-**`out.gate.declined`** — *(draft, not yet approved)* shown where the arithmetic is Level 6-eligible and the gating question was answered no; no pattern for this case was given alongside the three above, so this is drafted to match their register
-> Your answers would allow {potentialLevel}, but you have said there isn't something new and true to say that is not already public yet. This holds at {finalLevel}.
-
-**A note on the three drafts marked above.** `out.answersHeading`, `out.matrixOverriddenNote` and `out.gate.declined` are new sentences, not reuses of approved wording, and are flagged here rather than silently finalised, per this file's own rule (`this file's header, and CLAUDE.md`) that a needed string not already here must be flagged, not invented. `out.override.downward`, `out.override.downward.noFunctions`, `out.override.upward` and `out.gate.upward` are not new drafts in the same sense: their wording is the requester's own, given verbatim in the session that commissioned them; what's recorded here is the ID and the `{placeholder}` mechanics, not new prose.
+**`out.gate.declined`** — shown where the arithmetic is Level 6-eligible and the gating question was answered no; no pattern for this case was given alongside the three above. Reworded from the first draft to open with the same "Your answers place this at" pattern as the other three, so the shape is learnable, and to say "stays at" rather than "holds at" — nothing moved it, since the arithmetic cell for this band pair already is {finalLevel}.
+> Your answers place this at {potentialLevel}. You have said there is nothing new and true to say that is not already public, so this stays at {finalLevel}.
 
 ---
 
@@ -701,8 +699,8 @@ Collapsed by default behind an expandable control, same pattern as the Comms Cla
 **`ui.restart`** — Start again
 **`ui.sectorLabel`** — Sector
 **`ui.sectorDefault`** — General
-**`ui.yes`** — Yes *(draft, not yet approved — needed for the Level 6 gate's own Yes/No control; reuses the bare "Yes"/"No" wording already used for several core and branch options in section 3/4 rather than inventing new wording)*
-**`ui.no`** — No *(draft, not yet approved, same note as `ui.yes`)*
+**`ui.yes`** — Yes *(needed for the Level 6 gate's own Yes/No control; reuses the bare "Yes"/"No" wording already used for several core and branch options in section 3/4 rather than inventing new wording)*
+**`ui.no`** — No *(same note as `ui.yes`)*
 
 **`ui.heading.questions`** — Questions
 **`ui.heading.results`** — Your result
@@ -735,5 +733,4 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
-- `out.answersHeading`, `out.matrixOverriddenNote`, `out.matrixCurrentCell`, `out.gate.declined`, `ui.yes` and `ui.no` — drafted in sections 6 and 11 above, not yet approved.
 - **`SCORING.md` itself does not exist yet.** SPEC.md and CLAUDE.md both refer to it as though it does (score explanations, the F.6 sector-config footnote, "SCORING.md and SPEC.md must never describe behaviour the code no longer has"). Section 6's `out.heading`-adjacent score lines and the override sentences above are both specified (SPEC.md section I.2; the render.js session that added them) to link to "the relevant section of SCORING.md" / "that rule's section in SCORING.md". Until the file exists those links are necessarily forward references to anchors (`SCORING.md#cost-of-speaking`, `SCORING.md#rule-data`, and so on) that do not resolve yet.

@@ -295,9 +295,13 @@ PulseCheck.Render = (function () {
     var arithmeticInfo = levelInfo(scoring.level); // Level 5, the matrix cell for this band pair
     var sixInfo = levelInfo(6);
     var container = Dom.el('div', { className: 'result-gate-outcome' });
+    // out.gate.declined opens with "Your answers place this at {potentialLevel}"
+    // to match the other three templates' opening, where that slot is always
+    // where the arithmetic actually landed — here, Level 5, same as
+    // {finalLevel} in this sentence, since declining the gate moves nothing.
     var sentence = gateAnswer
       ? fillTemplate(uiText('out.gate.upward'), { arithmeticLevel: arithmeticInfo.label, finalLevel: sixInfo.label })
-      : fillTemplate(uiText('out.gate.declined'), { potentialLevel: sixInfo.label, finalLevel: arithmeticInfo.label });
+      : fillTemplate(uiText('out.gate.declined'), { potentialLevel: arithmeticInfo.label, finalLevel: arithmeticInfo.label });
     container.appendChild(Dom.el('p', {}, [document.createTextNode(sentence)]));
     return container;
   }
