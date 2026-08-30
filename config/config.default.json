@@ -670,6 +670,10 @@
   ],
   "sectorOverrides": [],
 
+  "noteRules": {
+    "rule.internalAudienceNote": { "questionId": "q8", "optionId": "q8.a", "levels": null }
+  },
+
   "notes": {
     "rule.privateIndividualNote": "The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.",
     "rule.firstPublicConfirmationNote": "Nothing has been published yet, so a response would be the first public record that this exists. That is not an argument for silence on its own, but it is a cost that does not show up in how far this has travelled.",
