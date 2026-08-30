@@ -477,7 +477,7 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 ### Overrides and the Level 6 gate, as shown with the result
 
-Three fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text.
+Three fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
 
 **`out.override.downward`** — shown where a rule has capped or routed the recommendation below what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.
@@ -492,10 +492,10 @@ Three fixed sentence patterns, each built from the rule's own lead sentence in s
 > Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.
 
 **`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
-> Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {finalLevel} is available to you.
+> Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.
 
-**`out.gate.declined`** — shown where the arithmetic is Level 6-eligible and the gating question was answered no; no pattern for this case was given alongside the three above. Reworded from the first draft to open with the same "Your answers place this at" pattern as the other three, so the shape is learnable, and to say "stays at" rather than "holds at" — nothing moved it, since the arithmetic cell for this band pair already is {finalLevel}.
-> Your answers place this at {potentialLevel}. You have said there is nothing new and true to say that is not already public, so this stays at {finalLevel}.
+**`out.gate.declined`** — shown where the arithmetic is Level 6-eligible and the gating question was answered no; no pattern for this case was given alongside the three above. The first reword read as though something was meant to change and didn't ("place this at Level 5 ... stays at Level 5"); this one names the level the gate would have unlocked (`{gateLevel}`) separately from the level the arithmetic actually reached and stays at (`{arithmeticLevel}`), so nothing reads as an unrealised change.
+> Your answers place this at {arithmeticLevel}. {gateLevel} was available to you, but you have said there is nothing new and true to say that is not already public, so this stays at {arithmeticLevel}.
 
 ---
 
