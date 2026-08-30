@@ -466,6 +466,37 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.q9eNoRoute`** — shown where Q9 is `q9.e` and nothing else in the assessment flagged
 > Legal, compliance or regulatory raised this, but nothing else in this assessment routes there. They may be working from something these questions didn't ask about.
 
+**`out.answersHeading`** — heading over the full list of answers given, shown under `out.driversHeading`
+> Your answers
+
+**`out.matrixOverriddenNote`** — shown on the matrix cell the arithmetic reached, only where a rule or the Level 6 gate has moved the recommendation away from it. Reworded from the first draft, which told the user two things differed without telling them which to act on.
+> Your answers land here. The recommendation below takes account of something else as well.
+
+**`out.matrixCurrentCell`** — visually-hidden text marking the matrix cell the arithmetic reached, for anyone not seeing the visual marker
+> Your answers land here.
+
+### Overrides and the Level 6 gate, as shown with the result
+
+Three fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+
+**`out.override.downward`** — shown where a rule has capped or routed the recommendation below what the two scores alone produced
+> Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.
+
+**`out.override.downward.noFunctions`** — same, for the one rule (`rule.individualExternal`) whose own text never names a function to consult
+> Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel}.
+
+**`out.override.downward.closingLine`** — appended under every downward override, per instruction that the block must end by noting this is what the answers point to
+> This is what your answers point to. You may know things these questions did not ask about.
+
+**`out.override.upward`** — shown where a rule has floored the recommendation at or above what the two scores alone produced
+> Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.
+
+**`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
+> Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.
+
+**`out.gate.declined`** — shown where the arithmetic is Level 6-eligible and the gating question was answered no; no pattern for this case was given alongside the three above. The first reword read as though something was meant to change and didn't ("place this at Level 5 ... stays at Level 5"); this one names the level the gate would have unlocked (`{gateLevel}`) separately from the level the arithmetic actually reached and stays at (`{arithmeticLevel}`), so nothing reads as an unrealised change.
+> Your answers place this at {arithmeticLevel}. {gateLevel} was available to you, but you have said there is nothing new and true to say that is not already public, so this stays at {arithmeticLevel}.
+
 ---
 
 ## 7. Rules and overrides
@@ -668,6 +699,8 @@ Collapsed by default behind an expandable control, same pattern as the Comms Cla
 **`ui.restart`** — Start again
 **`ui.sectorLabel`** — Sector
 **`ui.sectorDefault`** — General
+**`ui.yes`** — Yes *(needed for the Level 6 gate's own Yes/No control; reuses the bare "Yes"/"No" wording already used for several core and branch options in section 3/4 rather than inventing new wording)*
+**`ui.no`** — No *(same note as `ui.yes`)*
 
 **`ui.heading.questions`** — Questions
 **`ui.heading.results`** — Your result
@@ -700,3 +733,4 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
+- **`SCORING.md` itself does not exist yet.** SPEC.md and CLAUDE.md both refer to it as though it does (score explanations, the F.6 sector-config footnote, "SCORING.md and SPEC.md must never describe behaviour the code no longer has"). Section 6's `out.heading`-adjacent score lines and the override sentences above are both specified (SPEC.md section I.2; the render.js session that added them) to link to "the relevant section of SCORING.md" / "that rule's section in SCORING.md". Until the file exists those links are necessarily forward references to anchors (`SCORING.md#cost-of-speaking`, `SCORING.md#rule-data`, and so on) that do not resolve yet.
