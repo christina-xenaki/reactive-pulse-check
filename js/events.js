@@ -7,6 +7,7 @@
     PulseCheck.Config.load()
       .then(function (config) {
         PulseCheck.Questions.init(config);
+        PulseCheck.Render.init(config);
         wireStart(config);
         wireNav();
         wireSubmit(config);

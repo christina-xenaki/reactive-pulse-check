@@ -608,17 +608,75 @@
     { "speakingBand": "high", "quietBand": "high", "level": 3, "prepareEverything": true }
   ],
   "alwaysOnRegimes": [
-    { "id": "rule.individualExternal", "outcome": { "type": "forced", "level": 2 }, "priority": 1 },
-    { "id": "rule.individualInternal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 2 },
-    { "id": "rule.data", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 3 },
-    { "id": "rule.legal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 4 },
-    { "id": "rule.marketSensitive", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 5 },
-    { "id": "rule.employment", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 6 },
-    { "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 7 },
-    { "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 8 },
-    { "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 9 }
+    {
+      "id": "rule.individualExternal", "outcome": { "type": "forced", "level": 2 }, "priority": 1,
+      "renderTemplate": "downward",
+      "leadIn": "an individual outside the organisation is identifiable",
+      "text": "An individual outside the organisation is identifiable. You almost certainly cannot address the specifics publicly without confirming information about them. A public reply here is capped at a general line: not a rebuttal that discusses their case.\n\nThis applies even where you believe they are wrong. Being wrong does not remove their expectation of privacy, and this is the rule most often broken, because being wrong feels like it grants permission."
+    },
+    {
+      "id": "rule.individualInternal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 2,
+      "renderTemplate": "downward",
+      "leadIn": "an individual inside the organisation is identifiable",
+      "functions": "HR and legal",
+      "text": "An individual inside the organisation is identifiable. Duty of care, employment law and data protection all apply before communications does. Route this to HR and legal first. Where a public line is needed, it is about process, never about the person."
+    },
+    {
+      "id": "rule.data", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 3,
+      "renderTemplate": "downward",
+      "leadIn": "personal data may be involved",
+      "functions": "whoever owns data protection",
+      "text": "Personal data may be involved. Where a data breach has occurred, notification to the regulator and to affected individuals runs on its own clock and its own rules. Communications cannot run ahead of it, contradict it, or pre-empt it. Check with whoever owns data protection before responding."
+    },
+    {
+      "id": "rule.legal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 4,
+      "renderTemplate": "downward",
+      "leadIn": "legal proceedings may be live or reasonably anticipated",
+      "functions": "legal",
+      "text": "Legal proceedings may be live or reasonably anticipated. Public comment on the substance is constrained once that is true, regardless of how wrong you believe the other side to be. Check with legal before responding."
+    },
+    {
+      "id": "rule.marketSensitive", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 5,
+      "renderTemplate": "downward",
+      "leadIn": "the leaked information may be market-sensitive",
+      "functions": "legal and the company secretary",
+      "text": "The leaked information may be market-sensitive. Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled."
+    },
+    {
+      "id": "rule.employment", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 6,
+      "renderTemplate": "downward",
+      "leadIn": "an employment matter may be involved",
+      "functions": "HR and legal",
+      "text": "An employment matter may be involved. A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms."
+    },
+    {
+      "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 7,
+      "renderTemplate": "upward",
+      "leadIn": "a regulator or elected official raised this",
+      "text": "A regulator or elected official raised this. Silence is not available. The minimum is a private, acknowledged reply, made with legal or regulatory involved."
+    },
+    {
+      "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 8,
+      "renderTemplate": "upward",
+      "leadIn": "there is a deadline you don't control and you are named",
+      "text": "There is a deadline you don't control and you are named. Something is required by that deadline, even if it is only an acknowledgement. Silence becomes \"declined to comment\" in print, which is Level 4 with the worst possible wording."
+    },
+    {
+      "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 9,
+      "renderTemplate": "upward",
+      "leadIn": "what has been said is accurate, and you knew",
+      "text": "What has been said is accurate, and you knew. Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first."
+    }
   ],
   "sectorOverrides": [],
+
+  "notes": {
+    "rule.privateIndividualNote": "The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.",
+    "rule.firstPublicConfirmationNote": "Nothing has been published yet, so a response would be the first public record that this exists. That is not an argument for silence on its own, but it is a cost that does not show up in how far this has travelled.",
+    "rule.firstConfirmationUncertainNote": "You have said you do not know whether a response would be the first public confirmation. The assessment has treated it as though it would be, because if it is, that cannot be undone. This is worth establishing before you decide.",
+    "rule.personalAccountReplyNote": "Someone has already replied from a personal account. That reply is part of the record now, and anything the organisation says next will be read alongside it. Find out exactly what was said before deciding what to add.",
+    "rule.internalAudienceNote": "This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be."
+  },
 
   "glossary": [
     { "id": "gloss.you", "category": "Who's who", "term": "You", "definition": "The person running this check. Nothing you enter is stored or sent anywhere." },
@@ -657,8 +715,46 @@
     "ui.back": "Back",
     "ui.skip": "Skip this question",
     "ui.submit": "Get the recommendation",
+    "ui.restart": "Start again",
+    "ui.yes": "Yes",
+    "ui.no": "No",
     "state.incomplete": "Answer this to continue.",
+    "state.beforeStart": "Nothing has been entered yet.",
     "aria.progress": "Question {n} of {total}.",
-    "gloss.control.label": "What this means"
+    "aria.resultReady": "Assessment complete. Recommended level {n}, {level name}.",
+    "gloss.control.label": "What this means",
+    "page.disclaimerTeaser": "This is a pulse check, not a decision. What it can and can't tell you.",
+    "page.disclaimerFull": "This is a pulse check. It gives you a fast, structured read on a situation and shows you the reasoning behind it. It is not a diagnosis.\n\nIt does not replace the judgement of your communications or public affairs team. It does not replace the specialists who own the risk — legal, compliance, regulatory. It does not replace the person who actually knows the facts.\n\nIt does not replace your organisation's own escalation procedure. If you have one, it names who is accountable for this decision and who must be consulted before it is made. This tool does not know who those people are and cannot stand in for them.\n\nThe tool has not read the thing you are assessing and never asks. It works from the shape of the situation as you have described it, which means its recommendation is only as good as your answers.\n\nSector flags are a prompt to consult the function that owns that risk. They are not a compliance decision and not legal advice.\n\nThe regulatory regimes named are drawn from UK and EU practice. They will differ elsewhere and they change over time.\n\nA recommendation to stay at Level 1 is not a guarantee that an issue will not grow.",
+    "out.heading": "Recommended: Level {n} — {level name}",
+    "out.reasoningHeading": "Why",
+    "out.axisSpeakingLabel": "Cost of speaking",
+    "out.axisQuietLabel": "Cost of staying quiet",
+    "out.driversHeading": "What drove this",
+    "out.driverLine": "{answer text} — raised the cost of {axis}",
+    "out.answersHeading": "Your answers",
+    "out.overrideHeading": "A rule applied here",
+    "out.overrideIntro": "This recommendation was set by a rule, not by the two scores. Rules exist because some situations are not trade-offs.",
+    "out.override.downward": "Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.",
+    "out.override.downward.noFunctions": "Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel}.",
+    "out.override.downward.closingLine": "This is what your answers point to. You may know things these questions did not ask about.",
+    "out.override.upward": "Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.",
+    "out.gate.upward": "Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {finalLevel} is available to you.",
+    "out.gate.declined": "Your answers would allow {potentialLevel}, but you have said there isn't something new and true to say that is not already public yet. This holds at {finalLevel}.",
+    "out.matrixOverriddenNote": "The recommendation below differs from this cell.",
+    "out.matrixCurrentCell": "This is where your answers land.",
+    "out.changeHeading": "What would change this",
+    "out.changeIntro": "Name what would make you look at this again. A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms.",
+    "out.neighboursHeading": "The levels either side",
+    "out.neighboursIntro": "So you can argue with this rather than only accept it.",
+    "out.levelDown": "One level down would mean: {level def}. That is the right call if you think {axis} is overstated here.",
+    "out.levelUp": "One level up would mean: {level def}. That is the right call if you think {axis} is understated here.",
+    "out.checkYourselfHeading": "Worth separating",
+    "out.checkYourself": "The strongest pressure to respond here is internal rather than external. That is a real consideration, and it is a different one from the situation this assessment measures.",
+    "out.handoff": "This level means something has to be written. The Comms Clarity Scorer checks a draft for buzzwords, hedging, passive voice and empty quotes, in your browser, with nothing uploaded. Nothing is passed between the two tools — you copy your own draft across.",
+    "out.noHandoff": "Nothing needs writing for publication at this level. The record below is the output.",
+    "out.level6Gate": "Do we have something new and true to say that is not already public?",
+    "out.lowConfidenceCaveat": "More than {threshold}% of the answers behind this recommendation were \"we don't know\" or \"we can't verify it yet.\" This rests mostly on what you don't know yet. Worth re-running once you do.",
+    "out.q9eConsistent": "Legal, compliance or regulatory raised this. That's consistent with what this assessment found: {finding}.",
+    "out.q9eNoRoute": "Legal, compliance or regulatory raised this, but nothing else in this assessment routes there. They may be working from something these questions didn't ask about."
   }
 }
