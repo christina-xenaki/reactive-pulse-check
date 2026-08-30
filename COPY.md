@@ -481,6 +481,9 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`rule.legal`**
 > **Legal proceedings may be live or reasonably anticipated.** Public comment on the substance is constrained once that is true, regardless of how wrong you believe the other side to be. Check with legal before responding.
 
+**`rule.marketSensitive`**
+> **The leaked information may be market-sensitive.** Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled.
+
 **`rule.employment`**
 > **An employment matter may be involved.** A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms.
 
