@@ -409,7 +409,7 @@
     { "id": "br.leak.1.c", "questionId": "br.leak.1", "text": "No" },
     { "id": "br.leak.1.d", "questionId": "br.leak.1", "text": "We can't verify yet", "isUnknown": true },
 
-    { "id": "br.leak.2.a", "questionId": "br.leak.2", "text": "Market-sensitive" },
+    { "id": "br.leak.2.a", "questionId": "br.leak.2", "text": "Market-sensitive", "triggersOverride": "rule.marketSensitive" },
     { "id": "br.leak.2.b", "questionId": "br.leak.2", "text": "Personal data about an individual", "triggersOverride": "rule.data" },
     { "id": "br.leak.2.c", "questionId": "br.leak.2", "text": "Commercially confidential but neither of the above" },
     { "id": "br.leak.2.d", "questionId": "br.leak.2", "text": "Internal but not sensitive" },
@@ -612,10 +612,11 @@
     { "id": "rule.individualInternal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 2 },
     { "id": "rule.data", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 3 },
     { "id": "rule.legal", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 4 },
-    { "id": "rule.employment", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 5 },
-    { "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 6 },
-    { "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 7 },
-    { "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 8 }
+    { "id": "rule.marketSensitive", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 5 },
+    { "id": "rule.employment", "outcome": { "type": "clamp", "min": 2, "max": 3 }, "priority": 6 },
+    { "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 7 },
+    { "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 8 },
+    { "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 9 }
   ],
   "sectorOverrides": [],
 
