@@ -52,6 +52,21 @@ PulseCheck.Scoring = (function () {
   // conditions: if br.journ.3 is no longer reachable because q1 no longer
   // routes through the journalist branch, a leftover br.journ.3 answer
   // must not still be read by br.prior's showIf, which depends on it.
+  //
+  // History (SPEC.md C.1 records this too, in plain terms, without the
+  // specifics below): before this fix, axisTotals(), driversFor() and
+  // scoredSelections() here, findFired() in js/overrides.js, and
+  // buildAnswerRecord() in js/render.js all read Object.keys(answers) or
+  // config.questions directly. An answer left behind by Back-navigation
+  // (e.g. switching q1's branch after already answering that branch's
+  // follow-up questions) kept scoring, kept feeding the drivers list and
+  // the low-confidence count, and kept appearing in the exported answer
+  // record — inflating both the earned points and the maximum they were
+  // normalised against, so the percentage itself (and sometimes the
+  // recommended level) could be wrong, not just cosmetically off. The fix
+  // is this function, plus questions.js discarding an answer as soon as
+  // its question falls off the path (see recomputeVisible() there) rather
+  // than merely filtering it out at scoring/render time.
   function evaluateCondition(cond, pathAnswers) {
     if (!cond) return true;
     if (cond.any) return cond.any.some(function (c) { return evaluateCondition(c, pathAnswers); });
