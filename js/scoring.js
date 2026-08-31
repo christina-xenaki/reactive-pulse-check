@@ -27,6 +27,67 @@ PulseCheck.Scoring = (function () {
   var UNSCORED_QUESTION_IDS = { q1: true, q9: true };
   var CAPPED_MULTI_QUESTION_ID = 'q8';
 
+  // --- Path scoping -----------------------------------------------------
+  //
+  // PATH-SCOPED: this is the one shared definition of "questions on the
+  // current path". Back-navigation can leave answers behind for questions
+  // that are no longer reachable — e.g. switching q1 from "journalist" to
+  // "social media" after already answering the journalist branch's
+  // follow-up questions. The tool's principle is that only the path the
+  // user is currently on exists: an answer to a question no longer on that
+  // path stops counting everywhere it could be read — scoring (both the
+  // earned points and the maximum they're normalised against), drivers,
+  // the low-confidence count, the answer record, notes, overrides. Every
+  // one of those must be computed from questionsOnPath()'s result (or from
+  // an answers object questions.js has already pruned to match it), never
+  // by iterating Object.keys(answers) or config.questions directly. Do not
+  // reintroduce a second walk of answers/config.questions elsewhere — call
+  // this function instead, so there is exactly one definition to keep
+  // correct (previously this logic was duplicated, uselessly, in
+  // js/questions.js, which is why it drifted from what scoring needed).
+  //
+  // Conditions are evaluated against pathAnswers — answers built up
+  // left-to-right as each question is confirmed on-path — rather than the
+  // raw, possibly-stale answers object. This matters for chained
+  // conditions: if br.journ.3 is no longer reachable because q1 no longer
+  // routes through the journalist branch, a leftover br.journ.3 answer
+  // must not still be read by br.prior's showIf, which depends on it.
+  //
+  // History (SPEC.md C.1 records this too, in plain terms, without the
+  // specifics below): before this fix, axisTotals(), driversFor() and
+  // scoredSelections() here, findFired() in js/overrides.js, and
+  // buildAnswerRecord() in js/render.js all read Object.keys(answers) or
+  // config.questions directly. An answer left behind by Back-navigation
+  // (e.g. switching q1's branch after already answering that branch's
+  // follow-up questions) kept scoring, kept feeding the drivers list and
+  // the low-confidence count, and kept appearing in the exported answer
+  // record — inflating both the earned points and the maximum they were
+  // normalised against, so the percentage itself (and sometimes the
+  // recommended level) could be wrong, not just cosmetically off. The fix
+  // is this function, plus questions.js discarding an answer as soon as
+  // its question falls off the path (see recomputeVisible() there) rather
+  // than merely filtering it out at scoring/render time.
+  function evaluateCondition(cond, pathAnswers) {
+    if (!cond) return true;
+    if (cond.any) return cond.any.some(function (c) { return evaluateCondition(c, pathAnswers); });
+    if (cond.all) return cond.all.every(function (c) { return evaluateCondition(c, pathAnswers); });
+    var selected = pathAnswers[cond.questionId] || [];
+    if (cond.in) return cond.in.some(function (id) { return selected.indexOf(id) !== -1; });
+    if (cond.notIn) return cond.notIn.every(function (id) { return selected.indexOf(id) === -1; });
+    return true;
+  }
+
+  function questionsOnPath(config, answers) {
+    var onPath = [];
+    var pathAnswers = {};
+    (config.questions || []).forEach(function (question) {
+      if (!evaluateCondition(question.showIf, pathAnswers)) return;
+      onPath.push(question);
+      if (answers[question.id]) pathAnswers[question.id] = answers[question.id];
+    });
+    return onPath;
+  }
+
   function isConfigValid(config) {
     if (!config) return false;
     var aw = config.axisWeights, bb = config.bandBoundaries, lm = config.levelMatrix;
@@ -39,12 +100,6 @@ PulseCheck.Scoring = (function () {
   function optionsById(config) {
     var byId = {};
     config.answerOptions.forEach(function (option) { byId[option.id] = option; });
-    return byId;
-  }
-
-  function questionsById(config) {
-    var byId = {};
-    config.questions.forEach(function (question) { byId[question.id] = question; });
     return byId;
   }
 
@@ -75,15 +130,17 @@ PulseCheck.Scoring = (function () {
   }
 
   // Sums each axis contribution question by question, normalised by the
-  // maximum achievable on the path actually taken (SPEC.md C.1).
+  // maximum achievable on the path actually taken (SPEC.md C.1). Both the
+  // earned total and the max it's divided by come from questionsOnPath()
+  // — see the PATH-SCOPED comment above — so a question Back-navigation
+  // has made unreachable contributes to neither.
   function axisTotals(config, answers) {
-    var qById = questionsById(config);
     var earned = { costOfSpeaking: 0, costOfStayingQuiet: 0 };
     var max = { costOfSpeaking: 0, costOfStayingQuiet: 0 };
 
-    Object.keys(answers).forEach(function (questionId) {
-      var question = qById[questionId];
-      if (!question || UNSCORED_QUESTION_IDS[questionId]) return;
+    questionsOnPath(config, answers).forEach(function (question) {
+      var questionId = question.id;
+      if (UNSCORED_QUESTION_IDS[questionId]) return;
 
       var selected = answers[questionId] || [];
       var questionOptionIds = config.answerOptions
@@ -127,16 +184,15 @@ PulseCheck.Scoring = (function () {
 
   // Every selected option (excluding q1/q9, which never score) that
   // contributes to the given axis, ranked highest weight first, for
-  // "what drove this" (SPEC.md I.3).
+  // "what drove this" (SPEC.md I.3). Path-scoped: see the PATH-SCOPED
+  // comment above questionsOnPath().
   function driversFor(config, answers, axis, limit) {
-    var qById = questionsById(config);
     var oById = optionsById(config);
     var contributions = [];
 
-    Object.keys(answers).forEach(function (questionId) {
-      if (UNSCORED_QUESTION_IDS[questionId]) return;
-      if (!qById[questionId]) return;
-      (answers[questionId] || []).forEach(function (optionId) {
+    questionsOnPath(config, answers).forEach(function (question) {
+      if (UNSCORED_QUESTION_IDS[question.id]) return;
+      (answers[question.id] || []).forEach(function (optionId) {
         var weight = weightFor(config, optionId, axis);
         if (weight > 0) {
           contributions.push({ optionId: optionId, text: oById[optionId] ? oById[optionId].text : optionId, weight: weight });
@@ -149,23 +205,26 @@ PulseCheck.Scoring = (function () {
   }
 
   // Every selected option (excluding q1/q9) on the path taken, for the
-  // low-confidence caveat (SPEC.md C.3).
+  // low-confidence caveat (SPEC.md C.3). Path-scoped: see the PATH-SCOPED
+  // comment above questionsOnPath() — this is also what feeds the unknown
+  // count behind that caveat, so the caveat itself is path-scoped for free.
   function scoredSelections(config, answers) {
-    var qById = questionsById(config);
     var selections = [];
-    Object.keys(answers).forEach(function (questionId) {
-      if (UNSCORED_QUESTION_IDS[questionId]) return;
-      if (!qById[questionId]) return;
-      (answers[questionId] || []).forEach(function (optionId) { selections.push(optionId); });
+    questionsOnPath(config, answers).forEach(function (question) {
+      if (UNSCORED_QUESTION_IDS[question.id]) return;
+      (answers[question.id] || []).forEach(function (optionId) { selections.push(optionId); });
     });
     return selections;
   }
 
+  // Path-scoped for the same reason as scoredSelections() above: a note
+  // tied to an answer Back-navigation has abandoned must not still appear
+  // in the record.
   function notesFor(config, answers) {
     var oById = optionsById(config);
     var notes = [];
-    Object.keys(answers).forEach(function (questionId) {
-      (answers[questionId] || []).forEach(function (optionId) {
+    questionsOnPath(config, answers).forEach(function (question) {
+      (answers[question.id] || []).forEach(function (optionId) {
         var option = oById[optionId];
         if (option && option.noteId) notes.push({ optionId: optionId, noteId: option.noteId });
       });
@@ -259,6 +318,11 @@ PulseCheck.Scoring = (function () {
   return {
     isConfigValid: isConfigValid,
     compute: compute,
-    resolveLevel6Gate: resolveLevel6Gate
+    resolveLevel6Gate: resolveLevel6Gate,
+    // Exposed so questions.js (path/navigation state) and overrides.js and
+    // render.js (which also read answers by question) share this one
+    // definition rather than recomputing it — see the PATH-SCOPED comment
+    // above questionsOnPath().
+    questionsOnPath: questionsOnPath
   };
 })();

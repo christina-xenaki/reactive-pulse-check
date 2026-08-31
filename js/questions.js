@@ -31,19 +31,23 @@ PulseCheck.Questions = (function () {
   // Branch questions and the shared prior-coverage block only apply to some
   // paths through the question set (SPEC.md section E), so the visible list
   // is recomputed against the answers given so far every time it changes.
-  function evaluateCondition(cond) {
-    if (!cond) return true;
-    if (cond.any) return cond.any.some(evaluateCondition);
-    if (cond.all) return cond.all.every(evaluateCondition);
-    var selected = answers[cond.questionId] || [];
-    if (cond.in) return cond.in.some(function (id) { return selected.indexOf(id) !== -1; });
-    if (cond.notIn) return cond.notIn.every(function (id) { return selected.indexOf(id) === -1; });
-    return true;
-  }
-
+  // The condition evaluation itself lives in js/scoring.js
+  // (PulseCheck.Scoring.questionsOnPath) — see the PATH-SCOPED comment
+  // there — so this module doesn't keep its own, second copy of it.
+  //
+  // PATH-SCOPED: this is also where a stale answer gets discarded. If
+  // Back-navigation has changed an earlier answer (e.g. q1) such that a
+  // question answered along the abandoned branch is no longer reachable,
+  // its entry in `answers` is deleted here, not kept around. Switching
+  // back to that branch later means answering it again from scratch —
+  // there is no memory of abandoned paths anywhere in the tool. Do not
+  // reintroduce retention of answers to unreachable questions.
   function recomputeVisible() {
-    visible = config.questions.filter(function (question) {
-      return evaluateCondition(question.showIf);
+    visible = PulseCheck.Scoring.questionsOnPath(config, answers);
+    var onPathIds = {};
+    visible.forEach(function (question) { onPathIds[question.id] = true; });
+    Object.keys(answers).forEach(function (questionId) {
+      if (!onPathIds[questionId]) delete answers[questionId];
     });
     if (index >= visible.length) index = visible.length - 1;
     if (index < 0) index = 0;

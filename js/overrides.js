@@ -77,6 +77,10 @@ PulseCheck.Overrides = (function () {
   // Level 7); among the rest, lower "priority" in config wins (SPEC.md
   // F.7). Each override id fires at most once even if more than one
   // answer would trigger it.
+  //
+  // Path-scoped via PulseCheck.Scoring.questionsOnPath (see the
+  // PATH-SCOPED comment in js/scoring.js): an option's triggersOverride
+  // must not still fire from an answer Back-navigation has abandoned.
   function findFired(answers, config) {
     var oById = {};
     config.answerOptions.forEach(function (option) { oById[option.id] = option; });
@@ -95,8 +99,8 @@ PulseCheck.Overrides = (function () {
       pushOnce(SAFETY_OVERRIDE_ID, null, SAFETY_OUTCOME, -1);
     }
 
-    Object.keys(answers).forEach(function (questionId) {
-      (answers[questionId] || []).forEach(function (optionId) {
+    PulseCheck.Scoring.questionsOnPath(config, answers).forEach(function (question) {
+      (answers[question.id] || []).forEach(function (optionId) {
         var option = oById[optionId];
         var definition = option && option.triggersOverride ? overridesById[option.triggersOverride] : null;
         if (definition) {
