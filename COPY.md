@@ -418,10 +418,13 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.driverLine`** — one line per contributing answer. Drivers are grouped under a heading per axis (`out.axisSpeakingLabel` / `out.axisQuietLabel`, the axis name in full), so the line itself needs no "raised the cost of..." clause; the question supplies its own question mark, so nothing else joins the two ("Which way is it moving? Flat", not "Flat"). Same treatment in the export once it exists (SPEC.md I.3/J).
 > {question text} {answer text}
 
-**`out.overrideHeading`**
+**`out.overrideHeading`** — shown where a fired rule changed the recommendation (`out.override.downward`/`.downward.noFunctions`/`.upward` below)
 > A rule applied here
 
-**`out.overrideIntro`**
+**`out.overrideAlsoHeading`** — shown instead of `out.overrideHeading` where a rule fired but `finalLevel` equals `arithmeticLevel` (`out.override.satisfied`/`.matched` below, and the residual `out.overrideIntro` case). `out.overrideHeading` oversells this case — it reads as though something happened when nothing did.
+> A rule also applies here
+
+**`out.overrideIntro`** — now the fallback for one residual case only: a downward (capping) rule that fired without moving the level away from what the arithmetic already produced (e.g. `rule.individualExternal` when the arithmetic already lands on Level 2, or any clamp rule — `rule.individualInternal`, `rule.data`, `rule.legal`, `rule.marketSensitive`, `rule.employment` — where the arithmetic already sits inside the clamp's range). `out.override.satisfied`/`out.override.matched` below use floor wording ("a response is needed at {ruleLevel} *or above*"), which is wrong for a capping rule — it would claim the rule requires at least that level when it actually requires at most that level. No rule-specific wording exists yet for this case; flagged rather than reused.
 > This recommendation was set by a rule, not by the two scores. Rules exist because some situations are not trade-offs.
 
 **`out.changeHeading`**
@@ -477,7 +480,9 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 ### Overrides and the Level 6 gate, as shown with the result
 
-Three fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+Five fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence — `{leadIn}` in the first three below, `{ruleLeadIn}` in the last two, same value) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+
+The first three cover a rule that changed the recommendation (`finalLevel` differs from `arithmeticLevel`). The last two cover a rule that fired but didn't — the arithmetic already sat at or above what the rule requires — and are reached only for an upward (floor) rule; see `out.overrideIntro` above for the one case (a downward/capping rule firing without moving the level) neither covers. `{ruleLevel}` in those two is "Level *n*, *name*" for the level the rule itself requires (the floor's own `outcome.level`), like `{leadIn}`/`{ruleLeadIn}` it carries the link to that rule's section in `SCORING.md` — a forward reference, per section 12, same as the other four.
 
 **`out.override.downward`** — shown where a rule has capped or routed the recommendation below what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.
@@ -490,6 +495,12 @@ Three fixed sentence patterns, each built from the rule's own lead sentence in s
 
 **`out.override.upward`** — shown where a rule has floored the recommendation at or above what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.
+
+**`out.override.satisfied`** — shown where an upward (floor) rule fired but the arithmetic already sat above what the rule requires (`{ruleLevel}` is below `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers already point further than that.
+
+**`out.override.matched`** — same, where the arithmetic landed exactly on what the rule requires (`{ruleLevel}` equals `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers land in the same place.
 
 **`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
 > Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.
@@ -734,3 +745,4 @@ Flag rather than invent:
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
 - **`SCORING.md` itself does not exist yet.** SPEC.md and CLAUDE.md both refer to it as though it does (score explanations, the F.6 sector-config footnote, "SCORING.md and SPEC.md must never describe behaviour the code no longer has"). Section 6's `out.heading`-adjacent score lines and the override sentences above are both specified (SPEC.md section I.2; the render.js session that added them) to link to "the relevant section of SCORING.md" / "that rule's section in SCORING.md". Until the file exists those links are necessarily forward references to anchors (`SCORING.md#cost-of-speaking`, `SCORING.md#rule-data`, and so on) that do not resolve yet.
+- **No wording for a downward (capping) rule that fires without moving the level.** `out.override.satisfied`/`.matched` only cover an upward (floor) rule in that situation; a downward rule needs the mirror-image claim ("requires at most", not "at least"), which nobody has approved yet. `out.overrideHeading`/`out.overrideIntro` are kept as the fallback for this one case rather than reusing the floor wording. Reachable today: `rule.individualExternal` (forced Level 2) when the arithmetic already lands on Level 2, or any of the clamp rules (`rule.individualInternal`, `rule.data`, `rule.legal`, `rule.marketSensitive`, `rule.employment`) when the arithmetic already sits inside the clamp's range.

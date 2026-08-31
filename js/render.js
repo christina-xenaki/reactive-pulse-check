@@ -257,14 +257,14 @@ PulseCheck.Render = (function () {
     var arithmeticInfo = levelInfo(arithmeticLevel);
     var finalInfo = levelInfo(finalLevel);
 
-    var container = Dom.el('div', { className: 'result-override' });
-    container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.overrideHeading'))]));
-
-    var sentence;
     var isDownward = definition.renderTemplate === 'downward';
     var isUpward = definition.renderTemplate === 'upward';
+    var changed = finalLevel !== arithmeticLevel;
 
-    if (isDownward && finalLevel !== arithmeticLevel) {
+    var heading = uiText('out.overrideHeading');
+    var sentence;
+
+    if (isDownward && changed) {
       var templateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
       sentence = fillTemplate(uiText(templateId), {
         arithmeticLevel: arithmeticInfo.label,
@@ -272,24 +272,47 @@ PulseCheck.Render = (function () {
         finalLevel: finalInfo.label,
         functions: definition.functions
       });
-    } else if (isUpward && finalLevel !== arithmeticLevel) {
+    } else if (isUpward && changed) {
       sentence = fillTemplate(uiText('out.override.upward'), {
         arithmeticLevel: arithmeticInfo.label,
         leadIn: definition.leadIn,
         finalLevel: finalInfo.label
       });
+    } else if (isUpward && !changed) {
+      // The floor rule fired but the arithmetic already sat at or above
+      // what it requires (COPY.md: "out.override.satisfied"/".matched").
+      // "out.overrideHeading" oversells this — nothing moved — so it's
+      // paired with "out.overrideAlsoHeading" instead. finalLevel ===
+      // arithmeticLevel for a floor outcome only when arithmeticLevel is
+      // already >= the rule's own outcome.level, so ruleLevel here is
+      // always <= arithmeticLevel: equal picks "matched", lower picks
+      // "satisfied".
+      heading = uiText('out.overrideAlsoHeading');
+      var ruleLevel = definition.outcome && typeof definition.outcome.level === 'number' ? definition.outcome.level : null;
+      var matched = ruleLevel !== null && ruleLevel === arithmeticLevel;
+      sentence = fillTemplate(uiText(matched ? 'out.override.matched' : 'out.override.satisfied'), {
+        arithmeticLevel: arithmeticInfo.label,
+        ruleLeadIn: definition.leadIn,
+        ruleLevel: ruleLevel !== null ? levelInfo(ruleLevel).label : ''
+      });
     } else {
-      // The rule fired but did not move the number (the arithmetic already
-      // sat inside its range, or already met its floor) — the specific
-      // "downward"/"upward" sentences both claim a change that didn't
-      // happen here, so fall back to the general rule copy instead of
-      // overstating it.
+      // isDownward && !changed: a capping rule fired without moving the
+      // level (the arithmetic already sat inside its range). Nothing
+      // changed, so this also gets the "also" heading; but no rule-specific
+      // sentence exists yet for this case — see COPY.md section 12 —
+      // because the floor wording above ("requires at least") would
+      // misstate what a capping rule actually requires ("at most"). Falls
+      // back to the general rule copy rather than overstating either
+      // direction.
+      heading = uiText('out.overrideAlsoHeading');
       sentence = uiText('out.overrideIntro');
     }
 
+    var container = Dom.el('div', { className: 'result-override' });
+    container.appendChild(Dom.el('h3', {}, [document.createTextNode(heading)]));
     container.appendChild(Dom.el('p', {}, [document.createTextNode(sentence)]));
 
-    if (isDownward && finalLevel !== arithmeticLevel) {
+    if (isDownward && changed) {
       container.appendChild(Dom.el('p', { className: 'result-override-closing' }, [document.createTextNode(uiText('out.override.downward.closingLine'))]));
     }
 
