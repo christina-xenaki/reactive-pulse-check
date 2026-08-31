@@ -297,15 +297,31 @@ PulseCheck.Render = (function () {
       });
     } else {
       // isDownward && !changed: a capping rule fired without moving the
-      // level (the arithmetic already sat inside its range). Nothing
-      // changed, so this also gets the "also" heading; but no rule-specific
-      // sentence exists yet for this case — see COPY.md section 12 —
-      // because the floor wording above ("requires at least") would
-      // misstate what a capping rule actually requires ("at most"). Falls
-      // back to the general rule copy rather than overstating either
-      // direction.
+      // level (the arithmetic already sat inside its range) — the mirror
+      // of the isUpward-&&-!changed case above, with "cap" wording instead
+      // of "floor" wording (COPY.md: "out.override.cappedSatisfied"/
+      // ".cappedBelow"). The rule's own cap is outcome.max for a clamp
+      // (rule.individualInternal, .data, .legal, .marketSensitive,
+      // .employment) or outcome.level for a forced cap (the one downward
+      // rule with a single fixed outcome, rule.individualExternal) —
+      // finalLevel === arithmeticLevel here only when arithmeticLevel is
+      // already <= that cap, so ruleLevel is always >= arithmeticLevel:
+      // equal picks "cappedSatisfied" (sits at the cap), higher picks
+      // "cappedBelow".
       heading = uiText('out.overrideAlsoHeading');
-      sentence = uiText('out.overrideIntro');
+      var outcome = definition.outcome || {};
+      var capLevel = outcome.type === 'clamp' ? outcome.max
+        : (typeof outcome.level === 'number' ? outcome.level : null);
+      var atCap = capLevel !== null && capLevel === arithmeticLevel;
+      var cappedTemplateId = definition.functions
+        ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
+        : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
+      sentence = fillTemplate(uiText(cappedTemplateId), {
+        arithmeticLevel: arithmeticInfo.label,
+        ruleLeadIn: definition.leadIn,
+        ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
+        consultFunctions: definition.functions
+      });
     }
 
     var container = Dom.el('div', { className: 'result-override' });
