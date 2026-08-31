@@ -101,6 +101,14 @@ An answer option in `config/config.json` can carry three properties beyond its t
 
 All four are optional and independent: an option can carry any combination of them, or none.
 
+### C.5 Shared exposure: a partner, supplier or client implicated
+
+`q8.e` ("a partner, supplier or client is implicated") and `br.sect.1.a` ("a supplier, contractor or partner", the sector-incident branch's shared-exposure option) both carry `costOfStayingQuiet` 7.
+
+When a shared supplier or partner is implicated, silence does not keep the organisation out of the story. It leaves the organisation inside a category — "others affected," "other parties named" — while whichever organisation was actually named differentiates itself with a response. The cost of staying quiet here is that someone else defines your position while you say nothing.
+
+The previous weighting (`costOfStayingQuiet` 5 on `q8.e`, 6 on `br.sect.1.a`) was justified by a different and weaker argument: that failing to consult the third party carries a cost. That is a cost of not consulting, not a cost of public silence, and it has been replaced by the reasoning above.
+
 ---
 
 ## D. Controlled vocabulary
@@ -409,7 +417,7 @@ All seven levels from section B, defined in full. The output is meaningless with
 
 1. **Recommended level**, stated plainly, with its name. Where the arithmetic lands on level 6, the gating question (section C.1) and its answer are shown alongside it; a "no" is shown as having produced level 5, with that reasoning stated.
 2. **The two scores and the matrix position** that produced it.
-3. **What drove each score** — the three or four answers contributing most to each axis.
+3. **What drove each score**, grouped by axis (cost of speaking, cost of staying quiet, each group headed with the axis name in full) — the three or four answers contributing most to each, shown together with the question that produced them. A bare answer fragment ("Flat") is not readable on its own; "Which way is it moving? Flat" is. The same grouped, question-and-answer treatment applies to this block wherever it appears, including the export (section J), where the reader may have no memory of the questions at all.
 4. **Any override that applied**, named, with the statement that it beat the arithmetic.
 5. **Any notes attached by the answers given** (`noteId`, section C.4), in their own block immediately under the recommendation. Separate from item 4, which is for overrides that beat the arithmetic, and from item 6, which is for the check-yourself flag: a note is neither of those, and rendering it inside either block would misstate what produced it. One note is conditional on the final level rather than on the answer alone: where employees are already discussing it (`q8.a`), the record attaches the internal-audience note (`rule.internalAudienceNote`) whenever the final level is at or below `noteConditions.internalAudienceNoteMaxLevel` (a config value, currently 7 — the top of the scale — so the note fires at every level). It is computed in `js/overrides.js`, alongside the check-yourself flag and the Q9 legal cross-check, because it needs the final level, which is only known once overrides have been resolved. This condition was previously hardcoded in `js/overrides.js` as a Level 1/2 restriction; it has been moved into config so it is a threshold like any other (CLAUDE.md's config-not-code principle), and widened to fire at every level — a reactive statement to a journalist still leaves staff speculating, and that was the case (scenario 6, an internal rumour landing at level 3) the note was written for but previously missed.
 6. **The check-yourself flag**, if raised.

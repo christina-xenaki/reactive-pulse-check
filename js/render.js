@@ -186,19 +186,26 @@ PulseCheck.Render = (function () {
 
   // --- Drivers and the full answer record -----------------------------------
 
+  // Grouped by axis, each group headed with the axis name in full, and
+  // each line pairing the question with the answer that drove it — a bare
+  // answer fragment ("Flat") is unreadable on its own, while "Which way is
+  // it moving? Flat" stands alone (task instruction; this block is
+  // repeated verbatim in the export, SPEC.md section I.3/J, once export
+  // exists).
   function buildDrivers(scoring) {
     var container = Dom.el('div', { className: 'result-drivers' });
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.driversHeading'))]));
 
     [
-      { axis: 'costOfSpeaking', label: uiText('out.axisSpeakingLabel'), phrase: 'speaking' },
-      { axis: 'costOfStayingQuiet', label: uiText('out.axisQuietLabel'), phrase: 'staying quiet' }
+      { axis: 'costOfSpeaking', label: uiText('out.axisSpeakingLabel') },
+      { axis: 'costOfStayingQuiet', label: uiText('out.axisQuietLabel') }
     ].forEach(function (axisInfo) {
       var drivers = (scoring.drivers && scoring.drivers[axisInfo.axis]) || [];
       if (!drivers.length) return;
+      container.appendChild(Dom.el('h4', {}, [document.createTextNode(axisInfo.label)]));
       var list = Dom.el('ul', { className: 'result-driver-list' });
       drivers.forEach(function (driver) {
-        var line = fillTemplate(uiText('out.driverLine'), { 'answer text': driver.text, axis: axisInfo.phrase });
+        var line = fillTemplate(uiText('out.driverLine'), { 'question text': driver.questionText, 'answer text': driver.text });
         list.appendChild(Dom.el('li', {}, [document.createTextNode(line)]));
       });
       container.appendChild(list);

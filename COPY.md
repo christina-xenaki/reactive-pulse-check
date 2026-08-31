@@ -415,8 +415,8 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.driversHeading`**
 > What drove this
 
-**`out.driverLine`**
-> {answer text} — raised the cost of {speaking | staying quiet}
+**`out.driverLine`** — one line per contributing answer. Drivers are grouped under a heading per axis (`out.axisSpeakingLabel` / `out.axisQuietLabel`, the axis name in full), so the line itself needs no "raised the cost of..." clause; the question supplies its own question mark, so nothing else joins the two ("Which way is it moving? Flat", not "Flat"). Same treatment in the export once it exists (SPEC.md I.3/J).
+> {question text} {answer text}
 
 **`out.overrideHeading`**
 > A rule applied here
