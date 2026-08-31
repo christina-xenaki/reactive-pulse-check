@@ -140,14 +140,20 @@ PulseCheck.Overrides = (function () {
     };
   }
 
-  // SPEC.md I.5: where employees are already discussing it (q8.a) and the
-  // recommendation lands at Level 1 or 2, the ladder describes external
-  // response only — an internal audience already discussing something
-  // usually needs addressing whatever the external answer is.
-  function internalAudienceNote(answers, finalLevel) {
+  // SPEC.md I.5: where employees are already discussing it (q8.a), the
+  // ladder describes external response only — an internal audience already
+  // discussing something usually needs addressing whatever the external
+  // answer is. The level up to which this fires is a config value
+  // (bandBoundaries.internalAudienceNoteMaxLevel), not a hardcoded number
+  // — CLAUDE.md requires thresholds to live in config, not code. It is
+  // currently set to 7, the top of the scale, so the note fires at every
+  // level; see SPEC.md I.5 for why the earlier Level 1/2 restriction was
+  // wrong.
+  function internalAudienceNote(answers, finalLevel, config) {
     var q8 = answers.q8 || [];
     if (q8.indexOf('q8.a') === -1) return null;
-    if (finalLevel !== 1 && finalLevel !== 2) return null;
+    var maxLevel = config.bandBoundaries.internalAudienceNoteMaxLevel;
+    if (typeof maxLevel === 'number' && finalLevel > maxLevel) return null;
     return { noteId: 'rule.internalAudienceNote' };
   }
 
@@ -166,7 +172,7 @@ PulseCheck.Overrides = (function () {
       finalLevel: finalLevel,
       checkYourselfFlag: checkYourselfFlag(answers),
       legalCrossCheck: legalCrossCheck(answers, scoringResult, fired),
-      internalAudienceNote: internalAudienceNote(answers, finalLevel)
+      internalAudienceNote: internalAudienceNote(answers, finalLevel, config)
     };
   }
 

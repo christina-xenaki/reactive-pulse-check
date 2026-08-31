@@ -593,7 +593,8 @@
     "bandLowCeiling": 35,
     "bandMediumCeiling": 65,
     "lowConfidenceThreshold": 40,
-    "notIdentifiableQuietCap": 34
+    "notIdentifiableQuietCap": 34,
+    "internalAudienceNoteMaxLevel": 7
   },
 
   "levelMatrix": [
