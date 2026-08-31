@@ -593,8 +593,7 @@
     "bandLowCeiling": 35,
     "bandMediumCeiling": 65,
     "lowConfidenceThreshold": 40,
-    "notIdentifiableQuietCap": 34,
-    "internalAudienceNoteMaxLevel": 7
+    "notIdentifiableQuietCap": 34
   },
 
   "levelMatrix": [
@@ -670,6 +669,10 @@
     }
   ],
   "sectorOverrides": [],
+
+  "noteConditions": {
+    "internalAudienceNoteMaxLevel": 7
+  },
 
   "notes": {
     "rule.privateIndividualNote": "The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.",

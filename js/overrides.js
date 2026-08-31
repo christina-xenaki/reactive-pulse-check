@@ -143,14 +143,14 @@ PulseCheck.Overrides = (function () {
   // SPEC.md I.5: where employees are already discussing it (q8.a), the
   // ladder describes external response only — an internal audience already
   // discussing something usually needs addressing whatever the external
-  // answer is. The firing rule is config.bandBoundaries
+  // answer is. The firing rule is config.noteConditions
   // .internalAudienceNoteMaxLevel (CLAUDE.md config-not-code principle):
   // the note fires at finalLevel <= that value. Set to 7 (the top of the
   // scale) so it fires at every level.
   function internalAudienceNote(answers, finalLevel, config) {
     var q8 = answers.q8 || [];
     if (q8.indexOf('q8.a') === -1) return null;
-    var maxLevel = config.bandBoundaries.internalAudienceNoteMaxLevel;
+    var maxLevel = config.noteConditions.internalAudienceNoteMaxLevel;
     if (typeof maxLevel !== 'number' || finalLevel > maxLevel) return null;
     return { noteId: 'rule.internalAudienceNote' };
   }
