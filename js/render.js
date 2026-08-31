@@ -77,12 +77,6 @@ PulseCheck.Render = (function () {
     return { number: n, name: name, def: entry.definition, not: entry.not || null, label: entry.term };
   }
 
-  function questionsById() {
-    var byId = {};
-    (config.questions || []).forEach(function (q) { byId[q.id] = q; });
-    return byId;
-  }
-
   function optionsById() {
     var byId = {};
     (config.answerOptions || []).forEach(function (o) { byId[o.id] = o; });
@@ -216,14 +210,18 @@ PulseCheck.Render = (function () {
   // Task item 5, second half: "the answers given" — every answered question,
   // in the order asked, in the same full descriptive phrasing used
   // throughout (CLAUDE.md, "no free text ... full descriptive phrases").
+  //
+  // Path-scoped via PulseCheck.Scoring.questionsOnPath (see the
+  // PATH-SCOPED comment in js/scoring.js): a question Back-navigation has
+  // made unreachable must not still appear in the exported record, even
+  // though its answer may still be sitting in `answers`.
   function buildAnswerRecord(answers) {
-    var qById = questionsById();
     var oById = optionsById();
     var container = Dom.el('div', { className: 'result-answers' });
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.answersHeading'))]));
 
     var dl = Dom.el('dl');
-    (config.questions || []).forEach(function (question) {
+    PulseCheck.Scoring.questionsOnPath(config, answers).forEach(function (question) {
       var selected = answers[question.id];
       if (!selected || !selected.length) return;
       var text = selected.map(function (id) { return (oById[id] && oById[id].text) || id; }).join('; ');
