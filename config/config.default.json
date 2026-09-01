@@ -592,8 +592,8 @@
     "br.prior.3.d": { "costOfSpeaking": 4, "costOfStayingQuiet": 3 }
   },
   "bandBoundaries": {
-    "bandLowCeiling": 35,
-    "bandMediumCeiling": 65,
+    "costOfSpeaking": { "lowCeiling": 35, "mediumCeiling": 65 },
+    "costOfStayingQuiet": { "lowCeiling": 40, "mediumCeiling": 65 },
     "lowConfidenceThreshold": 40,
     "notIdentifiableQuietCap": 34
   },

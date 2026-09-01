@@ -89,11 +89,19 @@ PulseCheck.Scoring = (function () {
     return onPath;
   }
 
+  // SPEC.md C.1: band thresholds are per-axis, not shared — the two axes
+  // have different distributions, so nothing here assumes their low/medium
+  // ceilings are equal.
   function isConfigValid(config) {
     if (!config) return false;
     var aw = config.axisWeights, bb = config.bandBoundaries, lm = config.levelMatrix;
     if (!aw || typeof aw !== 'object' || Object.keys(aw).length === 0) return false;
-    if (!bb || typeof bb.bandLowCeiling !== 'number' || typeof bb.bandMediumCeiling !== 'number') return false;
+    if (!bb) return false;
+    var bandsValid = AXES.every(function (axis) {
+      var thresholds = bb[axis];
+      return thresholds && typeof thresholds.lowCeiling === 'number' && typeof thresholds.mediumCeiling === 'number';
+    });
+    if (!bandsValid) return false;
     if (!Array.isArray(lm) || lm.length === 0) return false;
     return true;
   }
@@ -173,9 +181,12 @@ PulseCheck.Scoring = (function () {
     return { earned: earned, max: max };
   }
 
-  function bandFor(score, bandBoundaries) {
-    if (score < bandBoundaries.bandLowCeiling) return 'low';
-    if (score <= bandBoundaries.bandMediumCeiling) return 'medium';
+  // thresholds is one axis's own { lowCeiling, mediumCeiling } from
+  // config.bandBoundaries — never the shared object, since the two axes'
+  // ceilings can differ (SPEC.md C.1).
+  function bandFor(score, thresholds) {
+    if (score < thresholds.lowCeiling) return 'low';
+    if (score <= thresholds.mediumCeiling) return 'medium';
     return 'high';
   }
 
@@ -257,7 +268,7 @@ PulseCheck.Scoring = (function () {
     AXES.forEach(function (axis) {
       var score = totals.max[axis] > 0 ? Math.round((totals.earned[axis] / totals.max[axis]) * 100) : 0;
       scores[axis] = score;
-      bands[axis] = bandFor(score, config.bandBoundaries);
+      bands[axis] = bandFor(score, config.bandBoundaries[axis]);
     });
 
     // SPEC.md C.1: the core questions assume the issue is about us. On a
@@ -270,7 +281,7 @@ PulseCheck.Scoring = (function () {
     var quietCap = config.bandBoundaries.notIdentifiableQuietCap;
     if (notIdentifiable && typeof quietCap === 'number') {
       scores.costOfStayingQuiet = Math.min(scores.costOfStayingQuiet, quietCap);
-      bands.costOfStayingQuiet = bandFor(scores.costOfStayingQuiet, config.bandBoundaries);
+      bands.costOfStayingQuiet = bandFor(scores.costOfStayingQuiet, config.bandBoundaries.costOfStayingQuiet);
     }
 
     var cell = matrixLevel(config.levelMatrix, bands.costOfSpeaking, bands.costOfStayingQuiet);
