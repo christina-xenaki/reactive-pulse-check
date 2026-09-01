@@ -184,8 +184,11 @@ PulseCheck.Scoring = (function () {
 
   // Every selected option (excluding q1/q9, which never score) that
   // contributes to the given axis, ranked highest weight first, for
-  // "what drove this" (SPEC.md I.3). Path-scoped: see the PATH-SCOPED
-  // comment above questionsOnPath().
+  // "what drove this" (SPEC.md I.3). Each contribution carries its
+  // question's text alongside the answer's, so the driver reads as a
+  // question-and-answer pair rather than a bare answer fragment (task
+  // instruction: "Which way is it moving? Flat", not "Flat"). Path-scoped:
+  // see the PATH-SCOPED comment above questionsOnPath().
   function driversFor(config, answers, axis, limit) {
     var oById = optionsById(config);
     var contributions = [];
@@ -195,7 +198,12 @@ PulseCheck.Scoring = (function () {
       (answers[question.id] || []).forEach(function (optionId) {
         var weight = weightFor(config, optionId, axis);
         if (weight > 0) {
-          contributions.push({ optionId: optionId, text: oById[optionId] ? oById[optionId].text : optionId, weight: weight });
+          contributions.push({
+            optionId: optionId,
+            text: oById[optionId] ? oById[optionId].text : optionId,
+            questionText: question.text,
+            weight: weight
+          });
         }
       });
     });

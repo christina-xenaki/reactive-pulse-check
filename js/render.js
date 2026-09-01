@@ -186,19 +186,26 @@ PulseCheck.Render = (function () {
 
   // --- Drivers and the full answer record -----------------------------------
 
+  // Grouped by axis, each group headed with the axis name in full, and
+  // each line pairing the question with the answer that drove it — a bare
+  // answer fragment ("Flat") is unreadable on its own, while "Which way is
+  // it moving? Flat" stands alone (task instruction; this block is
+  // repeated verbatim in the export, SPEC.md section I.3/J, once export
+  // exists).
   function buildDrivers(scoring) {
     var container = Dom.el('div', { className: 'result-drivers' });
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.driversHeading'))]));
 
     [
-      { axis: 'costOfSpeaking', label: uiText('out.axisSpeakingLabel'), phrase: 'speaking' },
-      { axis: 'costOfStayingQuiet', label: uiText('out.axisQuietLabel'), phrase: 'staying quiet' }
+      { axis: 'costOfSpeaking', label: uiText('out.axisSpeakingLabel') },
+      { axis: 'costOfStayingQuiet', label: uiText('out.axisQuietLabel') }
     ].forEach(function (axisInfo) {
       var drivers = (scoring.drivers && scoring.drivers[axisInfo.axis]) || [];
       if (!drivers.length) return;
+      container.appendChild(Dom.el('h4', {}, [document.createTextNode(axisInfo.label)]));
       var list = Dom.el('ul', { className: 'result-driver-list' });
       drivers.forEach(function (driver) {
-        var line = fillTemplate(uiText('out.driverLine'), { 'answer text': driver.text, axis: axisInfo.phrase });
+        var line = fillTemplate(uiText('out.driverLine'), { 'question text': driver.questionText, 'answer text': driver.text });
         list.appendChild(Dom.el('li', {}, [document.createTextNode(line)]));
       });
       container.appendChild(list);
@@ -250,14 +257,14 @@ PulseCheck.Render = (function () {
     var arithmeticInfo = levelInfo(arithmeticLevel);
     var finalInfo = levelInfo(finalLevel);
 
-    var container = Dom.el('div', { className: 'result-override' });
-    container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.overrideHeading'))]));
-
-    var sentence;
     var isDownward = definition.renderTemplate === 'downward';
     var isUpward = definition.renderTemplate === 'upward';
+    var changed = finalLevel !== arithmeticLevel;
 
-    if (isDownward && finalLevel !== arithmeticLevel) {
+    var heading = uiText('out.overrideHeading');
+    var sentence;
+
+    if (isDownward && changed) {
       var templateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
       sentence = fillTemplate(uiText(templateId), {
         arithmeticLevel: arithmeticInfo.label,
@@ -265,24 +272,63 @@ PulseCheck.Render = (function () {
         finalLevel: finalInfo.label,
         functions: definition.functions
       });
-    } else if (isUpward && finalLevel !== arithmeticLevel) {
+    } else if (isUpward && changed) {
       sentence = fillTemplate(uiText('out.override.upward'), {
         arithmeticLevel: arithmeticInfo.label,
         leadIn: definition.leadIn,
         finalLevel: finalInfo.label
       });
+    } else if (isUpward && !changed) {
+      // The floor rule fired but the arithmetic already sat at or above
+      // what it requires (COPY.md: "out.override.satisfied"/".matched").
+      // "out.overrideHeading" oversells this — nothing moved — so it's
+      // paired with "out.overrideAlsoHeading" instead. finalLevel ===
+      // arithmeticLevel for a floor outcome only when arithmeticLevel is
+      // already >= the rule's own outcome.level, so ruleLevel here is
+      // always <= arithmeticLevel: equal picks "matched", lower picks
+      // "satisfied".
+      heading = uiText('out.overrideAlsoHeading');
+      var ruleLevel = definition.outcome && typeof definition.outcome.level === 'number' ? definition.outcome.level : null;
+      var matched = ruleLevel !== null && ruleLevel === arithmeticLevel;
+      sentence = fillTemplate(uiText(matched ? 'out.override.matched' : 'out.override.satisfied'), {
+        arithmeticLevel: arithmeticInfo.label,
+        ruleLeadIn: definition.leadIn,
+        ruleLevel: ruleLevel !== null ? levelInfo(ruleLevel).label : ''
+      });
     } else {
-      // The rule fired but did not move the number (the arithmetic already
-      // sat inside its range, or already met its floor) — the specific
-      // "downward"/"upward" sentences both claim a change that didn't
-      // happen here, so fall back to the general rule copy instead of
-      // overstating it.
-      sentence = uiText('out.overrideIntro');
+      // isDownward && !changed: a capping rule fired without moving the
+      // level (the arithmetic already sat inside its range) — the mirror
+      // of the isUpward-&&-!changed case above, with "cap" wording instead
+      // of "floor" wording (COPY.md: "out.override.cappedSatisfied"/
+      // ".cappedBelow"). The rule's own cap is outcome.max for a clamp
+      // (rule.individualInternal, .data, .legal, .marketSensitive,
+      // .employment) or outcome.level for a forced cap (the one downward
+      // rule with a single fixed outcome, rule.individualExternal) —
+      // finalLevel === arithmeticLevel here only when arithmeticLevel is
+      // already <= that cap, so ruleLevel is always >= arithmeticLevel:
+      // equal picks "cappedSatisfied" (sits at the cap), higher picks
+      // "cappedBelow".
+      heading = uiText('out.overrideAlsoHeading');
+      var outcome = definition.outcome || {};
+      var capLevel = outcome.type === 'clamp' ? outcome.max
+        : (typeof outcome.level === 'number' ? outcome.level : null);
+      var atCap = capLevel !== null && capLevel === arithmeticLevel;
+      var cappedTemplateId = definition.functions
+        ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
+        : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
+      sentence = fillTemplate(uiText(cappedTemplateId), {
+        arithmeticLevel: arithmeticInfo.label,
+        ruleLeadIn: definition.leadIn,
+        ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
+        consultFunctions: definition.functions
+      });
     }
 
+    var container = Dom.el('div', { className: 'result-override' });
+    container.appendChild(Dom.el('h3', {}, [document.createTextNode(heading)]));
     container.appendChild(Dom.el('p', {}, [document.createTextNode(sentence)]));
 
-    if (isDownward && finalLevel !== arithmeticLevel) {
+    if (isDownward && changed) {
       container.appendChild(Dom.el('p', { className: 'result-override-closing' }, [document.createTextNode(uiText('out.override.downward.closingLine'))]));
     }
 

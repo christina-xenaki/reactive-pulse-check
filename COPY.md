@@ -415,14 +415,14 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.driversHeading`**
 > What drove this
 
-**`out.driverLine`**
-> {answer text} — raised the cost of {speaking | staying quiet}
+**`out.driverLine`** — one line per contributing answer. Drivers are grouped under a heading per axis (`out.axisSpeakingLabel` / `out.axisQuietLabel`, the axis name in full), so the line itself needs no "raised the cost of..." clause; the question supplies its own question mark, so nothing else joins the two ("Which way is it moving? Flat", not "Flat"). Same treatment in the export once it exists (SPEC.md I.3/J).
+> {question text} {answer text}
 
-**`out.overrideHeading`**
+**`out.overrideHeading`** — shown where a fired rule changed the recommendation (`out.override.downward`/`.downward.noFunctions`/`.upward` below)
 > A rule applied here
 
-**`out.overrideIntro`**
-> This recommendation was set by a rule, not by the two scores. Rules exist because some situations are not trade-offs.
+**`out.overrideAlsoHeading`** — shown instead of `out.overrideHeading` where a rule fired but `finalLevel` equals `arithmeticLevel` (`out.override.satisfied`/`.matched`/`.cappedSatisfied`/`.cappedBelow` below — every case where a rule fires without changing the number). `out.overrideHeading` oversells this case — it reads as though something happened when nothing did.
+> A rule also applies here
 
 **`out.changeHeading`**
 > What would change this
@@ -477,7 +477,11 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 ### Overrides and the Level 6 gate, as shown with the result
 
-Three fixed sentence patterns, each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+Six fixed sentence patterns (four of them with a `.noFunctions` sibling for the one rule, `rule.individualExternal`, whose own text never names a function to consult — ten IDs in total), each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence — `{leadIn}` where a rule changed the recommendation, `{ruleLeadIn}` where it fired without changing it, same value either way) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}`/`{consultFunctions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+
+`out.override.downward`/`.upward` cover a rule that changed the recommendation (`finalLevel` differs from `arithmeticLevel`). The other four cover a rule that fired but didn't — the arithmetic already satisfied what the rule requires — split by which kind of rule it was, because an upward (floor) rule and a downward (capping) rule require different verbs for the same non-event: a floor rule still means "a response is needed at {ruleLevel} or above" (`.satisfied`/`.matched`), while a capping rule means the opposite shape of constraint, "this cannot go above {ruleLevel}" (`.cappedSatisfied`/`.cappedBelow`) — reusing the floor wording for a capping rule would claim it requires at least that level when it actually requires at most that level. Within each pair, `{ruleLevel}` equalling `{arithmeticLevel}` picks the "landed exactly there" wording (`.matched`/`.cappedSatisfied`); `{ruleLevel}` diverging picks the other (`.satisfied`/`.cappedBelow`). `{ruleLevel}` is "Level *n*, *name*" for the level the rule itself requires — the floor's own `outcome.level` for `.satisfied`/`.matched`, and the cap's own `outcome.level` (a forced rule) or `outcome.max` (a clamped rule) for `.cappedSatisfied`/`.cappedBelow`. Like `{leadIn}`/`{ruleLeadIn}`, it carries the link to that rule's section in `SCORING.md` — a forward reference, per section 12, same as the score-line links.
+
+Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declares `renderTemplate` as either `downward` or `upward` — there is no third value, so between these six patterns, every case that reaches `out.overrideAlsoHeading`/`out.overrideHeading` now has a rule-specific sentence. `out.overrideIntro` is retired: nothing renders it any more.
 
 **`out.override.downward`** — shown where a rule has capped or routed the recommendation below what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.
@@ -490,6 +494,24 @@ Three fixed sentence patterns, each built from the rule's own lead sentence in s
 
 **`out.override.upward`** — shown where a rule has floored the recommendation at or above what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.
+
+**`out.override.satisfied`** — shown where an upward (floor) rule fired but the arithmetic already sat above what the rule requires (`{ruleLevel}` is below `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers already point further than that.
+
+**`out.override.matched`** — same, where the arithmetic landed exactly on what the rule requires (`{ruleLevel}` equals `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers land in the same place.
+
+**`out.override.cappedSatisfied`** — shown where a downward (capping) rule fired but the arithmetic already sat exactly at the cap (`{ruleLevel}` equals `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers already sit within that.
+
+**`out.override.cappedSatisfied.noFunctions`** — same, for `rule.individualExternal`
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers already sit within that.
+
+**`out.override.cappedBelow`** — shown where a downward (capping) rule fired but the arithmetic already sat below the cap (`{ruleLevel}` is above `{arithmeticLevel}`)
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers sit below that.
+
+**`out.override.cappedBelow.noFunctions`** — same, for `rule.individualExternal`. Not reachable today: `rule.individualExternal` forces a single fixed level rather than a range, so when it fires without changing the level, the arithmetic can only have been sitting exactly at that level (`.cappedSatisfied.noFunctions`), never below it. Kept for symmetry with the other three pairs, and in case a future no-functions rule is ever given a range instead of a fixed level.
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers sit below that.
 
 **`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
 > Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.
