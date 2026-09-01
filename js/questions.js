@@ -130,10 +130,17 @@ PulseCheck.Questions = (function () {
     return fieldset;
   }
 
-  // Q8 is multi-select; selecting "nobody beyond the originator yet"
-  // (q8.f) clears every other Q8 selection, and vice versa (CLAUDE.md,
-  // axis weight matrix rule 3) — the two are mutually exclusive.
-  var CLEARING_OPTION_ID = 'q8.f';
+  // An answer option carrying config's clearsSiblings (currently q8.f and
+  // q2b.h) is mutually exclusive with every other option on its question:
+  // selecting it clears every other selection on that question, and
+  // selecting any other option clears it. Which option that is, on which
+  // question, lives entirely in config — this function names none of them.
+  function clearingOptionIdFor(question) {
+    var match = config.answerOptions.filter(function (option) {
+      return option.questionId === question.id && option.clearsSiblings === true;
+    })[0];
+    return match ? match.id : null;
+  }
 
   function handleChange(question, input) {
     var current = (answers[question.id] || []).slice();
@@ -142,11 +149,12 @@ PulseCheck.Questions = (function () {
       if (input.checked && pos === -1) current.push(input.value);
       if (!input.checked && pos !== -1) current.splice(pos, 1);
 
-      if (question.id === 'q8') {
-        if (input.value === CLEARING_OPTION_ID && input.checked) {
-          current = [CLEARING_OPTION_ID];
-        } else if (input.value !== CLEARING_OPTION_ID && input.checked) {
-          var clearingPos = current.indexOf(CLEARING_OPTION_ID);
+      var clearingOptionId = clearingOptionIdFor(question);
+      if (clearingOptionId) {
+        if (input.value === clearingOptionId && input.checked) {
+          current = [clearingOptionId];
+        } else if (input.value !== clearingOptionId && input.checked) {
+          var clearingPos = current.indexOf(clearingOptionId);
           if (clearingPos !== -1) current.splice(clearingPos, 1);
         }
         syncCheckboxes(question, current);

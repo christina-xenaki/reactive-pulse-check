@@ -56,7 +56,15 @@ Deliberately not framed as "risk." Both directions carry risk, and the word make
 
 Each axis produces a 0–100 score from the weighted answer options in `config/config.json`.
 
-**Scores are normalised by the path taken.** Paths vary in length — a leak enquiry asks fewer branch questions than a prior-coverage block — so raw point totals are not comparable across paths. Each axis score is the percentage of the maximum achievable on the path actually taken: points earned on that axis by the questions actually asked, divided by the maximum those same questions could have contributed. Q1 carries no weight on either axis: its only job is to select which branch questions are asked, so it contributes nothing to either axis and nothing to either maximum. Each axis is then placed in a band:
+**Scores are normalised by the path taken.** Paths vary in length — a leak enquiry asks fewer branch questions than a prior-coverage block — so raw point totals are not comparable across paths. Each axis score is the percentage of the maximum achievable on the path actually taken: points earned on that axis by the questions actually asked, divided by the maximum those same questions could have contributed. Q1 carries no weight on either axis: its only job is to select which branch questions are asked, so it contributes nothing to either axis and nothing to either maximum.
+
+**How a question's own contribution is worked out depends on its type.** Three formulas exist, all in `js/scoring.js`:
+
+- **Single-select (max-of-single).** The question contributes the weight of whichever one option was chosen; the maximum it could have contributed is the highest weight among its options. Every single-choice question in the set uses this.
+- **Plain multi-select (sum).** The question contributes the sum of the weights of every option selected; the maximum is the sum of every option's weight. Used by any multi-select question that does not carry `cappedMultiScoring` in config.
+- **Capped multi-select.** Used where a plain sum would let the number of selections alone dominate the axis, regardless of how much any one of them actually adds. The question contributes the highest weight among the selected options, plus a per-question `increment` for each additional selection beyond the first; the maximum is the highest weight among *all* its options, plus a per-question `capBonus`. Both `increment` and `capBonus` are config values on the question (`config.questions[].cappedMultiScoring`), not hardcoded, so each capped question sets its own: `q8` ("who else has a stake") uses `increment: 2, capBonus: 4`; `q2b` ("is a named individual involved") uses the tighter `increment: 1, capBonus: 2`, because a second named individual adds constraint but not proportionally — the first individual named already carries most of the weight. `q2b` was, before this formula applied to it, the only question in the config normalised by the sum of *all* its options, which made it roughly 41% of the entire cost-of-speaking denominator from one question alone, deflating every score on every path where no individual was named (most paths select "no individual is named" at 0/0 on both axes and earn nothing from the question).
+
+Each axis is then placed in a band:
 
 - **Low** — below `bandLowCeiling` (default 35)
 - **Medium** — up to `bandMediumCeiling` (default 65)
