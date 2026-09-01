@@ -328,7 +328,13 @@ PulseCheck.Render = (function () {
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(heading)]));
     container.appendChild(Dom.el('p', {}, [document.createTextNode(sentence)]));
 
-    if (isDownward && changed) {
+    // The closing line applies to every downward (capping) rule, whether
+    // it moved the level or only fired without moving it (SPEC.md I.4) —
+    // a rule that capped the arithmetic in place is still telling the
+    // user there is a ceiling here, which is exactly when they most need
+    // to know the tool has limits. Never appended for an upward (floor)
+    // rule.
+    if (isDownward) {
       container.appendChild(Dom.el('p', { className: 'result-override-closing' }, [document.createTextNode(uiText('out.override.downward.closingLine'))]));
     }
 

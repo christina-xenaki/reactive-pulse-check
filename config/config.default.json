@@ -22,7 +22,8 @@
       "helpText": "Asked separately because a named individual is not simply a stronger version of the organisation being named. It can be more serious, and it changes which rules apply.",
       "type": "multi",
       "core": true,
-      "showIf": { "questionId": "q2", "notIn": ["q2.d"] }
+      "showIf": { "questionId": "q2", "notIn": ["q2.d"] },
+      "cappedMultiScoring": { "increment": 1, "capBonus": 2 }
     },
     {
       "id": "q3",
@@ -64,7 +65,8 @@
       "textId": "q8.text",
       "text": "Who else, beyond the originator, has a stake in this?",
       "type": "multi",
-      "core": true
+      "core": true,
+      "cappedMultiScoring": { "increment": 2, "capBonus": 4 }
     },
     {
       "id": "q9",
@@ -303,7 +305,7 @@
     { "id": "q2b.e", "questionId": "q2b", "text": "A contractor, agency or freelancer working for us" },
     { "id": "q2b.f", "questionId": "q2b", "text": "A partner, supplier or client organisation" },
     { "id": "q2b.g", "questionId": "q2b", "text": "A customer, patient or service user", "triggersOverride": "rule.individualExternal" },
-    { "id": "q2b.h", "questionId": "q2b", "text": "No individual is named" },
+    { "id": "q2b.h", "questionId": "q2b", "text": "No individual is named", "clearsSiblings": true },
 
     { "id": "q3.a", "questionId": "q3", "text": "True, and we knew", "triggersOverride": "rule.trueAndKnew" },
     { "id": "q3.b", "questionId": "q3", "text": "True, and we did not know until now" },
@@ -341,7 +343,7 @@
     { "id": "q8.c", "questionId": "q8", "text": "Customers, patients or service users are directly affected" },
     { "id": "q8.d", "questionId": "q8", "text": "Investors, funders or trustees will ask about it" },
     { "id": "q8.e", "questionId": "q8", "text": "A partner, supplier or client is implicated" },
-    { "id": "q8.f", "questionId": "q8", "text": "Nobody beyond the originator yet" },
+    { "id": "q8.f", "questionId": "q8", "text": "Nobody beyond the originator yet", "clearsSiblings": true },
 
     { "id": "q9.a", "questionId": "q9", "text": "Nobody; we are assessing it ourselves" },
     { "id": "q9.b", "questionId": "q9", "text": "The comms team" },

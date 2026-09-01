@@ -21,11 +21,12 @@ window.PulseCheck = window.PulseCheck || {};
 PulseCheck.Scoring = (function () {
   var AXES = ['costOfSpeaking', 'costOfStayingQuiet'];
 
-  // q1 and q9 route/record but never score (SPEC.md E, CLAUDE.md axis
-  // weight matrix rule 2); q8 uses the capped multi-select formula (rule 3)
-  // instead of a plain sum.
+  // q1 and q9 route/record but never score (SPEC.md E). A multi-select
+  // question carrying config.questions[].cappedMultiScoring (currently q2b
+  // and q8; see SPEC.md C.1) uses the capped multi-select formula instead
+  // of a plain sum — which question that is lives entirely in config, not
+  // here.
   var UNSCORED_QUESTION_IDS = { q1: true, q9: true };
-  var CAPPED_MULTI_QUESTION_ID = 'q8';
 
   // --- Path scoping -----------------------------------------------------
   //
@@ -108,24 +109,27 @@ PulseCheck.Scoring = (function () {
     return entry ? (entry[axis] || 0) : 0;
   }
 
-  // Rule 3: highest single selection on the axis, plus 2 per additional
-  // selection, capped at the question's highest single option value on
-  // that axis plus 4.
+  // SPEC.md C.1: highest single selection on the axis, plus
+  // question.cappedMultiScoring.increment per additional selection, capped
+  // at the question's highest single option value on that axis plus
+  // cappedMultiScoring.capBonus. Both the increment and the cap bonus are
+  // per-question config values (q2b and q8 each carry their own) — this
+  // function itself names no question.
   function cappedMultiScore(config, question, selectedIds, axis) {
-    var allOptionValues = optionsById(config);
+    var params = question.cappedMultiScoring;
     var questionOptionIds = config.answerOptions
       .filter(function (o) { return o.questionId === question.id; })
       .map(function (o) { return o.id; });
     var highestPossible = questionOptionIds.reduce(function (max, id) {
       return Math.max(max, weightFor(config, id, axis));
     }, 0);
-    var cap = highestPossible + 4;
+    var cap = highestPossible + params.capBonus;
 
     if (!selectedIds.length) return { earned: 0, max: cap };
 
     var selectedValues = selectedIds.map(function (id) { return weightFor(config, id, axis); });
     var highestSelected = Math.max.apply(null, selectedValues);
-    var raw = highestSelected + 2 * (selectedIds.length - 1);
+    var raw = highestSelected + params.increment * (selectedIds.length - 1);
     return { earned: Math.min(raw, cap), max: cap };
   }
 
@@ -148,7 +152,7 @@ PulseCheck.Scoring = (function () {
         .map(function (o) { return o.id; });
 
       AXES.forEach(function (axis) {
-        if (questionId === CAPPED_MULTI_QUESTION_ID) {
+        if (question.type === 'multi' && question.cappedMultiScoring) {
           var capped = cappedMultiScore(config, question, selected, axis);
           earned[axis] += capped.earned;
           max[axis] += capped.max;
