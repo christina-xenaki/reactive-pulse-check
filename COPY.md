@@ -124,6 +124,7 @@ Multi-select. Shown unless `q2.d` is selected.
 | `q2b.e` | A contractor, agency or freelancer working for us |
 | `q2b.f` | A partner, supplier or client organisation |
 | `q2b.g` | A customer, patient or service user |
+| `q2b.i` | The person who raised it, speaking about themselves |
 | `q2b.h` | No individual is named |
 
 ---
@@ -204,6 +205,7 @@ Multi-select.
 | `q8.c` | Customers, patients or service users are directly affected |
 | `q8.d` | Investors, funders or trustees will ask about it |
 | `q8.e` | A partner, supplier or client is implicated |
+| `q8.g` | Those directly affected are raising it publicly themselves |
 | `q8.f` | Nobody beyond the originator yet |
 
 ---
@@ -226,6 +228,17 @@ Single choice. Optional.
 *A:* "This question does not score. Internal pressure to respond and external risk are different things, and they can look identical when you are in the middle of one. Recording which is which keeps them separate."
 *C:* "This question does not score. Where the pressure to respond is coming from is a legitimate input to your decision. It is a separate input from the situation itself, and this assessment only measures the situation."
 *D:* "This question does not score. It records where the pressure to respond is coming from, because that is a different question from whether the situation warrants one."
+
+---
+
+**`q10.text`** — Is the organisation bound by a duty of confidentiality that prevents it from discussing the substance of this issue?
+Single choice.
+
+| ID | Option |
+|---|---|
+| `q10.a` | Yes – a contractual or professional duty means we cannot discuss the substance without consent |
+| `q10.b` | No |
+| `q10.c` | Not sure |
 
 ---
 
@@ -561,6 +574,12 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.trueAndKnew`**
 > **What has been said is accurate, and you knew.** Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first.
 
+**`rule.affectedPartyFloor`** — fires on `q3.a` + `q8.c` + `q8.g` together; floors the recommendation at Level 5 (SPEC.md E, F.4, F.7)
+> **Those affected were directly harmed, the account is true and was known internally, and they are already raising it.** In these conditions the response goes to them directly, not only to whoever asks.
+
+**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.2, F.7); `functions` is confirmed as "legal"; `leadIn` is "what can be said is limited"
+> **A contractual or professional duty prevents discussion of the substance without consent.** Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential.
+
 **`rule.privateIndividualNote`** — a note, not a rule
 > The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.
 
@@ -575,6 +594,9 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 
 **`rule.internalAudienceNote`** — a note, not a rule
 > This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.
+
+**`rule.confidentialityLegalNote`** — a note, not a rule; fires on `q10.a` and `q10.c`
+> A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer.
 
 ---
 

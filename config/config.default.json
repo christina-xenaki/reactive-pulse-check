@@ -78,6 +78,13 @@
       "core": true,
       "optional": true
     },
+    {
+      "id": "q10",
+      "textId": "q10.text",
+      "text": "Is the organisation bound by a duty of confidentiality that prevents it from discussing the substance of this issue?",
+      "type": "single",
+      "core": true
+    },
 
     {
       "id": "br.journ.1",
@@ -305,6 +312,7 @@
     { "id": "q2b.e", "questionId": "q2b", "text": "A contractor, agency or freelancer working for us" },
     { "id": "q2b.f", "questionId": "q2b", "text": "A partner, supplier or client organisation" },
     { "id": "q2b.g", "questionId": "q2b", "text": "A customer, patient or service user", "triggersOverride": "rule.individualExternal" },
+    { "id": "q2b.i", "questionId": "q2b", "text": "The person who raised it, speaking about themselves" },
     { "id": "q2b.h", "questionId": "q2b", "text": "No individual is named", "clearsSiblings": true },
 
     { "id": "q3.a", "questionId": "q3", "text": "True, and we knew", "triggersOverride": "rule.trueAndKnew" },
@@ -343,6 +351,7 @@
     { "id": "q8.c", "questionId": "q8", "text": "Customers, patients or service users are directly affected" },
     { "id": "q8.d", "questionId": "q8", "text": "Investors, funders or trustees will ask about it" },
     { "id": "q8.e", "questionId": "q8", "text": "A partner, supplier or client is implicated" },
+    { "id": "q8.g", "questionId": "q8", "text": "Those directly affected are raising it publicly themselves" },
     { "id": "q8.f", "questionId": "q8", "text": "Nobody beyond the originator yet", "clearsSiblings": true },
 
     { "id": "q9.a", "questionId": "q9", "text": "Nobody; we are assessing it ourselves" },
@@ -350,6 +359,10 @@
     { "id": "q9.c", "questionId": "q9", "text": "A senior leader has seen it and wants something said" },
     { "id": "q9.d", "questionId": "q9", "text": "The CEO or an equivalent has seen it and wants something said" },
     { "id": "q9.e", "questionId": "q9", "text": "Legal, compliance or regulatory have raised it" },
+
+    { "id": "q10.a", "questionId": "q10", "text": "Yes – a contractual or professional duty means we cannot discuss the substance without consent", "triggersOverride": "rule.confidentiality", "noteId": "rule.confidentialityLegalNote" },
+    { "id": "q10.b", "questionId": "q10", "text": "No" },
+    { "id": "q10.c", "questionId": "q10", "text": "Not sure", "isUnknown": true, "noteId": "rule.confidentialityLegalNote" },
 
     { "id": "br.journ.1.a", "questionId": "br.journ.1", "text": "Comment on a specific point" },
     { "id": "br.journ.1.b", "questionId": "br.journ.1", "text": "General background" },
@@ -474,6 +487,7 @@
     "q2b.e": { "costOfSpeaking": 6, "costOfStayingQuiet": 3 },
     "q2b.f": { "costOfSpeaking": 5, "costOfStayingQuiet": 4 },
     "q2b.g": { "costOfSpeaking": 8, "costOfStayingQuiet": 3 },
+    "q2b.i": { "costOfSpeaking": 8, "costOfStayingQuiet": 3 },
     "q2b.h": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q3.a": { "costOfSpeaking": 5, "costOfStayingQuiet": 9 },
     "q3.b": { "costOfSpeaking": 4, "costOfStayingQuiet": 8 },
@@ -506,12 +520,16 @@
     "q8.c": { "costOfSpeaking": 1, "costOfStayingQuiet": 9 },
     "q8.d": { "costOfSpeaking": 2, "costOfStayingQuiet": 7 },
     "q8.e": { "costOfSpeaking": 4, "costOfStayingQuiet": 7 },
+    "q8.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 9 },
     "q8.f": { "costOfSpeaking": 3, "costOfStayingQuiet": 0 },
     "q9.a": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.c": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.d": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.e": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q10.a": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q10.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q10.c": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "br.journ.1.a": { "costOfSpeaking": 2, "costOfStayingQuiet": 6 },
     "br.journ.1.b": { "costOfSpeaking": 3, "costOfStayingQuiet": 3 },
     "br.journ.1.c": { "costOfSpeaking": 1, "costOfStayingQuiet": 6 },
@@ -652,22 +670,35 @@
       "text": "An employment matter may be involved. A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms."
     },
     {
-      "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 7,
+      "id": "rule.affectedPartyFloor", "outcome": { "type": "floor", "level": 5 }, "priority": 7,
+      "renderTemplate": "upward",
+      "leadIn": "those affected were directly harmed, the account is true and was known internally, and they are already raising it",
+      "text": "Those affected were directly harmed, the account is true and was known internally, and they are already raising it. In these conditions the response goes to them directly, not only to whoever asks."
+    },
+    {
+      "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 8,
       "renderTemplate": "upward",
       "leadIn": "a regulator or elected official raised this",
       "text": "A regulator or elected official raised this. Silence is not available. The minimum is a private, acknowledged reply, made with legal or regulatory involved."
     },
     {
-      "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 8,
+      "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 9,
       "renderTemplate": "upward",
       "leadIn": "there is a deadline you don't control and you are named",
       "text": "There is a deadline you don't control and you are named. Something is required by that deadline, even if it is only an acknowledgement. Silence becomes \"declined to comment\" in print, which is Level 4 with the worst possible wording."
     },
     {
-      "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 9,
+      "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 10,
       "renderTemplate": "upward",
       "leadIn": "what has been said is accurate, and you knew",
       "text": "What has been said is accurate, and you knew. Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first."
+    },
+    {
+      "id": "rule.confidentiality", "outcome": { "type": "ceiling", "level": 3 }, "priority": 11,
+      "renderTemplate": "downward",
+      "leadIn": "what can be said is limited",
+      "functions": "legal",
+      "text": "A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
     }
   ],
   "sectorOverrides": [],
@@ -681,7 +712,8 @@
     "rule.firstPublicConfirmationNote": "Nothing has been published yet, so a response would be the first public record that this exists. That is not an argument for silence on its own, but it is a cost that does not show up in how far this has travelled.",
     "rule.firstConfirmationUncertainNote": "You have said you do not know whether a response would be the first public confirmation. The assessment has treated it as though it would be, because if it is, that cannot be undone. This is worth establishing before you decide.",
     "rule.personalAccountReplyNote": "Someone has already replied from a personal account. That reply is part of the record now, and anything the organisation says next will be read alongside it. Find out exactly what was said before deciding what to add.",
-    "rule.internalAudienceNote": "This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be."
+    "rule.internalAudienceNote": "This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.",
+    "rule.confidentialityLegalNote": "A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer."
   },
 
   "glossary": [
