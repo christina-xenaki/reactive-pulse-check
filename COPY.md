@@ -124,6 +124,7 @@ Multi-select. Shown unless `q2.d` is selected.
 | `q2b.e` | A contractor, agency or freelancer working for us |
 | `q2b.f` | A partner, supplier or client organisation |
 | `q2b.g` | A customer, patient or service user |
+| `q2b.i` | The person who raised it, speaking about themselves |
 | `q2b.h` | No individual is named |
 
 ---
@@ -226,6 +227,17 @@ Single choice. Optional.
 *A:* "This question does not score. Internal pressure to respond and external risk are different things, and they can look identical when you are in the middle of one. Recording which is which keeps them separate."
 *C:* "This question does not score. Where the pressure to respond is coming from is a legitimate input to your decision. It is a separate input from the situation itself, and this assessment only measures the situation."
 *D:* "This question does not score. It records where the pressure to respond is coming from, because that is a different question from whether the situation warrants one."
+
+---
+
+**`q10.text`** — Is the organisation bound by a duty of confidentiality that prevents it from discussing the substance of this issue?
+Single choice.
+
+| ID | Option |
+|---|---|
+| `q10.a` | Yes – a contractual or professional duty means we cannot discuss the substance without consent |
+| `q10.b` | No |
+| `q10.c` | Not sure |
 
 ---
 
@@ -561,6 +573,9 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.trueAndKnew`**
 > **What has been said is accurate, and you knew.** Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first.
 
+**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.7)
+> [[COPY NEEDED: explanatory paragraph, parallel to `rule.legal`/`rule.data` above — first sentence becomes `{leadIn}` mid-sentence, decapitalised, per section 6's documented pattern; should name the specialist function to consult (provisionally "legal" in config, inferred from `rule.confidentialityLegalNote` below, not yet confirmed as wording)]]
+
 **`rule.privateIndividualNote`** — a note, not a rule
 > The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.
 
@@ -575,6 +590,9 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 
 **`rule.internalAudienceNote`** — a note, not a rule
 > This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.
+
+**`rule.confidentialityLegalNote`** — a note, not a rule; fires on `q10.a` and `q10.c`
+> A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer.
 
 ---
 
@@ -755,4 +773,5 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
+- **`rule.confidentiality`'s own explanatory text** (section 7) — only the legal note and the Q10 question/option wording were supplied when this override was added; its `leadIn`/`functions` in `config.default.json` are placeholders pending this wording.
 - **`SCORING.md` itself does not exist yet.** SPEC.md and CLAUDE.md both refer to it as though it does (score explanations, the F.6 sector-config footnote, "SCORING.md and SPEC.md must never describe behaviour the code no longer has"). Section 6's `out.heading`-adjacent score lines and the override sentences above are both specified (SPEC.md section I.2; the render.js session that added them) to link to "the relevant section of SCORING.md" / "that rule's section in SCORING.md". Until the file exists those links are necessarily forward references to anchors (`SCORING.md#cost-of-speaking`, `SCORING.md#rule-data`, and so on) that do not resolve yet.

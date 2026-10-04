@@ -17,6 +17,11 @@
 // exception is the safety override (F.1), which lives in this file as
 // code per CLAUDE.md's config-not-code principle and cannot fire today,
 // since no question asks about it yet.
+//
+// One outcome type, 'ceiling' (rule.confidentiality, SPEC.md F.2/F.7), does
+// not take part in the "only one override decides" priority competition the
+// other three outcome types (forced/floor/clamp) use. See applyCeilings()
+// below for how and why it composes with that single winner instead.
 
 window.PulseCheck = window.PulseCheck || {};
 
@@ -155,6 +160,27 @@ PulseCheck.Overrides = (function () {
     return { noteId: 'rule.internalAudienceNote' };
   }
 
+  // SPEC.md F.7: professional confidentiality (`rule.confidentiality`) is a
+  // fourth outcome kind, 'ceiling', that does not compete for priority the
+  // way forced/floor/clamp do. Every other override's outcome is decided by
+  // "only one override decides" (fired[0], by priority) — a ceiling instead
+  // composes with whatever that single winner already produced: it is
+  // applied afterwards, as an unconditional final cap, which is what lets it
+  // pull a floor-type override's result back down ("a ceiling overrides a
+  // floor"). applyOutcome() above has no branch for 'ceiling', so if a
+  // ceiling override happens to be fired[0] itself (nothing else fired, or
+  // it won priority outright), that call is a no-op and finalLevel is still
+  // the bare arithmetic level at this point — exactly what the step below
+  // needs to then cap. The one exception is rule.safety (F.1): it outranks
+  // every other rule, hardcoded and un-editable, and a ceiling must never
+  // pull a forced Level 7 back down.
+  function applyCeilings(fired, applied, finalLevel) {
+    var ceiling = fired.filter(function (f) { return f.outcome && f.outcome.type === 'ceiling'; })[0];
+    if (!ceiling) return finalLevel;
+    if (applied && applied.id === SAFETY_OVERRIDE_ID) return finalLevel;
+    return Math.min(finalLevel, ceiling.outcome.level);
+  }
+
   function apply(answers, scoringResult, config) {
     if (scoringResult.configError) {
       return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null };
@@ -163,6 +189,7 @@ PulseCheck.Overrides = (function () {
     var fired = findFired(answers, config);
     var applied = fired.length ? fired[0] : null;
     var finalLevel = applied ? applyOutcome(applied.outcome, scoringResult.level) : scoringResult.level;
+    finalLevel = applyCeilings(fired, applied, finalLevel);
 
     return {
       fired: fired,
