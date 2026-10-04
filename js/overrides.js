@@ -223,9 +223,20 @@ PulseCheck.Overrides = (function () {
     return Math.min(finalLevel, ceiling.outcome.level);
   }
 
+  // SPEC.md C.1/F.7: whether any fired rule blocks the Level 6 gate. Only
+  // rules that force or limit the level block it — forced, clamp and
+  // ceiling outcomes (and rule.safety, which is forced). A floor never
+  // does: it only stops the level going lower, so it says nothing about
+  // whether escalation should be considered. Checked across every fired
+  // rule, not just the single winner, because a ceiling (rule.confidentiality)
+  // can fire alongside a higher-priority floor that wins the priority slot.
+  function level6GateBlocked(fired) {
+    return fired.some(function (f) { return !f.outcome || f.outcome.type !== 'floor'; });
+  }
+
   function apply(answers, scoringResult, config) {
     if (scoringResult.configError) {
-      return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null, alreadyAskedNote: null };
+      return { fired: [], applied: null, finalLevel: null, level6GateBlocked: false, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null, alreadyAskedNote: null };
     }
 
     var fired = findFired(answers, config);
@@ -237,6 +248,7 @@ PulseCheck.Overrides = (function () {
       fired: fired,
       applied: applied,
       finalLevel: finalLevel,
+      level6GateBlocked: level6GateBlocked(fired),
       checkYourselfFlag: checkYourselfFlag(answers),
       legalCrossCheck: legalCrossCheck(answers, scoringResult, fired),
       internalAudienceNote: internalAudienceNote(answers, finalLevel, config),
