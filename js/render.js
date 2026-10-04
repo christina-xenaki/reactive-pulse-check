@@ -64,6 +64,41 @@ PulseCheck.Render = (function () {
     }, template);
   }
 
+  // A rule's leadIn is stored lower case (config and COPY.md) because most
+  // templates place it mid-sentence. Where a template places it at the
+  // start of a sentence — the template's own start, or after a full stop —
+  // its first letter is capitalised here, at render, and the stored string
+  // is left alone.
+  var LEAD_IN_KEYS = ['leadIn', 'ruleLeadIn'];
+
+  function fillOverrideTemplate(template, values) {
+    var adjusted = {};
+    Object.keys(values || {}).forEach(function (key) { adjusted[key] = values[key]; });
+    LEAD_IN_KEYS.forEach(function (key) {
+      var value = adjusted[key];
+      var at = template ? template.indexOf('{' + key + '}') : -1;
+      if (typeof value !== 'string' || !value || at === -1) return;
+      if (at === 0 || /[.!?]\s+$/.test(template.slice(0, at))) {
+        adjusted[key] = value.charAt(0).toUpperCase() + value.slice(1);
+      }
+    });
+    return fillTemplate(template, adjusted);
+  }
+
+  // Drops a template's opening "… {arithmeticLevel}." sentence, used only
+  // where the Level 6 gate has raised the final level above the arithmetic
+  // level: that sentence would otherwise state a level the result no
+  // longer has. Only a template whose first sentence ends straight after
+  // {arithmeticLevel} can lose it; any other template is returned as is.
+  function withoutArithmeticSentence(template) {
+    var marker = '{arithmeticLevel}';
+    var at = template ? template.indexOf(marker) : -1;
+    if (at === -1) return template;
+    var rest = template.slice(at + marker.length);
+    var match = /^\.\s+/.exec(rest);
+    return match ? rest.slice(match[0].length) : template;
+  }
+
   // SPEC.md section H footnote / COPY.md section 9: gloss.level1..gloss.level7
   // carry "Level n — Name" as term, plus definition and, for most levels, a
   // "not" line. This is the one place level names/descriptions live in
@@ -247,15 +282,45 @@ PulseCheck.Render = (function () {
   // some of these are arguments against acting on the recommendation and
   // must survive being skimmed."
 
-  function buildOverrideBlock(scoring, overrides) {
+  // The level the priority winner alone produces, before any ceiling caps
+  // it. Mirrors applyOutcome() in js/overrides.js and is used here for one
+  // display decision only — which rule the block describes — never to set
+  // a level.
+  function levelBeforeCeiling(applied, arithmeticLevel) {
+    var outcome = applied.outcome || {};
+    if (outcome.type === 'forced') return outcome.level;
+    if (outcome.type === 'floor') return Math.max(arithmeticLevel, outcome.level);
+    if (outcome.type === 'clamp') return Math.min(Math.max(arithmeticLevel, outcome.min), outcome.max);
+    return arithmeticLevel;
+  }
+
+  // The rule that set the final level. Usually the priority winner, but a
+  // ceiling (SPEC.md F.7) composes after the winner, so where it lowered
+  // the winner's result, the ceiling is the rule that set the level and is
+  // the one described.
+  function decidingRule(overrides, arithmeticLevel) {
     var applied = overrides.applied;
-    if (!applied) return null;
+    var ceiling = (overrides.fired || []).filter(function (f) {
+      return f.outcome && f.outcome.type === 'ceiling';
+    })[0];
+    if (ceiling && ceiling !== applied && overrides.finalLevel < levelBeforeCeiling(applied, arithmeticLevel)) {
+      return ceiling;
+    }
+    return applied;
+  }
+
+  // resultLevel is the level the result shows. It differs from
+  // overrides.finalLevel only where the Level 6 gate has raised it.
+  function buildOverrideBlock(scoring, overrides, resultLevel) {
+    if (!overrides.applied) return null;
+    var applied = decidingRule(overrides, scoring.level);
 
     var definition = overrideDefinitionFor(applied.id);
     if (!definition) return null;
 
     var arithmeticLevel = scoring.level;
     var finalLevel = overrides.finalLevel;
+    var gateRaised = resultLevel > finalLevel;
     var arithmeticInfo = levelInfo(arithmeticLevel);
     var finalInfo = levelInfo(finalLevel);
 
@@ -268,14 +333,14 @@ PulseCheck.Render = (function () {
 
     if (isDownward && changed) {
       var templateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
-      sentence = fillTemplate(uiText(templateId), {
+      sentence = fillOverrideTemplate(uiText(templateId), {
         arithmeticLevel: arithmeticInfo.label,
         leadIn: definition.leadIn,
         finalLevel: finalInfo.label,
         functions: definition.functions
       });
     } else if (isUpward && changed) {
-      sentence = fillTemplate(uiText('out.override.upward'), {
+      sentence = fillOverrideTemplate(uiText('out.override.upward'), {
         arithmeticLevel: arithmeticInfo.label,
         leadIn: definition.leadIn,
         finalLevel: finalInfo.label
@@ -291,8 +356,16 @@ PulseCheck.Render = (function () {
       // "satisfied".
       heading = uiText('out.overrideAlsoHeading');
       var ruleLevel = definition.outcome && typeof definition.outcome.level === 'number' ? definition.outcome.level : null;
-      var matched = ruleLevel !== null && ruleLevel === arithmeticLevel;
-      sentence = fillTemplate(uiText(matched ? 'out.override.matched' : 'out.override.satisfied'), {
+      // Where the Level 6 gate has raised the result, the opening "Your
+      // answers place this at {arithmeticLevel}." sentence is dropped (the
+      // gate outcome block that follows explains the move from that level),
+      // and "matched" is judged against the level the result shows, so the
+      // block never claims the answers land where the floor does when the
+      // result sits above it.
+      var matched = ruleLevel !== null && ruleLevel === (gateRaised ? resultLevel : arithmeticLevel);
+      var floorTemplate = uiText(matched ? 'out.override.matched' : 'out.override.satisfied');
+      if (gateRaised) floorTemplate = withoutArithmeticSentence(floorTemplate);
+      sentence = fillOverrideTemplate(floorTemplate, {
         arithmeticLevel: arithmeticInfo.label,
         ruleLeadIn: definition.leadIn,
         ruleLevel: ruleLevel !== null ? levelInfo(ruleLevel).label : ''
@@ -318,7 +391,7 @@ PulseCheck.Render = (function () {
       var cappedTemplateId = definition.functions
         ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
         : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
-      sentence = fillTemplate(uiText(cappedTemplateId), {
+      sentence = fillOverrideTemplate(uiText(cappedTemplateId), {
         arithmeticLevel: arithmeticInfo.label,
         ruleLeadIn: definition.leadIn,
         ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
@@ -557,7 +630,7 @@ PulseCheck.Render = (function () {
     // 4. Qualifiers — overrides, the gate outcome, notes, check-yourself,
     // the Q9 legal cross-check, the low-confidence caveat. Above the
     // reasoning: see buildOverrideBlock's comment.
-    var overrideBlock = buildOverrideBlock(scoring, overrides);
+    var overrideBlock = buildOverrideBlock(scoring, overrides, finalLevel);
     if (overrideBlock) resultsEl.appendChild(overrideBlock);
     if (needsGate) resultsEl.appendChild(buildGateOutcomeBlock(scoring, finalLevel));
 
