@@ -99,10 +99,11 @@ There is no code yet. This file defines how it is to be built.
 
 ## Standing instructions for every session
 
-- **Work on a branch, never on `main`.** Create a branch named for the
-  session's purpose (e.g. `session-2-question-set`), commit to it, and
-  open a pull request describing what changed and what a reviewer should
-  check. Do not merge it yourself.
+- Work on a branch, never on main. Create a branch named for the session's
+  purpose (e.g. session-2-question-set) and commit to it. When the work is
+  done, report the branch name, what changed and what a reviewer should
+  check, then ask me whether to open a pull request. Do not open one
+  unless I say yes. Never merge.
 - **Update documentation in the same commit as the change that affects
   it.** `README.md`, `SCORING.md` and `SPEC.md` must never describe
   behaviour the code no longer has. If a change makes one of them
