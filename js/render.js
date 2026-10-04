@@ -355,6 +355,7 @@ PulseCheck.Render = (function () {
   function buildNotesBlock(scoring, overrides) {
     var notes = (scoring.notes || []).slice();
     if (overrides.internalAudienceNote) notes = notes.concat([overrides.internalAudienceNote]);
+    if (overrides.alreadyAskedNote) notes = notes.concat([overrides.alreadyAskedNote]);
     if (!notes.length) return null;
 
     var container = Dom.el('div', { className: 'result-notes' });

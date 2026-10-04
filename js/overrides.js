@@ -182,6 +182,26 @@ PulseCheck.Overrides = (function () {
     return { noteId: 'rule.internalAudienceNote' };
   }
 
+  // New note: fires where the final level is 3 and the originator has
+  // asked for comment — either q1.a ("a journalist has contacted us")
+  // directly, or any answer that fires rule.deadlineNamed (br.journ.1.d
+  // unconditionally, or the compound q7/q2 condition in
+  // deadlineAndNamedFired above). Reuses the already-computed `fired`
+  // list for the second disjunct rather than re-deriving
+  // deadlineAndNamedFired a second time — one definition of "did
+  // rule.deadlineNamed fire", same reasoning as PATH-SCOPED in
+  // js/scoring.js. Like internalAudienceNote below, this needs finalLevel,
+  // which is only known once overrides have resolved, so it lives here
+  // rather than in scoring.js's plain noteId mechanism.
+  function alreadyAskedNote(answers, finalLevel, fired) {
+    if (finalLevel !== 3) return null;
+    var q1 = answers.q1 || [];
+    var askedForComment = q1.indexOf('q1.a') !== -1
+      || fired.some(function (f) { return f.id === DEADLINE_NAMED_OVERRIDE_ID; });
+    if (!askedForComment) return null;
+    return { noteId: 'rule.alreadyAskedNote' };
+  }
+
   // SPEC.md F.7: professional confidentiality (`rule.confidentiality`) is a
   // fourth outcome kind, 'ceiling', that does not compete for priority the
   // way forced/floor/clamp do. Every other override's outcome is decided by
@@ -205,7 +225,7 @@ PulseCheck.Overrides = (function () {
 
   function apply(answers, scoringResult, config) {
     if (scoringResult.configError) {
-      return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null };
+      return { fired: [], applied: null, finalLevel: null, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null, alreadyAskedNote: null };
     }
 
     var fired = findFired(answers, config);
@@ -219,7 +239,8 @@ PulseCheck.Overrides = (function () {
       finalLevel: finalLevel,
       checkYourselfFlag: checkYourselfFlag(answers),
       legalCrossCheck: legalCrossCheck(answers, scoringResult, fired),
-      internalAudienceNote: internalAudienceNote(answers, finalLevel, config)
+      internalAudienceNote: internalAudienceNote(answers, finalLevel, config),
+      alreadyAskedNote: alreadyAskedNote(answers, finalLevel, fired)
     };
   }
 
