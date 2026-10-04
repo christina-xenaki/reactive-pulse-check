@@ -75,6 +75,23 @@ PulseCheck.Overrides = (function () {
     return !!(TIGHT_DEADLINE_OPTION_IDS[q7] && NAMED_OPTION_IDS[q2]);
   }
 
+  // SPEC.md E/F.4: the affected-party floor is a three-way compound
+  // condition — true and known internally (q3.a), the affected party
+  // directly harmed (q8.c), and that same party already raising it
+  // publicly themselves (q8.g) — same reason as deadlineAndNamedFired
+  // above: no single option's triggersOverride can express an AND across
+  // three answers (two of them on the same multi-select question) on its
+  // own. q3 and q8 are both unconditional core questions (never hidden by
+  // showIf), so reading answers.q3/answers.q8 directly here, without
+  // routing through questionsOnPath, is safe the same way q2/q7 are above.
+  var AFFECTED_PARTY_FLOOR_OVERRIDE_ID = 'rule.affectedPartyFloor';
+
+  function affectedPartyFloorFired(answers) {
+    var q3 = (answers.q3 || [])[0];
+    var q8 = answers.q8 || [];
+    return q3 === 'q3.a' && q8.indexOf('q8.c') !== -1 && q8.indexOf('q8.g') !== -1;
+  }
+
   // Any answer option carrying triggersOverride, across every question
   // actually on the path (SPEC.md C.4), plus the one compound condition
   // above, resolved against the config-driven override definitions.
@@ -117,6 +134,11 @@ PulseCheck.Overrides = (function () {
     if (deadlineAndNamedFired(answers) && overridesById[DEADLINE_NAMED_OVERRIDE_ID]) {
       var deadlineDefinition = overridesById[DEADLINE_NAMED_OVERRIDE_ID];
       pushOnce(deadlineDefinition.id, null, deadlineDefinition.outcome, typeof deadlineDefinition.priority === 'number' ? deadlineDefinition.priority : 99);
+    }
+
+    if (affectedPartyFloorFired(answers) && overridesById[AFFECTED_PARTY_FLOOR_OVERRIDE_ID]) {
+      var affectedPartyDefinition = overridesById[AFFECTED_PARTY_FLOOR_OVERRIDE_ID];
+      pushOnce(affectedPartyDefinition.id, null, affectedPartyDefinition.outcome, typeof affectedPartyDefinition.priority === 'number' ? affectedPartyDefinition.priority : 99);
     }
 
     fired.sort(function (a, b) { return a.priority - b.priority; });

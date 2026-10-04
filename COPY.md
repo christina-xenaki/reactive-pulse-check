@@ -205,6 +205,7 @@ Multi-select.
 | `q8.c` | Customers, patients or service users are directly affected |
 | `q8.d` | Investors, funders or trustees will ask about it |
 | `q8.e` | A partner, supplier or client is implicated |
+| `q8.g` | Those directly affected are raising it publicly themselves |
 | `q8.f` | Nobody beyond the originator yet |
 
 ---
@@ -491,6 +492,8 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 Six fixed sentence patterns (four of them with a `.noFunctions` sibling for the one rule, `rule.individualExternal`, whose own text never names a function to consult — ten IDs in total), each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence — `{leadIn}` where a rule changed the recommendation, `{ruleLeadIn}` where it fired without changing it, same value either way) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}`/`{consultFunctions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
 
+**One exception to "first sentence, decapitalised":** `rule.confidentiality`'s `leadIn` ("What can be said is limited.") was supplied separately from its `text`, not derived from it, and was not re-cased or re-punctuated to match the mid-sentence slot every other `{leadIn}`/`{ruleLeadIn}` fills — it carries a capital letter and a full stop where the pattern elsewhere has neither. Recorded here rather than silently normalised, per this file's own "do not paraphrase, shorten or improve" rule; whether `out.override.downward` should render it as supplied (producing "...but What can be said is limited., and that changes...") or whether the string itself should be revised to fit the slot is an open copy decision, not resolved by this entry.
+
 `out.override.downward`/`.upward` cover a rule that changed the recommendation (`finalLevel` differs from `arithmeticLevel`). The other four cover a rule that fired but didn't — the arithmetic already satisfied what the rule requires — split by which kind of rule it was, because an upward (floor) rule and a downward (capping) rule require different verbs for the same non-event: a floor rule still means "a response is needed at {ruleLevel} or above" (`.satisfied`/`.matched`), while a capping rule means the opposite shape of constraint, "this cannot go above {ruleLevel}" (`.cappedSatisfied`/`.cappedBelow`) — reusing the floor wording for a capping rule would claim it requires at least that level when it actually requires at most that level. Within each pair, `{ruleLevel}` equalling `{arithmeticLevel}` picks the "landed exactly there" wording (`.matched`/`.cappedSatisfied`); `{ruleLevel}` diverging picks the other (`.satisfied`/`.cappedBelow`). `{ruleLevel}` is "Level *n*, *name*" for the level the rule itself requires — the floor's own `outcome.level` for `.satisfied`/`.matched`, and the cap's own `outcome.level` (a forced rule) or `outcome.max` (a clamped rule) for `.cappedSatisfied`/`.cappedBelow`. Like `{leadIn}`/`{ruleLeadIn}`, it carries the link to that rule's section in `SCORING.md` — a forward reference, per section 12, same as the score-line links.
 
 Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declares `renderTemplate` as either `downward` or `upward` — there is no third value, so between these six patterns, every case that reaches `out.overrideAlsoHeading`/`out.overrideHeading` now has a rule-specific sentence. `out.overrideIntro` is retired: nothing renders it any more.
@@ -573,8 +576,11 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.trueAndKnew`**
 > **What has been said is accurate, and you knew.** Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first.
 
-**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.7)
-> [[COPY NEEDED: explanatory paragraph, parallel to `rule.legal`/`rule.data` above — first sentence becomes `{leadIn}` mid-sentence, decapitalised, per section 6's documented pattern; should name the specialist function to consult (provisionally "legal" in config, inferred from `rule.confidentialityLegalNote` below, not yet confirmed as wording)]]
+**`rule.affectedPartyFloor`** — fires on `q3.a` + `q8.c` + `q8.g` together; floors the recommendation at Level 5 (SPEC.md E, F.4, F.7)
+> **Those affected were directly harmed, the account is true and was known internally, and they are already raising it.** In these conditions the response goes to them directly, not only to whoever asks.
+
+**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.2, F.7); `functions` is confirmed as "legal"
+> **What can be said is limited.** A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential.
 
 **`rule.privateIndividualNote`** — a note, not a rule
 > The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.
@@ -773,5 +779,4 @@ Flag rather than invent:
 - Regulator `sourceUrl` values for the ten sector configs — must be verified live before use.
 - README screenshot alt text, once a screenshot exists.
 - Any string needed by a branch question not listed in section 4.
-- **`rule.confidentiality`'s own explanatory text** (section 7) — only the legal note and the Q10 question/option wording were supplied when this override was added; its `leadIn`/`functions` in `config.default.json` are placeholders pending this wording.
 - **`SCORING.md` itself does not exist yet.** SPEC.md and CLAUDE.md both refer to it as though it does (score explanations, the F.6 sector-config footnote, "SCORING.md and SPEC.md must never describe behaviour the code no longer has"). Section 6's `out.heading`-adjacent score lines and the override sentences above are both specified (SPEC.md section I.2; the render.js session that added them) to link to "the relevant section of SCORING.md" / "that rule's section in SCORING.md". Until the file exists those links are necessarily forward references to anchors (`SCORING.md#cost-of-speaking`, `SCORING.md#rule-data`, and so on) that do not resolve yet.

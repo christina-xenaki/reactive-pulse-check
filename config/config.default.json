@@ -351,6 +351,7 @@
     { "id": "q8.c", "questionId": "q8", "text": "Customers, patients or service users are directly affected" },
     { "id": "q8.d", "questionId": "q8", "text": "Investors, funders or trustees will ask about it" },
     { "id": "q8.e", "questionId": "q8", "text": "A partner, supplier or client is implicated" },
+    { "id": "q8.g", "questionId": "q8", "text": "Those directly affected are raising it publicly themselves" },
     { "id": "q8.f", "questionId": "q8", "text": "Nobody beyond the originator yet", "clearsSiblings": true },
 
     { "id": "q9.a", "questionId": "q9", "text": "Nobody; we are assessing it ourselves" },
@@ -519,6 +520,7 @@
     "q8.c": { "costOfSpeaking": 1, "costOfStayingQuiet": 9 },
     "q8.d": { "costOfSpeaking": 2, "costOfStayingQuiet": 7 },
     "q8.e": { "costOfSpeaking": 4, "costOfStayingQuiet": 7 },
+    "q8.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q8.f": { "costOfSpeaking": 3, "costOfStayingQuiet": 0 },
     "q9.a": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
@@ -668,29 +670,35 @@
       "text": "An employment matter may be involved. A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms."
     },
     {
-      "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 7,
+      "id": "rule.affectedPartyFloor", "outcome": { "type": "floor", "level": 5 }, "priority": 7,
+      "renderTemplate": "upward",
+      "leadIn": "those affected were directly harmed, the account is true and was known internally, and they are already raising it",
+      "text": "Those affected were directly harmed, the account is true and was known internally, and they are already raising it. In these conditions the response goes to them directly, not only to whoever asks."
+    },
+    {
+      "id": "rule.regulatorOriginator", "outcome": { "type": "floor", "level": 2 }, "priority": 8,
       "renderTemplate": "upward",
       "leadIn": "a regulator or elected official raised this",
       "text": "A regulator or elected official raised this. Silence is not available. The minimum is a private, acknowledged reply, made with legal or regulatory involved."
     },
     {
-      "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 8,
+      "id": "rule.deadlineNamed", "outcome": { "type": "floor", "level": 2 }, "priority": 9,
       "renderTemplate": "upward",
       "leadIn": "there is a deadline you don't control and you are named",
       "text": "There is a deadline you don't control and you are named. Something is required by that deadline, even if it is only an acknowledgement. Silence becomes \"declined to comment\" in print, which is Level 4 with the worst possible wording."
     },
     {
-      "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 9,
+      "id": "rule.trueAndKnew", "outcome": { "type": "floor", "level": 2 }, "priority": 10,
       "renderTemplate": "upward",
       "leadIn": "what has been said is accurate, and you knew",
       "text": "What has been said is accurate, and you knew. Silence is not a defensible posture here. The question is no longer whether to say something, but when, in what forum, and to whom first."
     },
     {
-      "id": "rule.confidentiality", "outcome": { "type": "ceiling", "level": 3 }, "priority": 10,
+      "id": "rule.confidentiality", "outcome": { "type": "ceiling", "level": 3 }, "priority": 11,
       "renderTemplate": "downward",
-      "leadIn": "[[COPY NEEDED: first sentence of rule.confidentiality's full text, decapitalised — see COPY.md section 7]]",
+      "leadIn": "What can be said is limited.",
       "functions": "legal",
-      "text": "[[COPY NEEDED: explanatory paragraph for the professional-confidentiality override, parallel to rule.legal/rule.data in COPY.md section 7 — this entry's own first sentence becomes leadIn above, decapitalised, per COPY.md section 6's documented pattern]]"
+      "text": "A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
     }
   ],
   "sectorOverrides": [],

@@ -133,11 +133,19 @@ PulseCheck.Scoring = (function () {
     }, 0);
     var cap = highestPossible + params.capBonus;
 
-    if (!selectedIds.length) return { earned: 0, max: cap };
+    // A selected option that carries no weight on this axis (e.g. q8's
+    // rule-trigger-only option, added for rule.affectedPartyFloor — SPEC.md
+    // E) must not itself inflate the score here just by being selected: the
+    // per-additional-selection increment below counts only selections that
+    // actually carry weight on this axis, so a zero-weight selection changes
+    // neither earned nor max, on either axis.
+    var contributing = selectedIds.filter(function (id) { return weightFor(config, id, axis) > 0; });
+    if (!contributing.length) return { earned: 0, max: cap };
 
-    var selectedValues = selectedIds.map(function (id) { return weightFor(config, id, axis); });
-    var highestSelected = Math.max.apply(null, selectedValues);
-    var raw = highestSelected + params.increment * (selectedIds.length - 1);
+    var highestSelected = contributing.reduce(function (max, id) {
+      return Math.max(max, weightFor(config, id, axis));
+    }, 0);
+    var raw = highestSelected + params.increment * (contributing.length - 1);
     return { earned: Math.min(raw, cap), max: cap };
   }
 
