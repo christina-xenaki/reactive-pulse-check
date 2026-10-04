@@ -520,7 +520,7 @@
     "q8.c": { "costOfSpeaking": 1, "costOfStayingQuiet": 9 },
     "q8.d": { "costOfSpeaking": 2, "costOfStayingQuiet": 7 },
     "q8.e": { "costOfSpeaking": 4, "costOfStayingQuiet": 7 },
-    "q8.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q8.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 9 },
     "q8.f": { "costOfSpeaking": 3, "costOfStayingQuiet": 0 },
     "q9.a": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q9.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
@@ -696,7 +696,7 @@
     {
       "id": "rule.confidentiality", "outcome": { "type": "ceiling", "level": 3 }, "priority": 11,
       "renderTemplate": "downward",
-      "leadIn": "What can be said is limited.",
+      "leadIn": "what can be said is limited",
       "functions": "legal",
       "text": "A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
     }
