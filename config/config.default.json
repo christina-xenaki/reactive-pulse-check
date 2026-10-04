@@ -713,7 +713,8 @@
     "rule.firstConfirmationUncertainNote": "You have said you do not know whether a response would be the first public confirmation. The assessment has treated it as though it would be, because if it is, that cannot be undone. This is worth establishing before you decide.",
     "rule.personalAccountReplyNote": "Someone has already replied from a personal account. That reply is part of the record now, and anything the organisation says next will be read alongside it. Find out exactly what was said before deciding what to add.",
     "rule.internalAudienceNote": "This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.",
-    "rule.confidentialityLegalNote": "A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer."
+    "rule.confidentialityLegalNote": "A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer.",
+    "rule.alreadyAskedNote": "Someone has already asked, so the holding line is what they receive, within their deadline."
   },
 
   "glossary": [

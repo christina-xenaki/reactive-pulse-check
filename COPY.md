@@ -598,6 +598,9 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.confidentialityLegalNote`** — a note, not a rule; fires on `q10.a` and `q10.c`
 > A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer.
 
+**`rule.alreadyAskedNote`** — a note, not a rule; fires where the final level is 3 and the originator has asked for comment (`q1.a`, or any answer that fires `rule.deadlineNamed`)
+> Someone has already asked, so the holding line is what they receive, within their deadline.
+
 ---
 
 ## 8. Sector rules
