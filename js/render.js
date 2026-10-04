@@ -99,9 +99,11 @@ PulseCheck.Render = (function () {
   // once compute() reports level6Eligible, shown alongside the result, and
   // answering it never re-runs the two-axis arithmetic — it only decides
   // whether Level 5 (the arithmetic cell for this band pair) or Level 6
-  // applies, via PulseCheck.Scoring.resolveLevel6Gate().
+  // applies, via PulseCheck.Scoring.resolveLevel6Gate(). Blocked only by
+  // a fired rule that forces or limits the level, never by a floor — see
+  // level6GateBlocked() in js/overrides.js and SPEC.md C.1.
   function gateApplicable(scoring, overrides) {
-    return !overrides.applied && scoring.level6Eligible === true;
+    return !overrides.level6GateBlocked && scoring.level6Eligible === true;
   }
 
   function buildGateControl() {
@@ -512,8 +514,10 @@ PulseCheck.Render = (function () {
       return;
     }
 
+    // A floor that fired alongside an offered gate still holds: the gate's
+    // answer can never take the level below it.
     var finalLevel = needsGate
-      ? PulseCheck.Scoring.resolveLevel6Gate(gateAnswer)
+      ? Math.max(PulseCheck.Scoring.resolveLevel6Gate(gateAnswer), overrides.finalLevel)
       : overrides.finalLevel;
     var overridden = finalLevel !== scoring.level;
     var finalInfo = levelInfo(finalLevel);
