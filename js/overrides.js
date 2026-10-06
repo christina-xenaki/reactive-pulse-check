@@ -18,10 +18,13 @@
 // code per CLAUDE.md's config-not-code principle and cannot fire today,
 // since no question asks about it yet.
 //
-// One outcome type, 'ceiling' (rule.confidentiality, SPEC.md F.2/F.7), does
-// not take part in the "only one override decides" priority competition the
-// other three outcome types (forced/floor/clamp) use. See applyCeilings()
-// below for how and why it composes with that single winner instead.
+// One outcome type, 'ceiling' (rule.individualExternal, rule.individualInternal,
+// rule.data, rule.legal, rule.marketSensitive, rule.employment and
+// rule.confidentiality; SPEC.md F.7), does not take part in the "only one
+// override decides" priority competition the other outcome types
+// (forced/floor/clamp) use. See applyCeilings() below for how and why it
+// composes with that single winner instead. No rule in config uses 'clamp'
+// today; applyOutcome() keeps supporting it.
 
 window.PulseCheck = window.PulseCheck || {};
 
@@ -202,22 +205,30 @@ PulseCheck.Overrides = (function () {
     return { noteId: 'rule.alreadyAskedNote' };
   }
 
-  // SPEC.md F.7: professional confidentiality (`rule.confidentiality`) is a
-  // fourth outcome kind, 'ceiling', that does not compete for priority the
-  // way forced/floor/clamp do. Every other override's outcome is decided by
-  // "only one override decides" (fired[0], by priority) — a ceiling instead
-  // composes with whatever that single winner already produced: it is
-  // applied afterwards, as an unconditional final cap, which is what lets it
+  // SPEC.md F.7: a 'ceiling' outcome does not compete for priority the way
+  // forced/floor/clamp do. Every other override's outcome is decided by
+  // "only one override decides" — the highest-priority fired rule that is
+  // not a ceiling (singleWinner() below) — and the ceilings then compose
+  // with whatever that single winner produced: the lowest fired ceiling is
+  // applied afterwards as an unconditional final cap, which is what lets it
   // pull a floor-type override's result back down ("a ceiling overrides a
-  // floor"). applyOutcome() above has no branch for 'ceiling', so if a
-  // ceiling override happens to be fired[0] itself (nothing else fired, or
-  // it won priority outright), that call is a no-op and finalLevel is still
-  // the bare arithmetic level at this point — exactly what the step below
-  // needs to then cap. The one exception is rule.safety (F.1): it outranks
-  // every other rule, hardcoded and un-editable, and a ceiling must never
-  // pull a forced Level 7 back down.
-  function applyCeilings(fired, applied, finalLevel) {
-    var ceiling = fired.filter(function (f) { return f.outcome && f.outcome.type === 'ceiling'; })[0];
+  // floor"). Where more than one ceiling fires, the lowest sets the level;
+  // ties go to the higher priority (fired is already sorted by priority, so
+  // the first ceiling at the lowest level wins). The one exception is
+  // rule.safety (F.1): it outranks every other rule, hardcoded and
+  // un-editable, and a ceiling must never pull a forced Level 7 back down.
+  function singleWinner(fired) {
+    return fired.filter(function (f) { return !f.outcome || f.outcome.type !== 'ceiling'; })[0] || null;
+  }
+
+  function bindingCeiling(fired) {
+    return fired.reduce(function (lowest, f) {
+      if (!f.outcome || f.outcome.type !== 'ceiling') return lowest;
+      return !lowest || f.outcome.level < lowest.outcome.level ? f : lowest;
+    }, null);
+  }
+
+  function applyCeilings(ceiling, applied, finalLevel) {
     if (!ceiling) return finalLevel;
     if (applied && applied.id === SAFETY_OVERRIDE_ID) return finalLevel;
     return Math.min(finalLevel, ceiling.outcome.level);
@@ -228,25 +239,31 @@ PulseCheck.Overrides = (function () {
   // ceiling outcomes (and rule.safety, which is forced). A floor never
   // does: it only stops the level going lower, so it says nothing about
   // whether escalation should be considered. Checked across every fired
-  // rule, not just the single winner, because a ceiling (rule.confidentiality)
-  // can fire alongside a higher-priority floor that wins the priority slot.
+  // rule, not just the single winner, because a ceiling never takes the
+  // single-winner slot: it composes after it (applyCeilings() above).
   function level6GateBlocked(fired) {
     return fired.some(function (f) { return !f.outcome || f.outcome.type !== 'floor'; });
   }
 
   function apply(answers, scoringResult, config) {
     if (scoringResult.configError) {
-      return { fired: [], applied: null, finalLevel: null, level6GateBlocked: false, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null, alreadyAskedNote: null };
+      return { fired: [], applied: null, ceiling: null, finalLevel: null, level6GateBlocked: false, checkYourselfFlag: false, legalCrossCheck: null, internalAudienceNote: null, alreadyAskedNote: null };
     }
 
     var fired = findFired(answers, config);
-    var applied = fired.length ? fired[0] : null;
-    var finalLevel = applied ? applyOutcome(applied.outcome, scoringResult.level) : scoringResult.level;
-    finalLevel = applyCeilings(fired, applied, finalLevel);
+    var applied = singleWinner(fired);
+    var ceiling = bindingCeiling(fired);
+    var levelBeforeCeiling = applied ? applyOutcome(applied.outcome, scoringResult.level) : scoringResult.level;
+    var finalLevel = applyCeilings(ceiling, applied, levelBeforeCeiling);
 
+    // applied is the single winner among non-ceiling rules (null where only
+    // ceilings fired) and ceiling the lowest fired ceiling. Both are
+    // reported so the result text can name what each did (SPEC.md F.7,
+    // transparency principle) without recomputing either.
     return {
       fired: fired,
       applied: applied,
+      ceiling: ceiling,
       finalLevel: finalLevel,
       level6GateBlocked: level6GateBlocked(fired),
       checkYourselfFlag: checkYourselfFlag(answers),

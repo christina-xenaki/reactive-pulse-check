@@ -129,6 +129,21 @@ Multi-select. Shown unless `q2.d` is selected.
 
 ---
 
+**`q2c.text`** — Do any of these apply?
+Multi-select. Shown unless `q2.d` is selected.
+
+| ID | Option |
+|---|---|
+| `q2c.a` | Someone inside the organisation may be raising this as a whistleblower |
+| `q2c.b` | A grievance or disciplinary process is live |
+| `q2c.c` | Legal proceedings are live or reasonably anticipated |
+| `q2c.d` | Personal data may have been exposed or misused |
+| `q2c.e` | It could affect the share price, or relates to information not yet disclosed to the market |
+| `q2c.f` | None of these |
+| `q2c.g` | We don't know whether any of these apply |
+
+---
+
 **`q3.text`** — What do we know about whether what's been said is accurate?
 Single choice.
 
@@ -437,11 +452,90 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 **`out.overrideAlsoHeading`** — shown instead of `out.overrideHeading` where a rule fired but `finalLevel` equals `arithmeticLevel` (`out.override.satisfied`/`.matched`/`.cappedSatisfied`/`.cappedBelow` below — every case where a rule fires without changing the number). `out.overrideHeading` oversells this case — it reads as though something happened when nothing did.
 > A rule also applies here
 
+**`out.overrideRulesHeading`** — shown instead of `out.overrideHeading` where a ceiling sets the final level below a floor that fired (`out.override.floorOverruled.*` below, or `out.override.downward` followed by `out.override.otherFloors`)
+> Rules applied here
+
 **`out.changeHeading`**
 > What would change this
 
 **`out.changeIntro`**
 > Name what would make you look at this again. A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms.
+
+**`out.change.findHeading`** — first column heading of the "What would change this" table: one row per unknown answer on the path, in path order (SPEC.md I.8)
+> What to find out
+
+**`out.change.effectHeading`** — second column heading of the same table
+> What it would change
+
+#### What would change this, one row per unknown answer
+
+Each answer option marked unknown (`isUnknown`) carries two strings, shown as one row of the table above in place of the option's own text, which stays in "Your answers": `<optionId>.change.find` in the first column and `<optionId>.change.effect` in the second. In config they are the option's `changeFind` and `changeEffect`, with `changeFindId`/`changeEffectId` pointing back here. Every unknown option must have both; a config without them fails validation (`out.configInvalid`, section 11).
+
+**`q2c.g.change.find`** — what to find out (`q2c.g`, "We don't know whether any of these apply")
+> Whether a whistleblowing concern, a live grievance or disciplinary process, legal proceedings, exposed personal data or market-sensitive information is involved.
+
+**`q2c.g.change.effect`**
+> Any of these limits what you can say.
+
+**`q3.f.change.find`** — what to find out (`q3.f`, "We cannot verify it yet")
+> Whether what has been said is accurate.
+
+**`q3.f.change.effect`**
+> Confirming it either way changes both the case for speaking and what you can say.
+
+**`q5.e.change.find`** — what to find out (`q5.e`, "Too early to tell; this is under an hour old")
+> Which way it is moving a few hours from now.
+
+**`q5.e.change.effect`**
+> A story under an hour old can still go either way.
+
+**`q10.c.change.find`** — what to find out (`q10.c`, "Not sure")
+> Whether a contractual or professional duty stops you discussing the substance.
+
+**`q10.c.change.effect`**
+> If one does, what you can say narrows, whatever else your answers say.
+
+**`br.journ.3.c.change.find`** — what to find out (`br.journ.3.c`, "We don't know")
+> Whether a version of this story has run before.
+
+**`br.journ.3.c.change.effect`**
+> If it has, there is already a public record, and anything you say will be read against it.
+
+**`br.review.1.d.change.find`** — what to find out (`br.review.1.d`, "We can't tell yet")
+> Whether this is a service failure you can fix.
+
+**`br.review.1.d.change.effect`**
+> If it is, putting it right changes what there is to say.
+
+**`br.reg.2.b.change.find`** — what to find out (`br.reg.2.b`, "Yes, but we need to check what it is")
+> What the required channel is.
+
+**`br.reg.2.b.change.effect`**
+> A response through the wrong channel may not count as a response.
+
+**`br.leak.1.d.change.find`** — what to find out (`br.leak.1.d`, "We can't verify yet")
+> Whether the leaked information is accurate.
+
+**`br.leak.1.d.change.effect`**
+> An accurate leak and an inaccurate one call for different responses.
+
+**`br.rum.1.c.change.find`** — what to find out (`br.rum.1.c`, "Not yet, but we expect it")
+> Whether a journalist gets in touch.
+
+**`br.rum.1.c.change.effect`**
+> A call turns a private rumour into a story with a deadline, so run this check again if it comes.
+
+**`br.rum.2.c.change.find`** — what to find out (`br.rum.2.c`, "We don't know")
+> Whether this has been confirmed publicly anywhere.
+
+**`br.rum.2.c.change.effect`**
+> If it has, the assumption behind this result no longer holds, and the result may change.
+
+**`br.prior.2.g.change.find`** — what to find out (`br.prior.2.g`, "We don't know; nobody here was there")
+> How the earlier story ended.
+
+**`br.prior.2.g.change.effect`**
+> If it went to a regulator, adjudicator or court, what was decided may limit what you can say now.
 
 **`out.neighboursHeading`**
 > The levels either side
@@ -490,11 +584,11 @@ Each level has a name, a one-line definition, and a "what this is not" line wher
 
 ### Overrides and the Level 6 gate, as shown with the result
 
-Six fixed sentence patterns (four of them with a `.noFunctions` sibling for the one rule, `rule.individualExternal`, whose own text never names a function to consult — ten IDs in total), each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence — `{leadIn}` where a rule changed the recommendation, `{ruleLeadIn}` where it fired without changing it, same value either way) so nothing here duplicates wording already approved there. `{arithmeticLevel}` and `{finalLevel}` are each "Level *n*, *name*"; `{functions}`/`{consultFunctions}` is the specialist function named in the rule's own text. In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6) — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
+Nine fixed sentence patterns (seven of them with a `.noFunctions` sibling for the one rule, `rule.individualExternal`, whose own text never names a function to consult — sixteen IDs in total), plus two supplementary lines (`out.override.otherFloors`, `out.override.alsoSpeakTo`), each built from the rule's own lead sentence in section 7 below (`rule.*`, first sentence, decapitalised to sit mid-sentence — `{leadIn}` where a rule changed the recommendation, `{ruleLeadIn}` where it fired without changing it, same value either way; `{floorLeadIn}`/`{ceilingLeadIn}` in the `floorOverruled` patterns) so nothing here duplicates wording already approved there. `{arithmeticLevel}`, `{finalLevel}` and `{floorLevel}` are each the level's glossary term, in the form "Level 1 — Log and monitor"; `{functions}`/`{consultFunctions}` is the rule's `functions` list (section 7), joined as "A", "A and B" or "A, B and C", with no comma before "and". In the two Level 6 gate sentences below, `{arithmeticLevel}` is the level the arithmetic actually reaches for this band pair (Level 5) and `{gateLevel}` is the level the gate can unlock (Level 6), both in the same glossary-term form — kept as two distinct names, rather than reusing `{finalLevel}`, because in the declined case `{arithmeticLevel}` is both where the recommendation starts and where it stays, and `{finalLevel}` would have implied a second, possibly different, value.
 
-`out.override.downward`/`.upward` cover a rule that changed the recommendation (`finalLevel` differs from `arithmeticLevel`). The other four cover a rule that fired but didn't — the arithmetic already satisfied what the rule requires — split by which kind of rule it was, because an upward (floor) rule and a downward (capping) rule require different verbs for the same non-event: a floor rule still means "a response is needed at {ruleLevel} or above" (`.satisfied`/`.matched`), while a capping rule means the opposite shape of constraint, "this cannot go above {ruleLevel}" (`.cappedSatisfied`/`.cappedBelow`) — reusing the floor wording for a capping rule would claim it requires at least that level when it actually requires at most that level. Within each pair, `{ruleLevel}` equalling `{arithmeticLevel}` picks the "landed exactly there" wording (`.matched`/`.cappedSatisfied`); `{ruleLevel}` diverging picks the other (`.satisfied`/`.cappedBelow`). `{ruleLevel}` is "Level *n*, *name*" for the level the rule itself requires — the floor's own `outcome.level` for `.satisfied`/`.matched`, and the cap's own `outcome.level` (a forced rule) or `outcome.max` (a clamped rule) for `.cappedSatisfied`/`.cappedBelow`. Like `{leadIn}`/`{ruleLeadIn}`, it carries the link to that rule's section in `SCORING.md` — a forward reference, per section 12, same as the score-line links.
+`out.override.downward`/`.upward` cover a rule that changed the recommendation (`finalLevel` differs from `arithmeticLevel`). `out.override.floorOverruled.up`/`.down`/`.same` cover a ceiling that set the final level below a floor that also fired, where that floor's level is above the arithmetic level, picked by whether the final level is above, below or equal to the arithmetic level. Where a ceiling lowers the level and every such floor is at or below the arithmetic level, the ceiling's own `out.override.downward` sentence is used instead, and those floors are listed with `out.override.otherFloors`. The other four cover a rule that fired but didn't — the arithmetic already satisfied what the rule requires — split by which kind of rule it was, because an upward (floor) rule and a downward (capping) rule require different verbs for the same non-event: a floor rule still means "a response is needed at {ruleLevel} or above" (`.satisfied`/`.matched`), while a capping rule means the opposite shape of constraint, "this cannot go above {ruleLevel}" (`.cappedSatisfied`/`.cappedBelow`) — reusing the floor wording for a capping rule would claim it requires at least that level when it actually requires at most that level. Within each pair, `{ruleLevel}` equalling `{arithmeticLevel}` picks the "landed exactly there" wording (`.matched`/`.cappedSatisfied`); `{ruleLevel}` diverging picks the other (`.satisfied`/`.cappedBelow`). `{ruleLevel}` is the glossary term, in the form "Level 1 — Log and monitor", for the level the rule itself requires — the floor's own `outcome.level` for `.satisfied`/`.matched`, and the ceiling's own `outcome.level` for `.cappedSatisfied`/`.cappedBelow`. Like `{leadIn}`/`{ruleLeadIn}`, it carries the link to that rule's section in `SCORING.md` — a forward reference, per section 12, same as the score-line links.
 
-Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declares `renderTemplate` as either `downward` or `upward` — there is no third value, so between these six patterns, every case that reaches `out.overrideAlsoHeading`/`out.overrideHeading` now has a rule-specific sentence. `out.overrideIntro` is retired: nothing renders it any more.
+The pattern is chosen by the actual movement from `{arithmeticLevel}` to `{finalLevel}`, never by a rule's `renderTemplate` alone, so no case uses downward wording when the level went up. Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) still declares `renderTemplate` as either `downward` or `upward`; it decides whether `out.override.downward.closingLine` follows. Between these nine patterns, every case that reaches `out.overrideAlsoHeading`/`out.overrideHeading`/`out.overrideRulesHeading` has a rule-specific sentence. `out.overrideIntro` is retired: nothing renders it any more.
 
 **`out.override.downward`** — shown where a rule has capped or routed the recommendation below what the two scores alone produced
 > Your answers place this at {arithmeticLevel}, but {leadIn}, and that changes what you can safely say. This holds at {finalLevel} until you have spoken to {functions}.
@@ -515,16 +609,40 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 > Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers land in the same place.
 
 **`out.override.cappedSatisfied`** — shown where a downward (capping) rule fired but the arithmetic already sat exactly at the cap (`{ruleLevel}` equals `{arithmeticLevel}`)
-> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers already sit within that.
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without speaking to {consultFunctions} first. Your answers already sit within that.
 
 **`out.override.cappedSatisfied.noFunctions`** — same, for `rule.individualExternal`
 > Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers already sit within that.
 
 **`out.override.cappedBelow`** — shown where a downward (capping) rule fired but the arithmetic already sat below the cap (`{ruleLevel}` is above `{arithmeticLevel}`)
-> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers sit below that.
+> Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without speaking to {consultFunctions} first. Your answers sit below that.
 
-**`out.override.cappedBelow.noFunctions`** — same, for `rule.individualExternal`. Not reachable today: `rule.individualExternal` forces a single fixed level rather than a range, so when it fires without changing the level, the arithmetic can only have been sitting exactly at that level (`.cappedSatisfied.noFunctions`), never below it. Kept for symmetry with the other three pairs, and in case a future no-functions rule is ever given a range instead of a fixed level.
+**`out.override.cappedBelow.noFunctions`** — same, for `rule.individualExternal`, where the arithmetic sits below its Level 2 ceiling (Level 1).
 > Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers sit below that.
+
+**`out.override.floorOverruled.up`** — shown where a ceiling sets the final level below a floor that fired, and the final level is above the arithmetic level. `{floorLeadIn}` and `{floorLevel}` are the highest such floor's lead-in and own level; `{ceilingLeadIn}` and `{functions}` are the binding ceiling's.
+> Your answers place this at {arithmeticLevel}, but {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this cannot go above {finalLevel} without speaking to {functions} first.
+
+**`out.override.floorOverruled.up.noFunctions`** — same, where the ceiling names no function
+> Your answers place this at {arithmeticLevel}, but {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this cannot go above {finalLevel}.
+
+**`out.override.floorOverruled.down`** — same, where the final level is below the arithmetic level
+> Your answers place this at {arithmeticLevel}, and {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this comes down to {finalLevel} until you have spoken to {functions}.
+
+**`out.override.floorOverruled.down.noFunctions`** — same, where the ceiling names no function
+> Your answers place this at {arithmeticLevel}, and {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this comes down to {finalLevel}.
+
+**`out.override.floorOverruled.same`** — same, where the final level equals the arithmetic level. `{FloorLeadIn}` is `{floorLeadIn}` at the start of a sentence.
+> Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel} until you have spoken to {functions}.
+
+**`out.override.floorOverruled.same.noFunctions`** — same, where the ceiling names no function
+> Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel}.
+
+**`out.override.otherFloors`** — shown under `out.override.floorOverruled.*` where more than one floor pointed above the final level, `{leadIns}` being every other such floor's lead-in; and under `out.override.downward` where a ceiling lowered the level past floors at or below the arithmetic level, `{leadIns}` being every floor that pointed above the final level. Lead-ins are joined with semicolons
+> Rules that pointed higher but were overruled: {leadIns}.
+
+**`out.override.alsoSpeakTo`** — shown where a fired ceiling is not the rule described in the sentence above; `{functions}` is every function of each such ceiling that the sentence above has not already named, in priority order, each named once, joined the same way as `{functions}`. Omitted when nothing is left.
+> Also speak to {functions}.
 
 **`out.gate.upward`** — shown where the arithmetic is Level 6-eligible and the gating question (`out.level6Gate`) was answered yes
 > Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.
@@ -541,16 +659,16 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.safety`**
 > **Someone's physical safety is involved.** This stops being a communications decision on its own. Involve the people who own safety in your organisation now, before anything is said or not said publicly. This rule cannot be switched off or reweighted in this tool's configuration, deliberately.
 
-**`rule.data`**
+**`rule.data`** — `functions`: `["whoever owns data protection"]`
 > **Personal data may be involved.** Where a data breach has occurred, notification to the regulator and to affected individuals runs on its own clock and its own rules. Communications cannot run ahead of it, contradict it, or pre-empt it. Check with whoever owns data protection before responding.
 
-**`rule.legal`**
+**`rule.legal`** — `functions`: `["legal"]`
 > **Legal proceedings may be live or reasonably anticipated.** Public comment on the substance is constrained once that is true, regardless of how wrong you believe the other side to be. Check with legal before responding.
 
-**`rule.marketSensitive`**
+**`rule.marketSensitive`** — `functions`: `["legal", "the company secretary"]`
 > **The leaked information may be market-sensitive.** Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled.
 
-**`rule.employment`**
+**`rule.employment`** — `functions`: `["HR", "legal"]`
 > **An employment matter may be involved.** A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms.
 
 ### Identifiability
@@ -560,7 +678,7 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 >
 > This applies even where you believe they are wrong. Being wrong does not remove their expectation of privacy, and this is the rule most often broken, because being wrong feels like it grants permission.
 
-**`rule.individualInternal`**
+**`rule.individualInternal`** — `functions`: `["HR", "legal"]`
 > **An individual inside the organisation is identifiable.** Duty of care, employment law and data protection all apply before communications does. Route this to HR and legal first. Where a public line is needed, it is about process, never about the person.
 
 ### Other
@@ -577,7 +695,7 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.affectedPartyFloor`** — fires on `q3.a` + `q8.c` + `q8.g` together; floors the recommendation at Level 5 (SPEC.md E, F.4, F.7)
 > **Those affected were directly harmed, the account is true and was known internally, and they are already raising it.** In these conditions the response goes to them directly, not only to whoever asks.
 
-**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.2, F.7); `functions` is confirmed as "legal"; `leadIn` is "what can be said is limited"
+**`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.2, F.7); `functions` is confirmed as `["legal"]`; `leadIn` is "a duty of confidentiality applies"
 > **A contractual or professional duty prevents discussion of the substance without consent.** Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential.
 
 **`rule.privateIndividualNote`** — a note, not a rule
@@ -595,7 +713,7 @@ Every rule in `config.alwaysOnRegimes` (and the hardcoded `rule.safety`) declare
 **`rule.internalAudienceNote`** — a note, not a rule
 > This recommendation covers the external response only. An internal audience already discussing something usually needs addressing, whatever the external answer turns out to be.
 
-**`rule.confidentialityLegalNote`** — a note, not a rule; fires on `q10.a` and `q10.c`
+**`rule.confidentialityLegalNote`** — a note, not a rule; fires on `q10.a` only (`q10.c` fires no rule, so the note's "stops at a holding line" would not be true there; its "What would change this" row covers that case)
 > A duty of confidentiality limits what can be said, so this assessment stops at a holding line. Whether the other party's own public statements change the scope of that duty is a legal question, and one this tool cannot answer.
 
 **`rule.alreadyAskedNote`** — a note, not a rule; fires where the final level is 3 and the originator has asked for comment (`q1.a`, or any answer that fires `rule.deadlineNamed`)
@@ -764,6 +882,9 @@ Collapsed by default behind an expandable control, same pattern as the Comms Cla
 
 **`state.configError`**
 > The tool couldn't load its configuration file, so it can't run. If you're running this from your own computer, it needs to be served by a local web server rather than opened as a file. See the README.
+
+**`out.configInvalid`** — shown in the same banner, in place of `state.configError`, where the config loads but fails validation (for example, an unknown option with no `changeFind` or `changeEffect`); `state.configError` stays for a config that never loads
+> The configuration loaded but contains an error, so no result can be shown. If you have edited the config, check it against SPEC.md.
 
 **`aria.resultReady`**
 > Assessment complete. Recommended level {n}, {level name}.

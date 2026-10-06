@@ -62,6 +62,12 @@ There is no code yet. This file defines how it is to be built.
   entries correctly carry no `textId`. A `textId` (or `helpTextId`) is
   added only where the `id` and the `COPY.md` ID differ, as they do for
   core questions (e.g. question `id` `q1`, `COPY.md` ID `q1.text`).
+  The same convention covers the two "What would change this" strings
+  on every unknown answer option: `changeFind` and `changeEffect` carry
+  their text, and `changeFindId` / `changeEffectId` point to their
+  `COPY.md` IDs (`<optionId>.change.find`, `<optionId>.change.effect`,
+  e.g. `q3.f.change.find`), because those IDs differ from the option's
+  own `id`. `out.*` IDs stay reserved for `uiCopy` keys.
 - **No free-text input, anywhere, ever.** The tool never asks what the
   issue is and has no field for describing it. Do not add a text field —
   including a "notes" field, an "other, please specify" option, or
