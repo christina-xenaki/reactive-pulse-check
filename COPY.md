@@ -139,6 +139,7 @@ Multi-select. Shown unless `q2.d` is selected.
 | `q2c.c` | Legal proceedings are live or reasonably anticipated |
 | `q2c.d` | Personal data may have been exposed or misused |
 | `q2c.e` | It could affect the share price, or relates to information not yet disclosed to the market |
+| `q2c.h` | Someone's physical safety may be at risk |
 | `q2c.f` | None of these |
 | `q2c.g` | We don't know whether any of these apply |
 
@@ -656,7 +657,7 @@ The pattern is chosen by the actual movement from `{arithmeticLevel}` to `{final
 
 ### Always-on
 
-**`rule.safety`**
+**`rule.safety`** — fires on `q2c.h`, from code rather than from that option's `triggersOverride` (SPEC.md F.1)
 > **Someone's physical safety is involved.** This stops being a communications decision on its own. Involve the people who own safety in your organisation now, before anything is said or not said publicly. This rule cannot be switched off or reweighted in this tool's configuration, deliberately.
 
 **`rule.data`** — `functions`: `["whoever owns data protection"]`
@@ -666,7 +667,7 @@ The pattern is chosen by the actual movement from `{arithmeticLevel}` to `{final
 > **Legal proceedings may be live or reasonably anticipated.** Public comment on the substance is constrained once that is true, regardless of how wrong you believe the other side to be. Check with legal before responding.
 
 **`rule.marketSensitive`** — `functions`: `["legal", "the company secretary"]`
-> **The leaked information may be market-sensitive.** Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled.
+> **Information that could affect the share price may be involved.** Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled.
 
 **`rule.employment`** — `functions`: `["HR", "legal"]`
 > **An employment matter may be involved.** A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms.
@@ -696,7 +697,7 @@ The pattern is chosen by the actual movement from `{arithmeticLevel}` to `{final
 > **Those affected were directly harmed, the account is true and was known internally, and they are already raising it.** In these conditions the response goes to them directly, not only to whoever asks.
 
 **`rule.confidentiality`** — fires on `q10.a`; caps the recommendation at Level 3, applied after every other rule has resolved (SPEC.md F.2, F.7); `functions` is confirmed as `["legal"]`; `leadIn` is "a duty of confidentiality applies"
-> **A contractual or professional duty prevents discussion of the substance without consent.** Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential.
+> **A duty of confidentiality applies.** You cannot discuss the substance without consent, so whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential.
 
 **`rule.privateIndividualNote`** — a note, not a rule
 > The originator appears to be a private individual with very little reach. Responding publicly does not only risk spreading this further. It also looks like a large organisation going after one person, and that is frequently the bigger story.

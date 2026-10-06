@@ -21,8 +21,8 @@ window.PulseCheck = window.PulseCheck || {};
 PulseCheck.Scoring = (function () {
   var AXES = ['costOfSpeaking', 'costOfStayingQuiet'];
 
-  // A question carrying config.questions[].unscored (currently q1, q2c and
-  // q9; SPEC.md C.1) routes or records but never scores: it carries no
+  // A question carrying config.questions[].unscored (currently q1, q2c, q9
+  // and q10; SPEC.md C.1) routes or records but never scores: it carries no
   // weight on either axis, is left out of the normalisation maximum, and is
   // not counted toward the low-confidence proportion (C.3). Which questions
   // those are lives entirely in config, not here. A multi-select
@@ -267,7 +267,7 @@ PulseCheck.Scoring = (function () {
 
   // SPEC.md C.2/I.8: one "What would change this" row per unknown answer
   // on the path, in path order, from every question on it — unscored ones
-  // included (q2c.g). This is deliberately a different list from the one
+  // included (q2c.g, q10.c). This is deliberately a different list from the one
   // behind the low-confidence count, which stays limited to scored
   // questions (scoredSelections() above). Each row carries the option's
   // own changeFind/changeEffect strings, never its option text.

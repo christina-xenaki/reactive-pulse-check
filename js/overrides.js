@@ -15,8 +15,8 @@
 // all documented in SPEC.md F.7, not here — that is the source of truth
 // for the behaviour this file implements, not this comment. The one
 // exception is the safety override (F.1), which lives in this file as
-// code per CLAUDE.md's config-not-code principle and cannot fire today,
-// since no question asks about it yet.
+// code per CLAUDE.md's config-not-code principle. It is asked through
+// q2c.h, but fired from here, never from that option's triggersOverride.
 //
 // One outcome type, 'ceiling' (rule.individualExternal, rule.individualInternal,
 // rule.data, rule.legal, rule.marketSensitive, rule.employment and
@@ -32,12 +32,39 @@ PulseCheck.Overrides = (function () {
   var SAFETY_OVERRIDE_ID = 'rule.safety';
   var SAFETY_OUTCOME = { type: 'forced', level: 7 };
 
-  // Deliberately unreachable today: no question in config asks about
-  // physical safety (SPEC.md F.1, CLAUDE.md). Kept as a real function,
-  // not a stub, so the one hardcoded override in this file has a single
-  // obvious place to grow into when that question is added.
-  function safetyFired() {
-    return false;
+  // DELIBERATE, NOT CONFIGURABLE (SPEC.md F.1, CLAUDE.md): the physical
+  // safety override is hardcoded here and must never be moved into config,
+  // made editable, reweighted or switched off. An organisation that can
+  // turn off the safety override in a config file is an organisation
+  // where, eventually, someone will.
+  //
+  // The question is asked through the q2c.h answer option, which carries
+  // no triggersOverride: the trigger lives here, keyed on the option's ID,
+  // so nothing in config can detach the option from the rule. Config can
+  // only remove the option itself, and safetyConfigProblems() below makes
+  // that a validation failure rather than a silent switch-off.
+  var SAFETY_QUESTION_ID = 'q2c';
+  var SAFETY_OPTION_ID = 'q2c.h';
+
+  // Path-scoped like every other answer read (see the PATH-SCOPED comment
+  // in js/scoring.js): an answer to q2c left behind after Back-navigation
+  // has taken q2c off the path must not still fire this rule.
+  function safetyFired(answers, config) {
+    var onPath = PulseCheck.Scoring.questionsOnPath(config, answers).some(function (question) {
+      return question.id === SAFETY_QUESTION_ID;
+    });
+    if (!onPath) return false;
+    return (answers[SAFETY_QUESTION_ID] || []).indexOf(SAFETY_OPTION_ID) !== -1;
+  }
+
+  // Called by js/config.js validate(). A config without the safety option
+  // on its question fails validation (out.configInvalid), and the console
+  // names the missing option.
+  function safetyConfigProblems(config) {
+    var present = ((config && config.answerOptions) || []).some(function (option) {
+      return option.id === SAFETY_OPTION_ID && option.questionId === SAFETY_QUESTION_ID;
+    });
+    return present ? [] : [{ check: 'safety option present on ' + SAFETY_QUESTION_ID, id: SAFETY_OPTION_ID }];
   }
 
   function applyOutcome(outcome, arithmeticLevel) {
@@ -120,7 +147,7 @@ PulseCheck.Overrides = (function () {
       fired.push({ id: id, sourceOptionId: sourceOptionId, outcome: outcome, priority: priority });
     }
 
-    if (safetyFired(answers)) {
+    if (safetyFired(answers, config)) {
       pushOnce(SAFETY_OVERRIDE_ID, null, SAFETY_OUTCOME, -1);
     }
 
@@ -273,5 +300,5 @@ PulseCheck.Overrides = (function () {
     };
   }
 
-  return { apply: apply };
+  return { apply: apply, safetyConfigProblems: safetyConfigProblems };
 })();
