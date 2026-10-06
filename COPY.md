@@ -639,7 +639,7 @@ The pattern is chosen by the actual movement from `{arithmeticLevel}` to `{final
 > Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel}.
 
 **`out.override.otherFloors`** — shown under `out.override.floorOverruled.*` where more than one floor pointed above the final level, `{leadIns}` being every other such floor's lead-in; and under `out.override.downward` where a ceiling lowered the level past floors at or below the arithmetic level, `{leadIns}` being every floor that pointed above the final level. Lead-ins are joined with semicolons
-> Other rules also pointed higher: {leadIns}.
+> Rules that pointed higher but were overruled: {leadIns}.
 
 **`out.override.alsoSpeakTo`** — shown where a fired ceiling is not the rule described in the sentence above; `{functions}` is every function of each such ceiling that the sentence above has not already named, in priority order, each named once, joined the same way as `{functions}`. Omitted when nothing is left.
 > Also speak to {functions}.

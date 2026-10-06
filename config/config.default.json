@@ -816,7 +816,7 @@
     "out.override.floorOverruled.down.noFunctions": "Your answers place this at {arithmeticLevel}, and {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this comes down to {finalLevel}.",
     "out.override.floorOverruled.same": "Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel} until you have spoken to {functions}.",
     "out.override.floorOverruled.same.noFunctions": "Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel}.",
-    "out.override.otherFloors": "Other rules also pointed higher: {leadIns}.",
+    "out.override.otherFloors": "Rules that pointed higher but were overruled: {leadIns}.",
     "out.override.alsoSpeakTo": "Also speak to {functions}.",
     "out.gate.upward": "Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.",
     "out.gate.declined": "Your answers place this at {arithmeticLevel}. {gateLevel} was available to you, but you have said there is nothing new and true to say that is not already public, so this stays at {arithmeticLevel}.",
