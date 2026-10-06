@@ -1,6 +1,7 @@
 // Responsibility: rendering the results region (SPEC.md section I) —
 // recommended level, the two scores and matrix position, what drove each
-// score, any override applied, the check-yourself flag, escalation
+// score, any override applied and the full text of every rule that fired,
+// the check-yourself flag, escalation
 // triggers, and the level-below/level-above explanation. Updates the
 // aria-live results region so the outcome is announced.
 //
@@ -459,6 +460,20 @@ PulseCheck.Render = (function () {
       }
     }
 
+    // Where rule.safety sets the level, no ceiling caps it (SPEC.md F.7), but
+    // every ceiling that fired still constrains what is said, so each is
+    // named here by its leadIn, in priority order. Floors are not listed.
+    // Sits after the main sentence and before out.override.alsoSpeakTo.
+    if (safetyWon) {
+      var stillApplyLeadIns = fired.filter(isCeiling).map(function (f) {
+        var ceilingDef = overrideDefinitionFor(f.id);
+        return ceilingDef ? ceilingDef.leadIn : f.id;
+      });
+      if (stillApplyLeadIns.length) {
+        extraLines.push(fillTemplate(uiText('out.override.stillApplies'), { leadIns: stillApplyLeadIns.join('; ') }));
+      }
+    }
+
     var otherFunctions = [];
     fired.forEach(function (f) {
       if (!isCeiling(f) || f === described) return;
@@ -489,6 +504,41 @@ PulseCheck.Render = (function () {
     }
 
     return container;
+  }
+
+  // SPEC.md I.4: the full text of every rule that fired, once each, straight
+  // after the override block — rule.safety first, then the rest in priority
+  // order (overrides.fired is already sorted that way, safety at -1), and
+  // including rules that fired without changing the level. Each rule's text
+  // is split on blank lines into paragraphs, and its first sentence is set
+  // in <strong>, matching how COPY.md section 7 marks it up. Nothing is
+  // rendered where no rule fired.
+  function splitFirstSentence(paragraph) {
+    var match = /^(.*?[.!?])(\s+|$)([\s\S]*)$/.exec(paragraph);
+    return match ? { first: match[1], rest: match[3] } : { first: paragraph, rest: '' };
+  }
+
+  function buildRuleTextsBlock(overrides) {
+    var fired = overrides.fired || [];
+    var container = Dom.el('div', { className: 'result-rule-texts' });
+    fired.forEach(function (f) {
+      var definition = overrideDefinitionFor(f.id);
+      if (!definition || !definition.text) return;
+      var ruleEl = Dom.el('div', { className: 'result-rule-text' });
+      definition.text.split(/\n\s*\n/).forEach(function (paragraph, i) {
+        var p = Dom.el('p');
+        if (i === 0) {
+          var parts = splitFirstSentence(paragraph);
+          p.appendChild(Dom.el('strong', {}, [document.createTextNode(parts.first)]));
+          if (parts.rest) p.appendChild(document.createTextNode(' ' + parts.rest));
+        } else {
+          p.appendChild(document.createTextNode(paragraph));
+        }
+        ruleEl.appendChild(p);
+      });
+      container.appendChild(ruleEl);
+    });
+    return container.childNodes.length ? container : null;
   }
 
   function buildGateOutcomeBlock(scoring, resolvedLevel) {
@@ -721,6 +771,8 @@ PulseCheck.Render = (function () {
     // reasoning: see buildOverrideBlock's comment.
     var overrideBlock = buildOverrideBlock(scoring, overrides);
     if (overrideBlock) resultsEl.appendChild(overrideBlock);
+    var ruleTextsBlock = buildRuleTextsBlock(overrides);
+    if (ruleTextsBlock) resultsEl.appendChild(ruleTextsBlock);
     if (needsGate) resultsEl.appendChild(buildGateOutcomeBlock(scoring, finalLevel));
 
     var notesBlock = buildNotesBlock(scoring, overrides);

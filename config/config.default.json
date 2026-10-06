@@ -32,8 +32,7 @@
       "text": "Do any of these apply?",
       "type": "multi",
       "core": true,
-      "unscored": true,
-      "showIf": { "questionId": "q2", "notIn": ["q2.d"] }
+      "unscored": true
     },
     {
       "id": "q3",
@@ -821,6 +820,7 @@
     "out.override.floorOverruled.same.noFunctions": "Your answers place this at {arithmeticLevel}. {FloorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this stays at {finalLevel}.",
     "out.override.otherFloors": "Rules that pointed higher but were overruled: {leadIns}.",
     "out.override.alsoSpeakTo": "Also speak to {functions}.",
+    "out.override.stillApplies": "These still apply to what you say: {leadIns}.",
     "out.gate.upward": "Your answers place this at {arithmeticLevel}. You have said there is something new and true to say that is not already public, so {gateLevel} is available to you.",
     "out.gate.declined": "Your answers place this at {arithmeticLevel}. {gateLevel} was available to you, but you have said there is nothing new and true to say that is not already public, so this stays at {arithmeticLevel}.",
     "out.matrixOverriddenNote": "Your answers land here. The recommendation below takes account of something else as well.",
