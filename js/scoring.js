@@ -21,15 +21,18 @@ window.PulseCheck = window.PulseCheck || {};
 PulseCheck.Scoring = (function () {
   var AXES = ['costOfSpeaking', 'costOfStayingQuiet'];
 
-  // q1, q2c and q9 route/record but never score (SPEC.md E): each carries
-  // no weight on either axis, is left out of the normalisation maximum,
-  // and is not counted toward the low-confidence proportion (C.3). q2c's
-  // only job is to fire rule.employment. A multi-select
+  // A question carrying config.questions[].unscored (currently q1, q2c and
+  // q9; SPEC.md C.1) routes or records but never scores: it carries no
+  // weight on either axis, is left out of the normalisation maximum, and is
+  // not counted toward the low-confidence proportion (C.3). Which questions
+  // those are lives entirely in config, not here. A multi-select
   // question carrying config.questions[].cappedMultiScoring (currently q2b
   // and q8; see SPEC.md C.1) uses the capped multi-select formula instead
   // of a plain sum — which question that is lives entirely in config, not
   // here.
-  var UNSCORED_QUESTION_IDS = { q1: true, q2c: true, q9: true };
+  function isUnscored(question) {
+    return question.unscored === true;
+  }
 
   // --- Path scoping -----------------------------------------------------
   //
@@ -94,19 +97,30 @@ PulseCheck.Scoring = (function () {
 
   // SPEC.md C.1: band thresholds are per-axis, not shared — the two axes
   // have different distributions, so nothing here assumes their low/medium
-  // ceilings are equal.
-  function isConfigValid(config) {
-    if (!config) return false;
+  // ceilings are equal. Returns every problem found, each naming the check
+  // that failed and the entry that caused it, so js/config.js can report
+  // them; an empty list means the scoring config is usable.
+  function configProblems(config) {
+    if (!config) return [{ check: 'config present', id: null }];
+    var problems = [];
     var aw = config.axisWeights, bb = config.bandBoundaries, lm = config.levelMatrix;
-    if (!aw || typeof aw !== 'object' || Object.keys(aw).length === 0) return false;
-    if (!bb) return false;
-    var bandsValid = AXES.every(function (axis) {
-      var thresholds = bb[axis];
-      return thresholds && typeof thresholds.lowCeiling === 'number' && typeof thresholds.mediumCeiling === 'number';
-    });
-    if (!bandsValid) return false;
-    if (!Array.isArray(lm) || lm.length === 0) return false;
-    return true;
+    if (!aw || typeof aw !== 'object' || Object.keys(aw).length === 0) problems.push({ check: 'axisWeights present', id: 'axisWeights' });
+    if (!bb) {
+      problems.push({ check: 'bandBoundaries present', id: 'bandBoundaries' });
+    } else {
+      AXES.forEach(function (axis) {
+        var thresholds = bb[axis];
+        if (!(thresholds && typeof thresholds.lowCeiling === 'number' && typeof thresholds.mediumCeiling === 'number')) {
+          problems.push({ check: 'band thresholds are numbers', id: 'bandBoundaries.' + axis });
+        }
+      });
+    }
+    if (!Array.isArray(lm) || lm.length === 0) problems.push({ check: 'levelMatrix present', id: 'levelMatrix' });
+    return problems;
+  }
+
+  function isConfigValid(config) {
+    return configProblems(config).length === 0;
   }
 
   function optionsById(config) {
@@ -163,7 +177,7 @@ PulseCheck.Scoring = (function () {
 
     questionsOnPath(config, answers).forEach(function (question) {
       var questionId = question.id;
-      if (UNSCORED_QUESTION_IDS[questionId]) return;
+      if (isUnscored(question)) return;
 
       var selected = answers[questionId] || [];
       var questionOptionIds = config.answerOptions
@@ -208,7 +222,7 @@ PulseCheck.Scoring = (function () {
     return cell || null;
   }
 
-  // Every selected option (excluding q1/q2c/q9, which never score) that
+  // Every selected option (excluding unscored questions) that
   // contributes to the given axis, ranked highest weight first, for
   // "what drove this" (SPEC.md I.3). Each contribution carries its
   // question's text alongside the answer's, so the driver reads as a
@@ -220,7 +234,7 @@ PulseCheck.Scoring = (function () {
     var contributions = [];
 
     questionsOnPath(config, answers).forEach(function (question) {
-      if (UNSCORED_QUESTION_IDS[question.id]) return;
+      if (isUnscored(question)) return;
       (answers[question.id] || []).forEach(function (optionId) {
         var weight = weightFor(config, optionId, axis);
         if (weight > 0) {
@@ -238,17 +252,37 @@ PulseCheck.Scoring = (function () {
     return contributions.slice(0, limit || 4);
   }
 
-  // Every selected option (excluding q1/q2c/q9) on the path taken, for the
+  // Every selected option (excluding unscored questions) on the path taken, for the
   // low-confidence caveat (SPEC.md C.3). Path-scoped: see the PATH-SCOPED
   // comment above questionsOnPath() — this is also what feeds the unknown
   // count behind that caveat, so the caveat itself is path-scoped for free.
   function scoredSelections(config, answers) {
     var selections = [];
     questionsOnPath(config, answers).forEach(function (question) {
-      if (UNSCORED_QUESTION_IDS[question.id]) return;
+      if (isUnscored(question)) return;
       (answers[question.id] || []).forEach(function (optionId) { selections.push(optionId); });
     });
     return selections;
+  }
+
+  // SPEC.md C.2/I.8: one "What would change this" row per unknown answer
+  // on the path, in path order, from every question on it — unscored ones
+  // included (q2c.g). This is deliberately a different list from the one
+  // behind the low-confidence count, which stays limited to scored
+  // questions (scoredSelections() above). Each row carries the option's
+  // own changeFind/changeEffect strings, never its option text.
+  function changeRowsFor(config, answers) {
+    var oById = optionsById(config);
+    var rows = [];
+    questionsOnPath(config, answers).forEach(function (question) {
+      (answers[question.id] || []).forEach(function (optionId) {
+        var option = oById[optionId];
+        if (option && option.isUnknown === true) {
+          rows.push({ optionId: optionId, find: option.changeFind, effect: option.changeEffect });
+        }
+      });
+    });
+    return rows;
   }
 
   // Path-scoped for the same reason as scoredSelections() above: a note
@@ -334,8 +368,10 @@ PulseCheck.Scoring = (function () {
       },
       notes: notesFor(config, answers),
       // Every unknown answer is itself an escalation trigger — it feeds
-      // "What would change this" (SPEC.md I.8) as well as the
-      // low-confidence caveat (C.3).
+      // "What would change this" (SPEC.md I.8, changeRows, every question
+      // on the path) as well as the low-confidence caveat (C.3,
+      // unknownSelections/unknownCount, scored questions only).
+      changeRows: changeRowsFor(config, answers),
       unknownSelections: unknownSelections,
       unknownCount: unknownCount,
       scoredAnswerCount: selections.length,
@@ -351,6 +387,7 @@ PulseCheck.Scoring = (function () {
 
   return {
     isConfigValid: isConfigValid,
+    configProblems: configProblems,
     compute: compute,
     resolveLevel6Gate: resolveLevel6Gate,
     // Exposed so questions.js (path/navigation state) and overrides.js and

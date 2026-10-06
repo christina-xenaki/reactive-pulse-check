@@ -284,6 +284,19 @@ PulseCheck.Render = (function () {
     return typeof outcome.level === 'number' ? outcome.level : null;
   }
 
+  // SPEC.md F.7: a rule's functions are stored as a list of single
+  // functions (["HR", "legal"]), so each can be named once per block. A
+  // list is joined for display as "A", "A and B" or "A, B and C", with no
+  // comma before "and".
+  function functionsOf(definition) {
+    return (definition && Array.isArray(definition.functions)) ? definition.functions : [];
+  }
+
+  function joinFunctions(list) {
+    if (list.length <= 1) return list.join('');
+    return list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1];
+  }
+
   function isFloor(fired) {
     return !!(fired.outcome && fired.outcome.type === 'floor');
   }
@@ -311,10 +324,10 @@ PulseCheck.Render = (function () {
   //    wording if one fired, otherwise the single winner with the floor
   //    wording, judged against the arithmetic level.
   //
-  // Every fired ceiling not described in the main sentence adds its
-  // functions to out.override.alsoSpeakTo, in priority order, joined with
-  // "and", exact duplicates removed — so the functions of every ceiling
-  // that fired appear somewhere in the block.
+  // out.override.alsoSpeakTo then names every function of every other
+  // fired ceiling that the main sentence has not already named, in
+  // priority order, each once, and is omitted when nothing is left — so
+  // every fired ceiling's functions appear in the block, and none twice.
   //
   // Where the Level 6 gate has raised the result, this block still compares
   // against the arithmetic level, not the gated result: the gate outcome
@@ -341,6 +354,7 @@ PulseCheck.Render = (function () {
     var described = null;
     var sentence = '';
     var extraLines = [];
+    var namedFunctions = []; // the functions the main sentence names
 
     if (overruledFloors.length) {
       described = ceiling;
@@ -348,7 +362,8 @@ PulseCheck.Render = (function () {
       var ceilingDefinition = overrideDefinitionFor(ceiling.id);
       if (!floorDefinition || !ceilingDefinition) return null;
       heading = uiText('out.overrideRulesHeading');
-      var overruledTemplateId = 'out.override.floorOverruled.' + movement + (ceilingDefinition.functions ? '' : '.noFunctions');
+      namedFunctions = functionsOf(ceilingDefinition);
+      var overruledTemplateId = 'out.override.floorOverruled.' + movement + (namedFunctions.length ? '' : '.noFunctions');
       sentence = fillOverrideTemplate(uiText(overruledTemplateId), {
         arithmeticLevel: arithmeticLabel,
         floorLeadIn: floorDefinition.leadIn,
@@ -356,7 +371,7 @@ PulseCheck.Render = (function () {
         floorLevel: levelInfo(overruledFloors[0].outcome.level).label,
         ceilingLeadIn: ceilingDefinition.leadIn,
         finalLevel: finalLabel,
-        functions: ceilingDefinition.functions
+        functions: joinFunctions(namedFunctions)
       });
       var otherLeadIns = overruledFloors.slice(1).map(function (f) {
         var definition = overrideDefinitionFor(f.id);
@@ -384,12 +399,13 @@ PulseCheck.Render = (function () {
           finalLevel: finalLabel
         });
       } else if (movement === 'down') {
-        var downwardTemplateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
+        namedFunctions = functionsOf(definition);
+        var downwardTemplateId = namedFunctions.length ? 'out.override.downward' : 'out.override.downward.noFunctions';
         sentence = fillOverrideTemplate(uiText(downwardTemplateId), {
           arithmeticLevel: arithmeticLabel,
           leadIn: definition.leadIn,
           finalLevel: finalLabel,
-          functions: definition.functions
+          functions: joinFunctions(namedFunctions)
         });
       } else if (describedIsFloor) {
         // A floor fired but the arithmetic already sat at or above what it
@@ -416,14 +432,15 @@ PulseCheck.Render = (function () {
         heading = uiText('out.overrideAlsoHeading');
         var capLevel = capLevelOf(definition);
         var atCap = capLevel !== null && capLevel === arithmeticLevel;
-        var cappedTemplateId = definition.functions
+        namedFunctions = functionsOf(definition);
+        var cappedTemplateId = namedFunctions.length
           ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
           : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
         sentence = fillOverrideTemplate(uiText(cappedTemplateId), {
           arithmeticLevel: arithmeticLabel,
           ruleLeadIn: definition.leadIn,
           ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
-          consultFunctions: definition.functions
+          consultFunctions: joinFunctions(namedFunctions)
         });
       }
     }
@@ -431,12 +448,12 @@ PulseCheck.Render = (function () {
     var otherFunctions = [];
     fired.forEach(function (f) {
       if (!isCeiling(f) || f === described) return;
-      var definition = overrideDefinitionFor(f.id);
-      var functions = definition && definition.functions;
-      if (functions && otherFunctions.indexOf(functions) === -1) otherFunctions.push(functions);
+      functionsOf(overrideDefinitionFor(f.id)).forEach(function (fn) {
+        if (namedFunctions.indexOf(fn) === -1 && otherFunctions.indexOf(fn) === -1) otherFunctions.push(fn);
+      });
     });
     if (otherFunctions.length) {
-      extraLines.push(fillTemplate(uiText('out.override.alsoSpeakTo'), { functions: otherFunctions.join(' and ') }));
+      extraLines.push(fillTemplate(uiText('out.override.alsoSpeakTo'), { functions: joinFunctions(otherFunctions) }));
     }
 
     var container = Dom.el('div', { className: 'result-override' });
@@ -526,13 +543,27 @@ PulseCheck.Render = (function () {
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(uiText('out.changeHeading'))]));
     container.appendChild(Dom.el('p', {}, [document.createTextNode(uiText('out.changeIntro'))]));
 
-    var unknowns = scoring.unknownSelections || [];
-    if (unknowns.length) {
-      var list = Dom.el('ul', { className: 'result-unknowns' });
-      unknowns.forEach(function (unknown) {
-        list.appendChild(Dom.el('li', {}, [document.createTextNode(unknown.text)]));
+    // SPEC.md I.8: one row per unknown answer on the path, in path order,
+    // each giving the option's changeFind and changeEffect — never its
+    // option text, which stays in "Your answers". Absent where no unknown
+    // is on the path. Unstyled here: how it behaves at phone width is an
+    // interface-session decision.
+    var rows = scoring.changeRows || [];
+    if (rows.length) {
+      var table = Dom.el('table', { className: 'result-change-table' });
+      table.appendChild(Dom.el('thead', {}, [Dom.el('tr', {}, [
+        Dom.el('th', { scope: 'col' }, [document.createTextNode(uiText('out.change.findHeading'))]),
+        Dom.el('th', { scope: 'col' }, [document.createTextNode(uiText('out.change.effectHeading'))])
+      ])]));
+      var tbody = Dom.el('tbody');
+      rows.forEach(function (row) {
+        tbody.appendChild(Dom.el('tr', {}, [
+          Dom.el('td', {}, [document.createTextNode(row.find)]),
+          Dom.el('td', {}, [document.createTextNode(row.effect)])
+        ]));
       });
-      container.appendChild(list);
+      table.appendChild(tbody);
+      container.appendChild(table);
     }
 
     return container;

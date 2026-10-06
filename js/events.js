@@ -6,6 +6,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     PulseCheck.Config.load()
       .then(function (config) {
+        if (!configUsable(config)) return;
         PulseCheck.Questions.init(config);
         PulseCheck.Render.init(config);
         wireStart(config);
@@ -19,10 +20,31 @@
       });
   });
 
+  // A config that loaded but fails validation (js/config.js validate())
+  // never fails silently: each failed check is logged to the console with
+  // the option or rule that caused it, and the existing banner shows
+  // out.configInvalid in place of its "couldn't load" message, which is
+  // kept for a config that never loads at all. Nothing is wired, so no
+  // result can be produced from it.
+  function configUsable(config) {
+    var problems = PulseCheck.Config.validate(config);
+    if (!problems.length) return true;
+    problems.forEach(function (problem) {
+      console.error('Config check failed: ' + problem.check + (problem.id ? ' (' + problem.id + ')' : ''));
+    });
+    var errorEl = document.getElementById('config-error');
+    if (errorEl) {
+      var message = config && config.uiCopy && config.uiCopy['out.configInvalid'];
+      if (message) errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+    return false;
+  }
+
   // Scoring and overrides are decision logic (CLAUDE.md); this listener is
   // only the wiring between the question set's submit event and those two
-  // modules. It never fails silently: an invalid or incomplete config shows
-  // state.configError, same as a config that failed to load at all.
+  // modules. The config is re-checked here too, so a result is never built
+  // from a config that fails validation.
   function wireSubmit(config) {
     var formEl = document.getElementById('pulse-check-form');
     if (!formEl) return;
@@ -30,11 +52,7 @@
     formEl.addEventListener('pulsecheck:submit', function (event) {
       var answers = event.detail.answers;
 
-      if (!PulseCheck.Scoring.isConfigValid(config)) {
-        var errorEl = document.getElementById('config-error');
-        if (errorEl) errorEl.hidden = false;
-        return;
-      }
+      if (!configUsable(config)) return;
 
       var scoringResult = PulseCheck.Scoring.compute(answers, config);
       var overridesResult = PulseCheck.Overrides.apply(answers, scoringResult, config);

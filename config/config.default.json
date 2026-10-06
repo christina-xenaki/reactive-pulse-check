@@ -5,7 +5,8 @@
       "textId": "q1.text",
       "text": "What kind of issue has been raised?",
       "type": "single",
-      "core": true
+      "core": true,
+      "unscored": true
     },
     {
       "id": "q2",
@@ -28,9 +29,10 @@
     {
       "id": "q2c",
       "textId": "q2c.text",
-      "text": "Is an employment matter involved?",
+      "text": "Do any of these apply?",
       "type": "multi",
       "core": true,
+      "unscored": true,
       "showIf": { "questionId": "q2", "notIn": ["q2.d"] }
     },
     {
@@ -84,7 +86,8 @@
       "helpText": "This question does not score. It is here because \"a senior leader wants something said\" is a real consideration, and it is not the one this assessment measures. Recording it separately means the decision can be explained later on the grounds it was actually made.",
       "type": "single",
       "core": true,
-      "optional": true
+      "optional": true,
+      "unscored": true
     },
     {
       "id": "q10",
@@ -325,15 +328,18 @@
 
     { "id": "q2c.a", "questionId": "q2c", "text": "Someone inside the organisation may be raising this as a whistleblower", "triggersOverride": "rule.employment" },
     { "id": "q2c.b", "questionId": "q2c", "text": "A grievance or disciplinary process is live", "triggersOverride": "rule.employment" },
-    { "id": "q2c.c", "questionId": "q2c", "text": "Neither of these", "clearsSiblings": true },
-    { "id": "q2c.d", "questionId": "q2c", "text": "We don't know", "triggersOverride": "rule.employment" },
+    { "id": "q2c.c", "questionId": "q2c", "text": "Legal proceedings are live or reasonably anticipated", "triggersOverride": "rule.legal" },
+    { "id": "q2c.d", "questionId": "q2c", "text": "Personal data may have been exposed or misused", "triggersOverride": "rule.data" },
+    { "id": "q2c.e", "questionId": "q2c", "text": "It could affect the share price, or relates to information not yet disclosed to the market", "triggersOverride": "rule.marketSensitive" },
+    { "id": "q2c.f", "questionId": "q2c", "text": "None of these", "clearsSiblings": true },
+    { "id": "q2c.g", "questionId": "q2c", "text": "We don't know whether any of these apply", "isUnknown": true, "changeFindId": "q2c.g.change.find", "changeFind": "Whether a whistleblowing concern, a live grievance or disciplinary process, legal proceedings, exposed personal data or market-sensitive information is involved.", "changeEffectId": "q2c.g.change.effect", "changeEffect": "Any of these limits what you can say." },
 
     { "id": "q3.a", "questionId": "q3", "text": "True, and we knew", "triggersOverride": "rule.trueAndKnew" },
     { "id": "q3.b", "questionId": "q3", "text": "True, and we did not know until now" },
     { "id": "q3.c", "questionId": "q3", "text": "Partly true, but the central point is wrong" },
     { "id": "q3.d", "questionId": "q3", "text": "False, but plausible enough that people will believe it" },
     { "id": "q3.e", "questionId": "q3", "text": "False, and self-evidently so" },
-    { "id": "q3.f", "questionId": "q3", "text": "We cannot verify it yet", "isUnknown": true, "forcesLowConfidence": true },
+    { "id": "q3.f", "questionId": "q3", "text": "We cannot verify it yet", "isUnknown": true, "changeFindId": "q3.f.change.find", "changeFind": "Whether what has been said is accurate.", "changeEffectId": "q3.f.change.effect", "changeEffect": "Confirming it either way changes both the case for speaking and what you can say.", "forcesLowConfidence": true },
 
     { "id": "q4.a", "questionId": "q4", "text": "Only the originator and we know about it" },
     { "id": "q4.b", "questionId": "q4", "text": "A small audience has seen it; nobody else has picked it up" },
@@ -345,7 +351,7 @@
     { "id": "q5.b", "questionId": "q5", "text": "Growing slowly" },
     { "id": "q5.c", "questionId": "q5", "text": "Flat" },
     { "id": "q5.d", "questionId": "q5", "text": "Already fading" },
-    { "id": "q5.e", "questionId": "q5", "text": "Too early to tell; this is under an hour old", "isUnknown": true },
+    { "id": "q5.e", "questionId": "q5", "text": "Too early to tell; this is under an hour old", "isUnknown": true, "changeFindId": "q5.e.change.find", "changeFind": "Which way it is moving a few hours from now.", "changeEffectId": "q5.e.change.effect", "changeEffect": "A story under an hour old can still go either way." },
 
     { "id": "q6.a", "questionId": "q6", "text": "Someone with real distribution — a journalist, a large account, a broadcaster" },
     { "id": "q6.b", "questionId": "q6", "text": "An account with a committed audience but little reach beyond it" },
@@ -375,7 +381,7 @@
 
     { "id": "q10.a", "questionId": "q10", "text": "Yes – a contractual or professional duty means we cannot discuss the substance without consent", "triggersOverride": "rule.confidentiality", "noteId": "rule.confidentialityLegalNote" },
     { "id": "q10.b", "questionId": "q10", "text": "No" },
-    { "id": "q10.c", "questionId": "q10", "text": "Not sure", "isUnknown": true, "noteId": "rule.confidentialityLegalNote" },
+    { "id": "q10.c", "questionId": "q10", "text": "Not sure", "isUnknown": true, "changeFindId": "q10.c.change.find", "changeFind": "Whether a contractual or professional duty stops you discussing the substance.", "changeEffectId": "q10.c.change.effect", "changeEffect": "If one does, what you can say narrows, whatever else your answers say.", "noteId": "rule.confidentialityLegalNote" },
 
     { "id": "br.journ.1.a", "questionId": "br.journ.1", "text": "Comment on a specific point" },
     { "id": "br.journ.1.b", "questionId": "br.journ.1", "text": "General background" },
@@ -388,7 +394,7 @@
 
     { "id": "br.journ.3.a", "questionId": "br.journ.3", "text": "Yes" },
     { "id": "br.journ.3.b", "questionId": "br.journ.3", "text": "No" },
-    { "id": "br.journ.3.c", "questionId": "br.journ.3", "text": "We don't know", "isUnknown": true },
+    { "id": "br.journ.3.c", "questionId": "br.journ.3", "text": "We don't know", "isUnknown": true, "changeFindId": "br.journ.3.c.change.find", "changeFind": "Whether a version of this story has run before.", "changeEffectId": "br.journ.3.c.change.effect", "changeEffect": "If it has, there is already a public record, and anything you say will be read against it." },
 
     { "id": "br.social.1.a", "questionId": "br.social.1", "text": "Yes, direct messages are open" },
     { "id": "br.social.1.b", "questionId": "br.social.1", "text": "No, public reply only" },
@@ -401,7 +407,7 @@
     { "id": "br.review.1.a", "questionId": "br.review.1", "text": "Yes, and we can say so" },
     { "id": "br.review.1.b", "questionId": "br.review.1", "text": "Yes, but not quickly" },
     { "id": "br.review.1.c", "questionId": "br.review.1", "text": "No, we don't accept the account of what happened" },
-    { "id": "br.review.1.d", "questionId": "br.review.1", "text": "We can't tell yet", "isUnknown": true },
+    { "id": "br.review.1.d", "questionId": "br.review.1", "text": "We can't tell yet", "isUnknown": true, "changeFindId": "br.review.1.d.change.find", "changeFind": "Whether this is a service failure you can fix.", "changeEffectId": "br.review.1.d.change.effect", "changeEffect": "If it is, putting it right changes what there is to say." },
 
     { "id": "br.review.2.a", "questionId": "br.review.2", "text": "Yes" },
     { "id": "br.review.2.b", "questionId": "br.review.2", "text": "No" },
@@ -429,13 +435,13 @@
     { "id": "br.reg.1.c", "questionId": "br.reg.1", "text": "A public statement with no direct approach to us", "triggersOverride": "rule.regulatorOriginator" },
 
     { "id": "br.reg.2.a", "questionId": "br.reg.2", "text": "Yes, and we know what it is" },
-    { "id": "br.reg.2.b", "questionId": "br.reg.2", "text": "Yes, but we need to check what it is", "isUnknown": true },
+    { "id": "br.reg.2.b", "questionId": "br.reg.2", "text": "Yes, but we need to check what it is", "isUnknown": true, "changeFindId": "br.reg.2.b.change.find", "changeFind": "What the required channel is.", "changeEffectId": "br.reg.2.b.change.effect", "changeEffect": "A response through the wrong channel may not count as a response." },
     { "id": "br.reg.2.c", "questionId": "br.reg.2", "text": "No" },
 
     { "id": "br.leak.1.a", "questionId": "br.leak.1", "text": "Yes" },
     { "id": "br.leak.1.b", "questionId": "br.leak.1", "text": "Partly" },
     { "id": "br.leak.1.c", "questionId": "br.leak.1", "text": "No" },
-    { "id": "br.leak.1.d", "questionId": "br.leak.1", "text": "We can't verify yet", "isUnknown": true },
+    { "id": "br.leak.1.d", "questionId": "br.leak.1", "text": "We can't verify yet", "isUnknown": true, "changeFindId": "br.leak.1.d.change.find", "changeFind": "Whether the leaked information is accurate.", "changeEffectId": "br.leak.1.d.change.effect", "changeEffect": "An accurate leak and an inaccurate one call for different responses." },
 
     { "id": "br.leak.2.a", "questionId": "br.leak.2", "text": "Market-sensitive", "triggersOverride": "rule.marketSensitive" },
     { "id": "br.leak.2.b", "questionId": "br.leak.2", "text": "Personal data about an individual", "triggersOverride": "rule.data" },
@@ -444,11 +450,11 @@
 
     { "id": "br.rum.1.a", "questionId": "br.rum.1", "text": "Yes" },
     { "id": "br.rum.1.b", "questionId": "br.rum.1", "text": "No" },
-    { "id": "br.rum.1.c", "questionId": "br.rum.1", "text": "Not yet, but we expect it", "isUnknown": true },
+    { "id": "br.rum.1.c", "questionId": "br.rum.1", "text": "Not yet, but we expect it", "isUnknown": true, "changeFindId": "br.rum.1.c.change.find", "changeFind": "Whether a journalist gets in touch.", "changeEffectId": "br.rum.1.c.change.effect", "changeEffect": "A call turns a private rumour into a story with a deadline, so run this check again if it comes." },
 
     { "id": "br.rum.2.a", "questionId": "br.rum.2", "text": "Yes", "noteId": "rule.firstPublicConfirmationNote" },
     { "id": "br.rum.2.b", "questionId": "br.rum.2", "text": "No, it is already public somewhere" },
-    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true, "noteId": "rule.firstConfirmationUncertainNote" },
+    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true, "changeFindId": "br.rum.2.c.change.find", "changeFind": "Whether this has been confirmed publicly anywhere.", "changeEffectId": "br.rum.2.c.change.effect", "changeEffect": "If it hasn't, responding would be the first confirmation that it exists.", "noteId": "rule.firstConfirmationUncertainNote" },
 
     { "id": "br.sect.1.a", "questionId": "br.sect.1", "text": "A supplier, contractor or partner" },
     { "id": "br.sect.1.b", "questionId": "br.sect.1", "text": "A practice or process that has been criticised" },
@@ -470,7 +476,7 @@
     { "id": "br.prior.2.d", "questionId": "br.prior.2", "text": "We didn't respond and it recurs periodically" },
     { "id": "br.prior.2.e", "questionId": "br.prior.2", "text": "It went to a regulator, adjudicator or legal process", "triggersOverride": "rule.legal" },
     { "id": "br.prior.2.f", "questionId": "br.prior.2", "text": "It has never resolved" },
-    { "id": "br.prior.2.g", "questionId": "br.prior.2", "text": "We don't know; nobody here was there", "isUnknown": true },
+    { "id": "br.prior.2.g", "questionId": "br.prior.2", "text": "We don't know; nobody here was there", "isUnknown": true, "changeFindId": "br.prior.2.g.change.find", "changeFind": "How the earlier story ended.", "changeEffectId": "br.prior.2.g.change.effect", "changeEffect": "If it went to a regulator, adjudicator or court, what was decided may limit what you can say now." },
 
     { "id": "br.prior.3.a", "questionId": "br.prior.3", "text": "Yes, unchanged" },
     { "id": "br.prior.3.b", "questionId": "br.prior.3", "text": "Yes, but the facts have moved since" },
@@ -506,6 +512,9 @@
     "q2c.b": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.c": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.d": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q2c.e": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q2c.f": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q2c.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q3.a": { "costOfSpeaking": 5, "costOfStayingQuiet": 9 },
     "q3.b": { "costOfSpeaking": 4, "costOfStayingQuiet": 8 },
     "q3.c": { "costOfSpeaking": 3, "costOfStayingQuiet": 7 },
@@ -655,35 +664,35 @@
       "id": "rule.individualInternal", "outcome": { "type": "ceiling", "level": 3 }, "priority": 2,
       "renderTemplate": "downward",
       "leadIn": "an individual inside the organisation is identifiable",
-      "functions": "HR and legal",
+      "functions": ["HR", "legal"],
       "text": "An individual inside the organisation is identifiable. Duty of care, employment law and data protection all apply before communications does. Route this to HR and legal first. Where a public line is needed, it is about process, never about the person."
     },
     {
       "id": "rule.data", "outcome": { "type": "ceiling", "level": 3 }, "priority": 3,
       "renderTemplate": "downward",
       "leadIn": "personal data may be involved",
-      "functions": "whoever owns data protection",
+      "functions": ["whoever owns data protection"],
       "text": "Personal data may be involved. Where a data breach has occurred, notification to the regulator and to affected individuals runs on its own clock and its own rules. Communications cannot run ahead of it, contradict it, or pre-empt it. Check with whoever owns data protection before responding."
     },
     {
       "id": "rule.legal", "outcome": { "type": "ceiling", "level": 3 }, "priority": 4,
       "renderTemplate": "downward",
       "leadIn": "legal proceedings may be live or reasonably anticipated",
-      "functions": "legal",
+      "functions": ["legal"],
       "text": "Legal proceedings may be live or reasonably anticipated. Public comment on the substance is constrained once that is true, regardless of how wrong you believe the other side to be. Check with legal before responding."
     },
     {
       "id": "rule.marketSensitive", "outcome": { "type": "ceiling", "level": 3 }, "priority": 5,
       "renderTemplate": "downward",
       "leadIn": "the leaked information may be market-sensitive",
-      "functions": "legal and the company secretary",
+      "functions": ["legal", "the company secretary"],
       "text": "The leaked information may be market-sensitive. Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled."
     },
     {
       "id": "rule.employment", "outcome": { "type": "ceiling", "level": 3 }, "priority": 6,
       "renderTemplate": "downward",
       "leadIn": "an employment matter may be involved",
-      "functions": "HR and legal",
+      "functions": ["HR", "legal"],
       "text": "An employment matter may be involved. A protected disclosure cannot be commented on, and any response that reads as retaliation becomes the story itself. The same applies to a live grievance or disciplinary process. Involve HR and legal before comms."
     },
     {
@@ -713,8 +722,8 @@
     {
       "id": "rule.confidentiality", "outcome": { "type": "ceiling", "level": 3 }, "priority": 11,
       "renderTemplate": "downward",
-      "leadIn": "a duty of confidentiality limits what you can discuss",
-      "functions": "legal",
+      "leadIn": "a duty of confidentiality applies",
+      "functions": ["legal"],
       "text": "A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
     }
   ],
@@ -797,9 +806,9 @@
     "out.override.upward": "Your answers place this at {arithmeticLevel}, but {leadIn}, which carries obligations your own assessment cannot set aside. This starts at {finalLevel}.",
     "out.override.satisfied": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers already point further than that.",
     "out.override.matched": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, which means a response is needed at {ruleLevel} or above. Your answers land in the same place.",
-    "out.override.cappedSatisfied": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers already sit within that.",
+    "out.override.cappedSatisfied": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without speaking to {consultFunctions} first. Your answers already sit within that.",
     "out.override.cappedSatisfied.noFunctions": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers already sit within that.",
-    "out.override.cappedBelow": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without {consultFunctions}. Your answers sit below that.",
+    "out.override.cappedBelow": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel} without speaking to {consultFunctions} first. Your answers sit below that.",
     "out.override.cappedBelow.noFunctions": "Your answers place this at {arithmeticLevel}. {ruleLeadIn}, so this cannot go above {ruleLevel}. Your answers sit below that.",
     "out.override.floorOverruled.up": "Your answers place this at {arithmeticLevel}, but {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this cannot go above {finalLevel} without speaking to {functions} first.",
     "out.override.floorOverruled.up.noFunctions": "Your answers place this at {arithmeticLevel}, but {floorLeadIn}, which would point to {floorLevel}. However, {ceilingLeadIn}, so this cannot go above {finalLevel}.",
@@ -814,6 +823,9 @@
     "out.matrixOverriddenNote": "Your answers land here. The recommendation below takes account of something else as well.",
     "out.matrixCurrentCell": "Your answers land here.",
     "out.changeHeading": "What would change this",
+    "out.change.findHeading": "What to find out",
+    "out.change.effectHeading": "What it would change",
+    "out.configInvalid": "The configuration loaded but contains an error, so no result can be shown. If you have edited the config, check it against SPEC.md.",
     "out.changeIntro": "Name what would make you look at this again. A decision recorded without one has no expiry date, and reactive decisions go stale faster than anything else in comms.",
     "out.neighboursHeading": "The levels either side",
     "out.neighboursIntro": "So you can argue with this rather than only accept it.",
