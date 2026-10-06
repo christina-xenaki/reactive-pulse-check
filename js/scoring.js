@@ -21,12 +21,15 @@ window.PulseCheck = window.PulseCheck || {};
 PulseCheck.Scoring = (function () {
   var AXES = ['costOfSpeaking', 'costOfStayingQuiet'];
 
-  // q1 and q9 route/record but never score (SPEC.md E). A multi-select
+  // q1, q2c and q9 route/record but never score (SPEC.md E): each carries
+  // no weight on either axis, is left out of the normalisation maximum,
+  // and is not counted toward the low-confidence proportion (C.3). q2c's
+  // only job is to fire rule.employment. A multi-select
   // question carrying config.questions[].cappedMultiScoring (currently q2b
   // and q8; see SPEC.md C.1) uses the capped multi-select formula instead
   // of a plain sum — which question that is lives entirely in config, not
   // here.
-  var UNSCORED_QUESTION_IDS = { q1: true, q9: true };
+  var UNSCORED_QUESTION_IDS = { q1: true, q2c: true, q9: true };
 
   // --- Path scoping -----------------------------------------------------
   //
@@ -205,7 +208,7 @@ PulseCheck.Scoring = (function () {
     return cell || null;
   }
 
-  // Every selected option (excluding q1/q9, which never score) that
+  // Every selected option (excluding q1/q2c/q9, which never score) that
   // contributes to the given axis, ranked highest weight first, for
   // "what drove this" (SPEC.md I.3). Each contribution carries its
   // question's text alongside the answer's, so the driver reads as a
@@ -235,7 +238,7 @@ PulseCheck.Scoring = (function () {
     return contributions.slice(0, limit || 4);
   }
 
-  // Every selected option (excluding q1/q9) on the path taken, for the
+  // Every selected option (excluding q1/q2c/q9) on the path taken, for the
   // low-confidence caveat (SPEC.md C.3). Path-scoped: see the PATH-SCOPED
   // comment above questionsOnPath() — this is also what feeds the unknown
   // count behind that caveat, so the caveat itself is path-scoped for free.

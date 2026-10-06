@@ -69,7 +69,14 @@ PulseCheck.Render = (function () {
   // start of a sentence — the template's own start, or after a full stop —
   // its first letter is capitalised here, at render, and the stored string
   // is left alone.
-  var LEAD_IN_KEYS = ['leadIn', 'ruleLeadIn'];
+  // The floorOverruled.same template names its sentence-start placeholder
+  // {FloorLeadIn} outright (COPY.md section 6); it is filled with the same
+  // stored leadIn, capitalised the same way.
+  var LEAD_IN_KEYS = ['leadIn', 'ruleLeadIn', 'floorLeadIn', 'ceilingLeadIn'];
+
+  function capitalise(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
 
   function fillOverrideTemplate(template, values) {
     var adjusted = {};
@@ -79,24 +86,10 @@ PulseCheck.Render = (function () {
       var at = template ? template.indexOf('{' + key + '}') : -1;
       if (typeof value !== 'string' || !value || at === -1) return;
       if (at === 0 || /[.!?]\s+$/.test(template.slice(0, at))) {
-        adjusted[key] = value.charAt(0).toUpperCase() + value.slice(1);
+        adjusted[key] = capitalise(value);
       }
     });
     return fillTemplate(template, adjusted);
-  }
-
-  // Drops a template's opening "… {arithmeticLevel}." sentence, used only
-  // where the Level 6 gate has raised the final level above the arithmetic
-  // level: that sentence would otherwise state a level the result no
-  // longer has. Only a template whose first sentence ends straight after
-  // {arithmeticLevel} can lose it; any other template is returned as is.
-  function withoutArithmeticSentence(template) {
-    var marker = '{arithmeticLevel}';
-    var at = template ? template.indexOf(marker) : -1;
-    if (at === -1) return template;
-    var rest = template.slice(at + marker.length);
-    var match = /^\.\s+/.exec(rest);
-    return match ? rest.slice(match[0].length) : template;
   }
 
   // SPEC.md section H footnote / COPY.md section 9: gloss.level1..gloss.level7
@@ -282,134 +275,185 @@ PulseCheck.Render = (function () {
   // some of these are arguments against acting on the recommendation and
   // must survive being skimmed."
 
-  // The level the priority winner alone produces, before any ceiling caps
-  // it. Mirrors applyOutcome() in js/overrides.js and is used here for one
-  // display decision only — which rule the block describes — never to set
-  // a level.
-  function levelBeforeCeiling(applied, arithmeticLevel) {
-    var outcome = applied.outcome || {};
-    if (outcome.type === 'forced') return outcome.level;
-    if (outcome.type === 'floor') return Math.max(arithmeticLevel, outcome.level);
-    if (outcome.type === 'clamp') return Math.min(Math.max(arithmeticLevel, outcome.min), outcome.max);
-    return arithmeticLevel;
+  // The level a capping rule allows at most: a ceiling's (or a forced
+  // rule's) own level, or a clamp's max. No rule in config uses a clamp
+  // today; the branch is kept because js/overrides.js still supports one.
+  function capLevelOf(definition) {
+    var outcome = (definition && definition.outcome) || {};
+    if (outcome.type === 'clamp') return outcome.max;
+    return typeof outcome.level === 'number' ? outcome.level : null;
   }
 
-  // The rule that set the final level. Usually the priority winner, but a
-  // ceiling (SPEC.md F.7) composes after the winner, so where it lowered
-  // the winner's result, the ceiling is the rule that set the level and is
-  // the one described.
-  function decidingRule(overrides, arithmeticLevel) {
-    var applied = overrides.applied;
-    var ceiling = (overrides.fired || []).filter(function (f) {
-      return f.outcome && f.outcome.type === 'ceiling';
-    })[0];
-    if (ceiling && ceiling !== applied && overrides.finalLevel < levelBeforeCeiling(applied, arithmeticLevel)) {
-      return ceiling;
-    }
-    return applied;
+  function isFloor(fired) {
+    return !!(fired.outcome && fired.outcome.type === 'floor');
   }
 
-  // resultLevel is the level the result shows. It differs from
-  // overrides.finalLevel only where the Level 6 gate has raised it.
-  function buildOverrideBlock(scoring, overrides, resultLevel) {
-    if (!overrides.applied) return null;
-    var applied = decidingRule(overrides, scoring.level);
+  function isCeiling(fired) {
+    return !!(fired.outcome && fired.outcome.type === 'ceiling');
+  }
 
-    var definition = overrideDefinitionFor(applied.id);
-    if (!definition) return null;
+  // SPEC.md I.4 / F.7. The template is chosen by the actual movement from
+  // the arithmetic level to overrides.finalLevel — never from a rule's
+  // renderTemplate alone, so no case can use downward wording when the
+  // level went up. Four cases:
+  //
+  // 1. A ceiling sets the final level below a floor that fired (a floor
+  //    "overruled"). The highest such floor (ties by priority) and the
+  //    binding ceiling are described together (floorOverruled.up/.down/
+  //    .same, by movement); every other floor that pointed above the final
+  //    level is listed in out.override.otherFloors, so no overruled floor
+  //    goes unnamed (SPEC.md F.7, transparency principle).
+  // 2. The level went up: the single winner (a floor, or rule.safety) is
+  //    described (out.override.upward).
+  // 3. The level went down: the binding (lowest) ceiling is described
+  //    (out.override.downward).
+  // 4. Nothing moved: the binding ceiling is described with the "capped"
+  //    wording if one fired, otherwise the single winner with the floor
+  //    wording, judged against the arithmetic level.
+  //
+  // Every fired ceiling not described in the main sentence adds its
+  // functions to out.override.alsoSpeakTo, in priority order, joined with
+  // "and", exact duplicates removed — so the functions of every ceiling
+  // that fired appear somewhere in the block.
+  //
+  // Where the Level 6 gate has raised the result, this block still compares
+  // against the arithmetic level, not the gated result: the gate outcome
+  // block that follows it is what explains the move to Level 6.
+  function buildOverrideBlock(scoring, overrides) {
+    var fired = overrides.fired || [];
+    if (!fired.length) return null;
 
     var arithmeticLevel = scoring.level;
     var finalLevel = overrides.finalLevel;
-    var gateRaised = resultLevel > finalLevel;
-    var arithmeticInfo = levelInfo(arithmeticLevel);
-    var finalInfo = levelInfo(finalLevel);
+    var applied = overrides.applied;
+    var ceiling = overrides.ceiling;
+    var safetyWon = !!(applied && applied.id === SAFETY_OVERRIDE.id);
+    var arithmeticLabel = levelInfo(arithmeticLevel).label;
+    var finalLabel = levelInfo(finalLevel).label;
+    var movement = finalLevel > arithmeticLevel ? 'up' : finalLevel < arithmeticLevel ? 'down' : 'same';
 
-    var isDownward = definition.renderTemplate === 'downward';
-    var isUpward = definition.renderTemplate === 'upward';
-    var changed = finalLevel !== arithmeticLevel;
+    var overruledFloors = (ceiling && !safetyWon)
+      ? fired.filter(function (f) { return isFloor(f) && f.outcome.level > finalLevel; })
+        .sort(function (a, b) { return (b.outcome.level - a.outcome.level) || (a.priority - b.priority); })
+      : [];
 
     var heading = uiText('out.overrideHeading');
-    var sentence;
+    var described = null;
+    var sentence = '';
+    var extraLines = [];
 
-    if (isDownward && changed) {
-      var templateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
-      sentence = fillOverrideTemplate(uiText(templateId), {
-        arithmeticLevel: arithmeticInfo.label,
-        leadIn: definition.leadIn,
-        finalLevel: finalInfo.label,
-        functions: definition.functions
+    if (overruledFloors.length) {
+      described = ceiling;
+      var floorDefinition = overrideDefinitionFor(overruledFloors[0].id);
+      var ceilingDefinition = overrideDefinitionFor(ceiling.id);
+      if (!floorDefinition || !ceilingDefinition) return null;
+      heading = uiText('out.overrideRulesHeading');
+      var overruledTemplateId = 'out.override.floorOverruled.' + movement + (ceilingDefinition.functions ? '' : '.noFunctions');
+      sentence = fillOverrideTemplate(uiText(overruledTemplateId), {
+        arithmeticLevel: arithmeticLabel,
+        floorLeadIn: floorDefinition.leadIn,
+        FloorLeadIn: capitalise(floorDefinition.leadIn),
+        floorLevel: levelInfo(overruledFloors[0].outcome.level).label,
+        ceilingLeadIn: ceilingDefinition.leadIn,
+        finalLevel: finalLabel,
+        functions: ceilingDefinition.functions
       });
-    } else if (isUpward && changed) {
-      sentence = fillOverrideTemplate(uiText('out.override.upward'), {
-        arithmeticLevel: arithmeticInfo.label,
-        leadIn: definition.leadIn,
-        finalLevel: finalInfo.label
+      var otherLeadIns = overruledFloors.slice(1).map(function (f) {
+        var definition = overrideDefinitionFor(f.id);
+        return definition ? definition.leadIn : f.id;
       });
-    } else if (isUpward && !changed) {
-      // The floor rule fired but the arithmetic already sat at or above
-      // what it requires (COPY.md: "out.override.satisfied"/".matched").
-      // "out.overrideHeading" oversells this — nothing moved — so it's
-      // paired with "out.overrideAlsoHeading" instead. finalLevel ===
-      // arithmeticLevel for a floor outcome only when arithmeticLevel is
-      // already >= the rule's own outcome.level, so ruleLevel here is
-      // always <= arithmeticLevel: equal picks "matched", lower picks
-      // "satisfied".
-      heading = uiText('out.overrideAlsoHeading');
-      var ruleLevel = definition.outcome && typeof definition.outcome.level === 'number' ? definition.outcome.level : null;
-      // Where the Level 6 gate has raised the result, the opening "Your
-      // answers place this at {arithmeticLevel}." sentence is dropped (the
-      // gate outcome block that follows explains the move from that level),
-      // and "matched" is judged against the level the result shows, so the
-      // block never claims the answers land where the floor does when the
-      // result sits above it.
-      var matched = ruleLevel !== null && ruleLevel === (gateRaised ? resultLevel : arithmeticLevel);
-      var floorTemplate = uiText(matched ? 'out.override.matched' : 'out.override.satisfied');
-      if (gateRaised) floorTemplate = withoutArithmeticSentence(floorTemplate);
-      sentence = fillOverrideTemplate(floorTemplate, {
-        arithmeticLevel: arithmeticInfo.label,
-        ruleLeadIn: definition.leadIn,
-        ruleLevel: ruleLevel !== null ? levelInfo(ruleLevel).label : ''
-      });
+      if (otherLeadIns.length) {
+        extraLines.push(fillTemplate(uiText('out.override.otherFloors'), { leadIns: otherLeadIns.join('; ') }));
+      }
     } else {
-      // isDownward && !changed: a capping rule fired without moving the
-      // level (the arithmetic already sat inside its range) — the mirror
-      // of the isUpward-&&-!changed case above, with "cap" wording instead
-      // of "floor" wording (COPY.md: "out.override.cappedSatisfied"/
-      // ".cappedBelow"). The rule's own cap is outcome.max for a clamp
-      // (rule.individualInternal, .data, .legal, .marketSensitive,
-      // .employment) or outcome.level for a forced cap (the one downward
-      // rule with a single fixed outcome, rule.individualExternal) —
-      // finalLevel === arithmeticLevel here only when arithmeticLevel is
-      // already <= that cap, so ruleLevel is always >= arithmeticLevel:
-      // equal picks "cappedSatisfied" (sits at the cap), higher picks
-      // "cappedBelow".
-      heading = uiText('out.overrideAlsoHeading');
-      var outcome = definition.outcome || {};
-      var capLevel = outcome.type === 'clamp' ? outcome.max
-        : (typeof outcome.level === 'number' ? outcome.level : null);
-      var atCap = capLevel !== null && capLevel === arithmeticLevel;
-      var cappedTemplateId = definition.functions
-        ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
-        : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
-      sentence = fillOverrideTemplate(uiText(cappedTemplateId), {
-        arithmeticLevel: arithmeticInfo.label,
-        ruleLeadIn: definition.leadIn,
-        ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
-        consultFunctions: definition.functions
-      });
+      if (movement === 'up') {
+        described = applied;
+      } else if (ceiling && !safetyWon) {
+        described = ceiling;
+      } else {
+        described = applied;
+      }
+      var definition = described ? overrideDefinitionFor(described.id) : null;
+      if (!definition) return null;
+      var describedIsFloor = isFloor(described) || (described && described.id === SAFETY_OVERRIDE.id);
+
+      if (movement === 'up') {
+        sentence = fillOverrideTemplate(uiText('out.override.upward'), {
+          arithmeticLevel: arithmeticLabel,
+          leadIn: definition.leadIn,
+          finalLevel: finalLabel
+        });
+      } else if (movement === 'down') {
+        var downwardTemplateId = definition.functions ? 'out.override.downward' : 'out.override.downward.noFunctions';
+        sentence = fillOverrideTemplate(uiText(downwardTemplateId), {
+          arithmeticLevel: arithmeticLabel,
+          leadIn: definition.leadIn,
+          finalLevel: finalLabel,
+          functions: definition.functions
+        });
+      } else if (describedIsFloor) {
+        // A floor fired but the arithmetic already sat at or above what it
+        // requires (COPY.md: "out.override.satisfied"/".matched").
+        // "out.overrideHeading" oversells this — nothing moved — so it's
+        // paired with "out.overrideAlsoHeading" instead. ruleLevel here is
+        // always <= arithmeticLevel: equal picks "matched", lower picks
+        // "satisfied".
+        heading = uiText('out.overrideAlsoHeading');
+        var ruleLevel = definition.outcome && typeof definition.outcome.level === 'number' ? definition.outcome.level : null;
+        var matched = ruleLevel !== null && ruleLevel === arithmeticLevel;
+        sentence = fillOverrideTemplate(uiText(matched ? 'out.override.matched' : 'out.override.satisfied'), {
+          arithmeticLevel: arithmeticLabel,
+          ruleLeadIn: definition.leadIn,
+          ruleLevel: ruleLevel !== null ? levelInfo(ruleLevel).label : ''
+        });
+      } else {
+        // A capping rule fired without moving the level (the arithmetic
+        // already sat at or under its cap) — the mirror of the floor case
+        // above, with "cap" wording instead of "floor" wording (COPY.md:
+        // "out.override.cappedSatisfied"/".cappedBelow"). capLevel is always
+        // >= arithmeticLevel here: equal picks "cappedSatisfied", higher
+        // picks "cappedBelow".
+        heading = uiText('out.overrideAlsoHeading');
+        var capLevel = capLevelOf(definition);
+        var atCap = capLevel !== null && capLevel === arithmeticLevel;
+        var cappedTemplateId = definition.functions
+          ? (atCap ? 'out.override.cappedSatisfied' : 'out.override.cappedBelow')
+          : (atCap ? 'out.override.cappedSatisfied.noFunctions' : 'out.override.cappedBelow.noFunctions');
+        sentence = fillOverrideTemplate(uiText(cappedTemplateId), {
+          arithmeticLevel: arithmeticLabel,
+          ruleLeadIn: definition.leadIn,
+          ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
+          consultFunctions: definition.functions
+        });
+      }
+    }
+
+    var otherFunctions = [];
+    fired.forEach(function (f) {
+      if (!isCeiling(f) || f === described) return;
+      var definition = overrideDefinitionFor(f.id);
+      var functions = definition && definition.functions;
+      if (functions && otherFunctions.indexOf(functions) === -1) otherFunctions.push(functions);
+    });
+    if (otherFunctions.length) {
+      extraLines.push(fillTemplate(uiText('out.override.alsoSpeakTo'), { functions: otherFunctions.join(' and ') }));
     }
 
     var container = Dom.el('div', { className: 'result-override' });
     container.appendChild(Dom.el('h3', {}, [document.createTextNode(heading)]));
     container.appendChild(Dom.el('p', {}, [document.createTextNode(sentence)]));
+    extraLines.forEach(function (line) {
+      container.appendChild(Dom.el('p', {}, [document.createTextNode(line)]));
+    });
 
-    // The closing line applies to every downward (capping) rule, whether
-    // it moved the level or only fired without moving it (SPEC.md I.4) —
-    // a rule that capped the arithmetic in place is still telling the
-    // user there is a ceiling here, which is exactly when they most need
-    // to know the tool has limits. Never appended for an upward (floor)
-    // rule.
-    if (isDownward) {
+    // The closing line applies wherever the rule described is a downward
+    // (capping) rule, whether it moved the level or only fired without
+    // moving it (SPEC.md I.4) — a rule that capped the arithmetic in place
+    // is still telling the user there is a ceiling here, which is exactly
+    // when they most need to know the tool has limits. Never appended where
+    // the rule described is an upward (floor) rule.
+    var describedDefinition = described ? overrideDefinitionFor(described.id) : null;
+    if (describedDefinition && describedDefinition.renderTemplate === 'downward') {
       container.appendChild(Dom.el('p', { className: 'result-override-closing' }, [document.createTextNode(uiText('out.override.downward.closingLine'))]));
     }
 
@@ -630,7 +674,7 @@ PulseCheck.Render = (function () {
     // 4. Qualifiers — overrides, the gate outcome, notes, check-yourself,
     // the Q9 legal cross-check, the low-confidence caveat. Above the
     // reasoning: see buildOverrideBlock's comment.
-    var overrideBlock = buildOverrideBlock(scoring, overrides, finalLevel);
+    var overrideBlock = buildOverrideBlock(scoring, overrides);
     if (overrideBlock) resultsEl.appendChild(overrideBlock);
     if (needsGate) resultsEl.appendChild(buildGateOutcomeBlock(scoring, finalLevel));
 
