@@ -311,11 +311,15 @@ PulseCheck.Render = (function () {
   // level went up. Four cases:
   //
   // 1. A ceiling sets the final level below a floor that fired (a floor
-  //    "overruled"). The highest such floor (ties by priority) and the
-  //    binding ceiling are described together (floorOverruled.up/.down/
-  //    .same, by movement); every other floor that pointed above the final
-  //    level is listed in out.override.otherFloors, so no overruled floor
-  //    goes unnamed (SPEC.md F.7, transparency principle).
+  //    "overruled") and that floor's level is above the arithmetic level.
+  //    The highest such floor (ties by priority) and the binding ceiling
+  //    are described together (floorOverruled.up/.down/.same, by
+  //    movement); every other floor that pointed above the final level is
+  //    listed in out.override.otherFloors, so no overruled floor goes
+  //    unnamed (SPEC.md F.7, transparency principle). Where every
+  //    overruled floor is at or below the arithmetic level, the floor
+  //    raised nothing, so case 3 below describes the ceiling's own move
+  //    and all of those floors are listed in out.override.otherFloors.
   // 2. The level went up: the single winner (a floor, or rule.safety) is
   //    described (out.override.upward).
   // 3. The level went down: the binding (lowest) ceiling is described
@@ -356,7 +360,9 @@ PulseCheck.Render = (function () {
     var extraLines = [];
     var namedFunctions = []; // the functions the main sentence names
 
-    if (overruledFloors.length) {
+    var floorAboveArithmetic = overruledFloors.length > 0 && overruledFloors[0].outcome.level > arithmeticLevel;
+
+    if (floorAboveArithmetic) {
       described = ceiling;
       var floorDefinition = overrideDefinitionFor(overruledFloors[0].id);
       var ceilingDefinition = overrideDefinitionFor(ceiling.id);
@@ -442,6 +448,16 @@ PulseCheck.Render = (function () {
           ruleLevel: capLevel !== null ? levelInfo(capLevel).label : '',
           consultFunctions: joinFunctions(namedFunctions)
         });
+      }
+
+      if (overruledFloors.length) {
+        heading = uiText('out.overrideRulesHeading');
+        extraLines.push(fillTemplate(uiText('out.override.otherFloors'), {
+          leadIns: overruledFloors.map(function (f) {
+            var floorDef = overrideDefinitionFor(f.id);
+            return floorDef ? floorDef.leadIn : f.id;
+          }).join('; ')
+        }));
       }
     }
 

@@ -381,7 +381,7 @@
 
     { "id": "q10.a", "questionId": "q10", "text": "Yes – a contractual or professional duty means we cannot discuss the substance without consent", "triggersOverride": "rule.confidentiality", "noteId": "rule.confidentialityLegalNote" },
     { "id": "q10.b", "questionId": "q10", "text": "No" },
-    { "id": "q10.c", "questionId": "q10", "text": "Not sure", "isUnknown": true, "changeFindId": "q10.c.change.find", "changeFind": "Whether a contractual or professional duty stops you discussing the substance.", "changeEffectId": "q10.c.change.effect", "changeEffect": "If one does, what you can say narrows, whatever else your answers say.", "noteId": "rule.confidentialityLegalNote" },
+    { "id": "q10.c", "questionId": "q10", "text": "Not sure", "isUnknown": true, "changeFindId": "q10.c.change.find", "changeFind": "Whether a contractual or professional duty stops you discussing the substance.", "changeEffectId": "q10.c.change.effect", "changeEffect": "If one does, what you can say narrows, whatever else your answers say." },
 
     { "id": "br.journ.1.a", "questionId": "br.journ.1", "text": "Comment on a specific point" },
     { "id": "br.journ.1.b", "questionId": "br.journ.1", "text": "General background" },
@@ -454,7 +454,7 @@
 
     { "id": "br.rum.2.a", "questionId": "br.rum.2", "text": "Yes", "noteId": "rule.firstPublicConfirmationNote" },
     { "id": "br.rum.2.b", "questionId": "br.rum.2", "text": "No, it is already public somewhere" },
-    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true, "changeFindId": "br.rum.2.c.change.find", "changeFind": "Whether this has been confirmed publicly anywhere.", "changeEffectId": "br.rum.2.c.change.effect", "changeEffect": "If it hasn't, responding would be the first confirmation that it exists.", "noteId": "rule.firstConfirmationUncertainNote" },
+    { "id": "br.rum.2.c", "questionId": "br.rum.2", "text": "We don't know", "isUnknown": true, "changeFindId": "br.rum.2.c.change.find", "changeFind": "Whether this has been confirmed publicly anywhere.", "changeEffectId": "br.rum.2.c.change.effect", "changeEffect": "If it has, the assumption behind this result no longer holds, and the result may change.", "noteId": "rule.firstConfirmationUncertainNote" },
 
     { "id": "br.sect.1.a", "questionId": "br.sect.1", "text": "A supplier, contractor or partner" },
     { "id": "br.sect.1.b", "questionId": "br.sect.1", "text": "A practice or process that has been criticised" },
