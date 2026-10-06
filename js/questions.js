@@ -131,7 +131,7 @@ PulseCheck.Questions = (function () {
   }
 
   // An answer option carrying config's clearsSiblings (currently q8.f,
-  // q2b.h and q2c.c) is mutually exclusive with every other option on its question:
+  // q2b.h and q2c.f) is mutually exclusive with every other option on its question:
   // selecting it clears every other selection on that question, and
   // selecting any other option clears it. Which option that is, on which
   // question, lives entirely in config — this function names none of them.

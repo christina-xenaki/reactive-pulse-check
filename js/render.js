@@ -26,9 +26,7 @@ PulseCheck.Render = (function () {
   // edited, reweighted or switched off. Its display copy is kept here,
   // in code, for the same reason, rather than added to config.default.json:
   // moving it to config would make it look editable even though it isn't.
-  // It cannot fire today (js/overrides.js safetyFired() always returns
-  // false, since no question asks about physical safety), so this path is
-  // exercised only by direct test, never by a real answer set.
+  // It fires when q2c.h is selected (js/overrides.js safetyFired()).
   var SAFETY_OVERRIDE = {
     id: 'rule.safety',
     renderTemplate: 'upward',

@@ -37,10 +37,14 @@ PulseCheck.Config = (function () {
   //   changeEffect — no generic fallback exists for either (SPEC.md I.8);
   // - every triggersOverride names a rule that exists in config;
   // - every rule's functions, where present, is a non-empty list of
-  //   non-empty strings (SPEC.md F.7).
+  //   non-empty strings (SPEC.md F.7);
+  // - the answer option that asks about physical safety exists — checked
+  //   by js/overrides.js, which owns that hardcoded rule (SPEC.md F.1).
   function validate(config) {
     var problems = PulseCheck.Scoring.configProblems(config);
     if (!config) return problems;
+
+    problems = problems.concat(PulseCheck.Overrides.safetyConfigProblems(config));
 
     var rulesById = {};
     (config.alwaysOnRegimes || []).concat(config.sectorOverrides || []).forEach(function (rule) {

@@ -94,7 +94,8 @@
       "textId": "q10.text",
       "text": "Is the organisation bound by a duty of confidentiality that prevents it from discussing the substance of this issue?",
       "type": "single",
-      "core": true
+      "core": true,
+      "unscored": true
     },
 
     {
@@ -331,6 +332,7 @@
     { "id": "q2c.c", "questionId": "q2c", "text": "Legal proceedings are live or reasonably anticipated", "triggersOverride": "rule.legal" },
     { "id": "q2c.d", "questionId": "q2c", "text": "Personal data may have been exposed or misused", "triggersOverride": "rule.data" },
     { "id": "q2c.e", "questionId": "q2c", "text": "It could affect the share price, or relates to information not yet disclosed to the market", "triggersOverride": "rule.marketSensitive" },
+    { "id": "q2c.h", "questionId": "q2c", "text": "Someone's physical safety may be at risk" },
     { "id": "q2c.f", "questionId": "q2c", "text": "None of these", "clearsSiblings": true },
     { "id": "q2c.g", "questionId": "q2c", "text": "We don't know whether any of these apply", "isUnknown": true, "changeFindId": "q2c.g.change.find", "changeFind": "Whether a whistleblowing concern, a live grievance or disciplinary process, legal proceedings, exposed personal data or market-sensitive information is involved.", "changeEffectId": "q2c.g.change.effect", "changeEffect": "Any of these limits what you can say." },
 
@@ -513,6 +515,7 @@
     "q2c.c": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.d": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.e": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
+    "q2c.h": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.f": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q2c.g": { "costOfSpeaking": 0, "costOfStayingQuiet": 0 },
     "q3.a": { "costOfSpeaking": 5, "costOfStayingQuiet": 9 },
@@ -684,9 +687,9 @@
     {
       "id": "rule.marketSensitive", "outcome": { "type": "ceiling", "level": 3 }, "priority": 5,
       "renderTemplate": "downward",
-      "leadIn": "the leaked information may be market-sensitive",
+      "leadIn": "information that could affect the share price may be involved",
       "functions": ["legal", "the company secretary"],
-      "text": "The leaked information may be market-sensitive. Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled."
+      "text": "Information that could affect the share price may be involved. Where that's true, disclosure obligations decide what is said and when, not a judgement about reach or trajectory. Route this to legal and the company secretary before comms responds, and hold the recommendation until they have ruled."
     },
     {
       "id": "rule.employment", "outcome": { "type": "ceiling", "level": 3 }, "priority": 6,
@@ -724,7 +727,7 @@
       "renderTemplate": "downward",
       "leadIn": "a duty of confidentiality applies",
       "functions": ["legal"],
-      "text": "A contractual or professional duty prevents discussion of the substance without consent. Whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
+      "text": "A duty of confidentiality applies. You cannot discuss the substance without consent, so whatever the scores suggest, this assessment stops at a holding line on process, such as a statement that the organisation does not discuss matters it is bound to keep confidential."
     }
   ],
   "sectorOverrides": [],
